@@ -22,6 +22,14 @@ const router = createRouter({
       path: '/userpost',
       component: () => import('../views/PostView.vue'),
     },
+    {
+      path: '/pinia',
+      component: () => import('../views/PINIA.vue'),
+    },
+    {
+      path: '/update',
+      component: () => import('../views/update.vue'),
+    },
   ],
 })
 export default router

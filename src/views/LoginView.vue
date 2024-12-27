@@ -19,7 +19,19 @@ const signInField = ref({
 const signIn = async () => {
   try {
     const resdata = await axios.post(`${localurl}/auth/sign_In`, signInField.value)
-    console.log('resdata:', resdata)
+    sigInToken.value = resdata.data.data.user.token
+    document.cookie = `Token=${resdata.data.data.user.token}` //儲存cookie
+    showAlert(`歡迎回來${resdata.data.data.user.name}`, 'success')
+    router.push({ path: '/index' })
+  } catch (error) {
+    console.log(error)
+    showAlert(`${error.response.data.message}`, 'error')
+  }
+}
+
+const signInFromGoogle = async () => {
+  try {
+    const resdata = await axios.get(`${localurl}/googleClient/callback`)
 
     sigInToken.value = resdata.data.data.user.token
     document.cookie = `Token=${resdata.data.data.user.token}` //儲存cookie
@@ -74,6 +86,12 @@ const signIn = async () => {
               type="button"
               @click="signIn"
               value="登入"
+            />
+            <input
+              class="btn btn-primary w-75 mt-2 mb-3"
+              type="button"
+              @click="signInFromGoogle"
+              value="google登入"
             />
             <RouterLink class="btn btn-primary w-75 mt-2 mb-3" to="/register">註冊</RouterLink>
           </div>

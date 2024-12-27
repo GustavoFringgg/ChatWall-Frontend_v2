@@ -1,7 +1,6 @@
 <script setup>
-defineProps({
-  getUserData: Object,
-})
+import { useUserStore } from '@/stores/userStore'
+const userSotre = useUserStore()
 </script>
 
 <template>
@@ -14,12 +13,12 @@ defineProps({
         <div class="d-flex flex-column align-items-start">
           <div class="d-flex align-items-center mb-3">
             <img
-              :src="getUserData.user?.photo"
+              :src="userSotre.photo"
               alt="Avatar"
               class="rounded-circle me-2"
               style="width: 50px; height: 50px"
             />
-            <span>{{ getUserData.user?.name }}</span>
+            <span>{{ userSotre.username }}</span>
           </div>
           <button class="btn btn-light w-100 text-start mb-2">
             <i class="bi bi-bell"></i> 追蹤名單

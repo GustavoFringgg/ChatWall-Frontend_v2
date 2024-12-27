@@ -6,6 +6,8 @@ import { useAlert } from '@/Composables/useAlert.js'
 import dayjs from 'dayjs'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
+import { useUserStore } from '@/stores/UserStore'
+const userStore = useUserStore()
 const { showAlert } = useAlert()
 const router = useRouter()
 const localurl = 'http://localhost:3000'
@@ -51,8 +53,8 @@ const signCheck = async () => {
       },
     })
     getUserData.value = res.data
+    userStore.setUserInfo(getUserData.value.user, signInToken.value)
     getUserId.value = res.data.user._id
-    console.log(' getUserId.value', getUserId.value)
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
@@ -65,6 +67,7 @@ const signCheck = async () => {
 }
 
 // 提交留言
+
 const submitComment = async (postId, commentText) => {
   if (!commentText || !commentText.trim()) {
     alert('請輸入留言！')
@@ -112,7 +115,7 @@ onMounted(async () => {
     <div v-if="isLoading" class="loading-overlay">
       <div class="loading-text">載入中...</div>
     </div>
-    <div>
+    <div v-else>
       <!-- Header -->
       <header class="row align-items-center border-bottom border-3 border-dark p-3 bg-white">
         <div class="col">
@@ -120,10 +123,10 @@ onMounted(async () => {
           <RouterLink class="fs-4 m-0" to="/index">MetaWall</RouterLink>
         </div>
         <div class="col-auto d-flex align-items-center">
-          <span class="me-2">Member</span>
+          <span class="me-2">{{ userStore.username }}</span>
 
           <img
-            :src="getUserData.user?.photo"
+            :src="userStore.photo"
             alt="Avatar"
             class="rounded-circle"
             style="width: 40px; height: 40px"
@@ -164,7 +167,7 @@ onMounted(async () => {
 
           <!-- Sidebar -->
 
-          <SidebarCard :getUserData="getUserData"></SidebarCard>
+          <SidebarCard></SidebarCard>
         </div>
       </div>
     </div>

@@ -1,6 +1,8 @@
 <script setup>
 import axios from 'axios'
 import { defineProps, ref, defineEmits } from 'vue'
+import { useUserStore } from '@/stores/userStore'
+const userStore = useUserStore()
 const localurl = 'http://localhost:3000'
 // defineProps(['post'])
 const props = defineProps({
@@ -17,14 +19,14 @@ const handleSubmit = () => {
 
 const isLiked = ref(props.post.likes?.some((like) => like._id === props.userId))
 const likeCount = ref(props.post.likes.length)
-console.log(likeCount.value)
+// console.log(likeCount.value)
 
 const toggleLike = async () => {
   try {
     if (isLiked.value) {
       await axios.delete(`${localurl}/posts/${props.post._id}/unlikes`, {
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NTgwOGQzMjhjYWFjMTY0MjBiNTlhYiIsImlhdCI6MTczNDQxMjgwNywiZXhwIjoxNzM0NTg1NjA3fQ.TkWweG4FljWPDatIHm2TaXtxV7xHOOtc2bmwzyuvy4g`,
+          Authorization: `Bearer ${userStore.token}`,
         },
       })
       likeCount.value -= 1
@@ -35,7 +37,7 @@ const toggleLike = async () => {
         {},
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NTgwOGQzMjhjYWFjMTY0MjBiNTlhYiIsImlhdCI6MTczNDQxMjgwNywiZXhwIjoxNzM0NTg1NjA3fQ.TkWweG4FljWPDatIHm2TaXtxV7xHOOtc2bmwzyuvy4g`,
+            Authorization: `Bearer ${userStore.token}`,
           },
         },
       )
@@ -85,7 +87,10 @@ const toggleLike = async () => {
         <!-- 顯示留言列表 -->
         <ul class="list-group list-group-flush mt-3">
           <li v-for="comment in post.comments" :key="comment.id" class="list-group-item">
-            {{ comment.user.name }}<strong>{{ comment.comment }}</strong>
+            <img :src="comment.user.photo" alt="" style="width: 30px; height: 30px" />{{
+              comment.user.name
+            }}:
+            <strong>{{ comment.comment }}</strong>
             <span class="text-muted"> {{ comment.createdAt }}</span>
           </li>
         </ul>
