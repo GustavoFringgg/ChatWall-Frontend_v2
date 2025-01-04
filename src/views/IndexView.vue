@@ -6,7 +6,8 @@ import { useAlert } from '@/Composables/useAlert.js'
 import dayjs from 'dayjs'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
-import { useUserStore } from '@/stores/UserStore'
+import NavbarCard from '@/components/NavbarCard.vue'
+import { useUserStore } from '@/stores/userStore'
 const userStore = useUserStore()
 const { showAlert } = useAlert()
 const router = useRouter()
@@ -99,6 +100,9 @@ const submitComment = async (postId, commentText) => {
 onMounted(async () => {
   try {
     await signCheck()
+    console.log('這是onMounted')
+    const userStore = useUserStore()
+    userStore.loadUserInfo()
     if (signInToken.value) {
       await getPost()
     } else {
@@ -116,8 +120,7 @@ onMounted(async () => {
       <div class="loading-text">載入中...</div>
     </div>
     <div v-else>
-      <!-- Header -->
-      <header class="row align-items-center border-bottom border-3 border-dark p-3 bg-white">
+      <!-- <header class="row align-items-center border-bottom border-3 border-dark p-3 bg-white">
         <div class="col">
           <h1 class="fs-4 m-0">MetaWall</h1>
           <RouterLink class="fs-4 m-0" to="/index">MetaWall</RouterLink>
@@ -132,7 +135,9 @@ onMounted(async () => {
             style="width: 40px; height: 40px"
           />
         </div>
-      </header>
+      </header> -->
+      <!-- Header -->
+      <NavbarCard></NavbarCard>
 
       <div class="container">
         <!-- Main Section -->
@@ -166,7 +171,6 @@ onMounted(async () => {
           </main>
 
           <!-- Sidebar -->
-
           <SidebarCard></SidebarCard>
         </div>
       </div>

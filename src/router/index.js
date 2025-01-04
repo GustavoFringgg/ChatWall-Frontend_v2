@@ -6,7 +6,7 @@ const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'home',
       component: HomeView,
     },
@@ -27,8 +27,8 @@ const router = createRouter({
       component: () => import('../views/PINIA.vue'),
     },
     {
-      path: '/update',
-      component: () => import('../views/update.vue'),
+      path: '/profile',
+      component: () => import('../views/ProfileView.vue'),
     },
   ],
 })

@@ -1,12 +1,12 @@
 import Swal from 'sweetalert2'
 
 export function useAlert() {
-  const showAlert = (title, icon) => {
+  const showAlert = (title, icon, time = 1000) => {
     return Swal.fire({
       position: 'top',
       title: title,
       icon: icon,
-      timer: 1000,
+      timer: time,
       toast: true,
       showConfirmButton: false,
       timerProgressBar: true,

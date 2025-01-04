@@ -22,7 +22,9 @@ const signIn = async () => {
     sigInToken.value = resdata.data.data.user.token
     document.cookie = `Token=${resdata.data.data.user.token}` //儲存cookie
     showAlert(`歡迎回來${resdata.data.data.user.name}`, 'success')
-    router.push({ path: '/index' })
+    setTimeout(() => {
+      router.push({ path: '/index' })
+    }, 1000)
   } catch (error) {
     console.log(error)
     showAlert(`${error.response.data.message}`, 'error')
