@@ -85,7 +85,7 @@ const submitPost = async () => {
   <div class="container">
     <!-- Main Section -->
     <div class="row mt-4">
-      <!-- Main Content -->
+      <!-- Main Content --> 
       <main class="col-lg-9">
         <!-- Filter and Search -->
         <div class="card">

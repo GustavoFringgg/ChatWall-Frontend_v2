@@ -9,7 +9,7 @@ userStore.loadUserInfo()
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
         <!-- 左側 LOGO -->
-        <RouterLink class="fs-4 m-0 text-decoration-none" to="/index">MetaWall</RouterLink>
+        <RouterLink class="fs-4 m-0 text-decoration-none" to="/index">ChatWall雀窩</RouterLink>
         <!-- 右側內容 -->
         <div class="d-flex align-items-center">
           <!-- 用戶名稱和圖片 -->
@@ -32,8 +32,8 @@ userStore.loadUserInfo()
             <!-- 下拉選單 -->
             <ul class="dropdown-menu" aria-labelledby="userDropdown">
               <li>
-                <RouterLink class="dropdown-item text-decoration-none" to="/index"
-                  >我的貼文牆(沒功能)</RouterLink
+                <RouterLink class="dropdown-item text-decoration-none" to="/mypost"
+                  >我的貼文牆</RouterLink
                 >
               </li>
               <li>

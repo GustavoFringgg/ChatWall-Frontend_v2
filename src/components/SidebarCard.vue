@@ -20,12 +20,12 @@ const userSotre = useUserStore()
             />
             <span>{{ userSotre.username }}</span>
           </div>
-          <button class="btn btn-light w-100 text-start mb-2">
-            <i class="bi bi-bell"></i> 追蹤名單
-          </button>
-          <button class="btn btn-light w-100 text-start">
-            <i class="bi bi-hand-thumbs-up"></i> 我按讚的文章
-          </button>
+          <RouterLink class="btn btn-light w-100 text-start mb-2" to="/myfollowlist"
+            ><i class="bi bi-bell"></i>追蹤名單</RouterLink
+          >
+          <RouterLink class="btn btn-light w-100 text-start mb-2" to="/mylikelist"
+            ><i class="bi bi-hand-thumbs-up"></i>我按讚的文章</RouterLink
+          >
         </div>
       </div>
     </div>

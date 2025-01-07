@@ -21,8 +21,11 @@ const isLoading = ref(true) //判斷是否在loding
 const comments = ref([]) // 留言列表
 
 const getPost = async (timeSort = 'desc') => {
-  const res = await axios.get(`${localurl}/posts/`, {
+  const res = await axios.get(`${localurl}/posts/${userStore.userid}/user`, {
     params: { timeSort, keyword: searchPost.value },
+    headers: {
+      Authorization: `Bearer ${signInToken.value}`,
+    },
   })
   comments.value = res.data.message
   try {
@@ -45,7 +48,7 @@ const signCheck = async () => {
 
   if (!signInToken.value) {
     showAlert(`請登入`, 'error')
-    router.push({ path: '/login' })
+    router.push({ path: '/' })
   }
   try {
     const res = await axios.get(`${localurl}/users/checkout`, {
@@ -68,6 +71,7 @@ const signCheck = async () => {
 }
 
 // 提交留言
+
 const submitComment = async (postId, commentText) => {
   if (!commentText || !commentText.trim()) {
     alert('請輸入留言！')
@@ -85,9 +89,9 @@ const submitComment = async (postId, commentText) => {
     )
 
     // 將新留言加入到對應的貼文留言列表中
-    // const postItem = post.find((post) => post.id === postId)
-    // if (postItem) {
-    //   postItem.comments.push(res.data.comment)
+    // const post = post.value.find((post) => post.id === postId)
+    // if (post) {
+    //   post.comments.push(res.data.comment)
     // }
 
     getPost()
@@ -99,7 +103,8 @@ const submitComment = async (postId, commentText) => {
 onMounted(async () => {
   try {
     await signCheck()
-    console.log('這是Index的onMounted')
+    console.log('這是onMounted')
+    const userStore = useUserStore()
     userStore.loadUserInfo()
     if (signInToken.value) {
       await getPost()
@@ -164,7 +169,7 @@ onMounted(async () => {
 
             <!-- Posts -->
             <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-              <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
+              <PostCard :post="post" @submit-comment="submitComment"></PostCard>
             </div>
           </main>
 

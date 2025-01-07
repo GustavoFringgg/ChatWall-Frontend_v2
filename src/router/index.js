@@ -23,12 +23,24 @@ const router = createRouter({
       component: () => import('../views/PostView.vue'),
     },
     {
-      path: '/pinia',
-      component: () => import('../views/PINIA.vue'),
+      path: '/mypost',
+      component: () => import('../views/MyPostView.vue'),
     },
     {
       path: '/profile',
       component: () => import('../views/ProfileView.vue'),
+    },
+    {
+      path: '/otherpost/:id',
+      component: () => import('../views/OtherPostView.vue'),
+    },
+    {
+      path: '/myfollowlist',
+      component: () => import('../views/MyFollowListView.vue'),
+    },
+    {
+      path: '/mylikelist',
+      component: () => import('../views/MyLikeListView.vue'),
     },
   ],
 })

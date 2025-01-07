@@ -1,16 +1,39 @@
-<!-- <script setup>
-import { useUserStore } from '@/stores/userStore'
-const userStore = useUserStore()
-console.log(userStore.username) // JohnDoe
-console.log(userStore.userid) // 12345
+<script setup>
+import { ref, computed } from 'vue'
+
+// 確保 getUserData 與 userStore 已正確初始化
+const getUserData = ref({
+  data: {
+    followers: [
+      {
+        user: '67793aca7ea6039a2dce3947',
+        _id: '677ba4af8cc5a530d32da82d',
+      },
+    ],
+  },
+})
+
+const userStore = {
+  userid: '67793aca7ea6039a2dce3947',
+}
+
+// 使用 computed 進行檢查
+const isFollowing = computed(() => {
+  const followers = getUserData.value.data?.followers || []
+  return followers.some((follower) => follower.user === userStore.userid)
+})
+
+// Debug 輸出
+console.log('isFollowing:', isFollowing.value)
 </script>
 
-<template>
+<!-- <template>
   <div>{{ userStore.username }}</div>
   <div>{{ userStore.userid }}</div>
   <div>{{ userStore.token }}</div>
   <img :src="userStore.photo" alt="" />
 </template> -->
+
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">

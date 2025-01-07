@@ -15,17 +15,40 @@ const userData = ref({
   name: '',
   sex: '男',
 })
+const userPassword = ref({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
 
 const updateUserPassword = async () => {
+  if (userPassword.value.newPassword != userPassword.value.confirmPassword) {
+    showAlert('確認密碼不符新密碼', 'error', 2000)
+  }
   try {
-    console.log('hihi')
+    const res = await axios.patch(`${localurl}/users/updatePassword`, userPassword.value, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`,
+      },
+    })
+    userPassword.value.oldPassword = ''
+    userPassword.value.newPassword = ''
+    console.log('Passwordupdate', res)
+    showAlert('更新密碼成功，導回首頁', 'success', 2000)
+    setTimeout(() => {
+      router.push({ path: '/index' })
+    }, 2000)
   } catch (error) {
-    console.log(error)
+    if (error.response) {
+      switch (error.response.status) {
+        case 401:
+          showAlert('密碼輸入錯誤', 'error', 2000)
+      }
+    } else showAlert('無法連接到伺服器', 'error', 2000)
   }
 }
 const updateUserInfo = async () => {
   try {
-    console.log('userData', userData.value)
     const resdata = await axios.patch(`${localurl}/users/profile/`, userData.value, {
       headers: {
         Authorization: `Bearer ${userStore.token}`,
@@ -38,7 +61,12 @@ const updateUserInfo = async () => {
       router.push({ path: '/index' })
     }, 1500)
   } catch (error) {
-    console.log(error)
+    if (error.response) {
+      switch (error.response.status) {
+        case 400:
+          showAlert('密碼輸入錯誤', 'error', 2000)
+      }
+    } else showAlert('無法連接到伺服器', 'error', 2000)
   }
 }
 
@@ -107,17 +135,32 @@ const uploadImage = async () => {
                 <!-- Tabs -->
                 <div class="col-md-8">
                   <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <!-- 暱稱修改 Tab -->
+                    <!-- 個人資料 -->
                     <li class="nav-item" role="presentation">
                       <button
                         class="nav-link active"
+                        id="personal-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#personal"
+                        type="button"
+                        role="tab"
+                        aria-controls="personal"
+                        aria-selected="true"
+                      >
+                        個人資料
+                      </button>
+                    </li>
+                    <!-- 暱稱修改 Tab -->
+                    <li class="nav-item" role="presentation">
+                      <button
+                        class="nav-link"
                         id="nickname-tab"
                         data-bs-toggle="tab"
                         data-bs-target="#nickname"
                         type="button"
                         role="tab"
                         aria-controls="nickname"
-                        aria-selected="true"
+                        aria-selected="false"
                       >
                         暱稱修改
                       </button>
@@ -144,7 +187,7 @@ const uploadImage = async () => {
                 <div class="col-md-8 tab-content border border-top-0 p-4">
                   <!-- 暱稱修改內容 -->
                   <div
-                    class="tab-pane fade show active"
+                    class="tab-pane fade"
                     id="nickname"
                     role="tabpanel"
                     aria-labelledby="nickname-tab"
@@ -197,7 +240,7 @@ const uploadImage = async () => {
                             type="radio"
                             name="gender"
                             id="genderMale"
-                            value="男"
+                            value="male"
                             v-model="userData.sex"
                           />
 
@@ -209,7 +252,7 @@ const uploadImage = async () => {
                             type="radio"
                             name="gender"
                             id="genderFemale"
-                            value="女"
+                            value="female"
                             v-model="userData.sex"
                           />
                           <label class="form-check-label" for="genderFemale">女</label>
@@ -241,6 +284,7 @@ const uploadImage = async () => {
                           class="form-control"
                           id="currentPassword"
                           placeholder="輸入目前密碼"
+                          v-model="userPassword.oldPassword"
                         />
                       </div>
                       <div class="mb-3">
@@ -250,6 +294,7 @@ const uploadImage = async () => {
                           class="form-control"
                           id="newPassword"
                           placeholder="輸入新密碼"
+                          v-model="userPassword.newPassword"
                         />
                       </div>
                       <div class="mb-3">
@@ -259,12 +304,26 @@ const uploadImage = async () => {
                           class="form-control"
                           id="confirmPassword"
                           placeholder="再次輸入新密碼"
+                          v-model="userPassword.confirmPassword"
                         />
                       </div>
-                      <button type="button" class="btn btn-secondary w-100" @click="updateUserInfo">
+                      <button
+                        type="button"
+                        class="btn btn-secondary w-100"
+                        @click="updateUserPassword"
+                      >
                         送出資訊
                       </button>
                     </form>
+                  </div>
+                  <!-- 個人資料 -->
+                  <div
+                    class="tab-pane fade show active"
+                    id="personal"
+                    role="tabpanel"
+                    aria-labelledby="personal-tab"
+                  >
+                    <div>測試</div>
                   </div>
                 </div>
               </div>

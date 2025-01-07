@@ -1,7 +1,9 @@
 <script setup>
 import axios from 'axios'
 import { defineProps, ref, defineEmits } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+const router = useRouter()
 const userStore = useUserStore()
 const localurl = 'http://localhost:3000'
 // defineProps(['post'])
@@ -9,6 +11,7 @@ const props = defineProps({
   post: Object, // 接收父層傳遞的 post 資料
   userId: String,
 })
+
 const emit = defineEmits(['submit-comment']) // 定義事件
 const newComment = ref('') // 子元件內部儲存新留言
 // 點擊按鈕觸發事件，將 post ID 和留言內容發送給父層
@@ -17,20 +20,21 @@ const handleSubmit = () => {
   newComment.value = '' // 清空留言框
 }
 
-const isLiked = ref(props.post.likes?.some((like) => like._id === props.userId))
+const isLiked = ref(props.post.likes?.some((like) => like._id === userStore.userid))
 const likeCount = ref(props.post.likes.length)
 // console.log(likeCount.value)
 
 const toggleLike = async () => {
   try {
     if (isLiked.value) {
-      await axios.delete(`${localurl}/posts/${props.post._id}/unlikes`, {
+      const res = await axios.delete(`${localurl}/posts/${props.post._id}/unlikes`, {
         headers: {
           Authorization: `Bearer ${userStore.token}`,
         },
       })
       likeCount.value -= 1
       isLiked.value = false
+      console.log('togglelike-res', res)
     } else {
       await axios.post(
         `${localurl}/posts/${props.post._id}/likes`,
@@ -48,6 +52,11 @@ const toggleLike = async () => {
     console.log('操作錯誤', error)
   }
 }
+
+//
+const goToUserPage = (id) => {
+  router.push(`/otherpost/${id}`) // 跳轉到 URL，並附上 ID
+}
 </script>
 
 <template>
@@ -61,6 +70,9 @@ const toggleLike = async () => {
           style="width: 50px; height: 50px"
         />
         <div>
+          <span @click="goToUserPage(post.user._id)" style="cursor: pointer; color: blue">
+            {{ post.user.name }}
+          </span>
           <h6 class="m-0">{{ post.user.name }}</h6>
           <small class="text-muted"> {{ post.formattedDate }}</small>
         </div>
@@ -69,15 +81,16 @@ const toggleLike = async () => {
       <img :src="post.image" class="img-fluid rounded" v-if="post.image" />
       <!-- 按讚區域 -->
       <div class="d-flex align-items-center-3">
-        <button
-          type="button"
-          class="btn btn-link text-decoration-none"
-          @click="toggleLike"
-        ></button>
-        <span v-if="isLiked" class="text-primary"> 👍 已按讚</span>
-        <span v-else class="text-primary"> 👍 按讚</span>
+        <button type="button" class="btn btn-link text-decoration-none" @click="toggleLike">
+          <span v-if="isLiked" class="text-primary">
+            <i class="bi bi-hand-thumbs-up-fill"></i> {{ likeCount }}</span
+          >
+          <span v-else class="text-primary">
+            <i class="bi bi-hand-thumbs-up"></i> {{ likeCount }}</span
+          >
+        </button>
       </div>
-      <span class="ms-2">{{ likeCount }}個用戶按過讚</span>
+
       <!-- 留言區域 -->
       <div class="card-footer">
         <div class="mb-3">
