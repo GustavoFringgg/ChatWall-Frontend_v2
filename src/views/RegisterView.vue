@@ -25,7 +25,7 @@ const registerUser = async () => {
     registerToken.value = res.data.data.user.token
     console.log('token', registerToken.value)
     showAlert('註冊成功', 'success')
-    router.push({ path: '/login' })
+    router.push({ path: '/' })
   } catch (err) {
     console.log('err', err.message)
   }

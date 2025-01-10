@@ -17,7 +17,7 @@ const signCheck = async () => {
   signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
   if (!signInToken.value) {
     showAlert('請登入', 'error')
-    router.push({ path: '/login' })
+    router.push({ path: '/' })
   }
   try {
     const res = await axios.get(`${localurl}/users/checkout`, {

@@ -6,7 +6,7 @@ import { useAlert } from '@/Composables/useAlert'
 import axios from 'axios'
 const { showAlert } = useAlert()
 const img = ref(
-  'https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2Fimg.svg?alt=media&token=0cd7e380-7158-4632-9b3c-3f5766bc954c',
+  'https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2FiStock-1987991143.jpg?alt=media&token=72d3cb3f-f061-47a9-b927-8fb6564a9e94',
 )
 const localurl = 'http://localhost:3000'
 const router = useRouter()
@@ -49,16 +49,15 @@ const signInFromGoogle = async () => {
 <template>
   <main>
     <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row shadow rounded p-5 bg-light border border-3 border-dark w-75 h-75">
+      <div class="row shadow rounded p-5 bg-light border border-3 border-dark w-75 h-75 yellow-box">
         <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
           <!-- 左側圖像 -->
-          <img :src="img" alt="MetaWall Illustration" class="img-fluid" />
         </div>
         <div class="col-md-6 d-flex flex-column">
           <!-- 登入表單 -->
           <div class="text-center">
-            <h1 class="text-primary fw-bold">MetaWall</h1>
-            <p class="text-secondary">元宇宙展開全新社交圈</p>
+            <h1 class="text-primary fw-bold">ChatWall</h1>
+            <p class="text-secondary">聊天、交朋友</p>
           </div>
           <form @submit.prevent="handleLogin">
             <div class="mb-3 mt-auto">
@@ -102,3 +101,13 @@ const signInFromGoogle = async () => {
     </div>
   </main>
 </template>
+
+<style scope>
+.yellow-box {
+  background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2FiStock-1987991143.jpg?alt=media&token=72d3cb3f-f061-47a9-b927-8fb6564a9e94');
+  background-size: cover; /* 確保圖片完全覆蓋 */
+  background-position: center; /* 居中對齊 */
+  width: 100%;
+  height: 100%;
+}
+</style>

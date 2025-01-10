@@ -76,7 +76,7 @@ const signCheck = async () => {
 
   if (!signInToken.value) {
     showAlert(`請登入`, 'error')
-    router.push({ path: '/login' })
+    router.push({ path: '/' })
   }
   try {
     const res = await axios.get(`${localurl}/users/checkout`, {

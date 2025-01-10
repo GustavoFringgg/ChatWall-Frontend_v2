@@ -98,7 +98,7 @@ const goToUserPage = (id) => {
         </div>
         <button class="btn btn-primary" @click="handleSubmit(post._id)">留言</button>
         <!-- 顯示留言列表 -->
-        <ul class="list-group list-group-flush mt-3">
+        <ul class="list-group list-group-flush mt-3 comment-list-body">
           <li v-for="comment in post.comments" :key="comment.id" class="list-group-item">
             <img :src="comment.user.photo" alt="" style="width: 30px; height: 30px" />{{
               comment.user.name
@@ -117,5 +117,10 @@ const goToUserPage = (id) => {
 }
 .text-secondary {
   color: #6c757d;
+}
+
+.comment-list-body {
+  max-height: 200px;
+  overflow-y: auto;
 }
 </style>
