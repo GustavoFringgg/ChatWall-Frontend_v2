@@ -120,6 +120,7 @@ const goToUserPage = (id) => {
 }
 
 .comment-list-body {
+  /*留言的區塊*/
   max-height: 200px;
   overflow-y: auto;
 }

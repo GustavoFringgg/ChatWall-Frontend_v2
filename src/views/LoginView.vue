@@ -49,7 +49,7 @@ const signInFromGoogle = async () => {
 <template>
   <main>
     <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row shadow rounded p-5 bg-light border border-3 border-dark w-75 h-75 yellow-box">
+      <div class="row shadow rounded p-5 bg-light w-75 h-75 yellow-box">
         <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
           <!-- 左側圖像 -->
         </div>
@@ -104,7 +104,9 @@ const signInFromGoogle = async () => {
 
 <style scope>
 .yellow-box {
-  background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2FiStock-1987991143.jpg?alt=media&token=72d3cb3f-f061-47a9-b927-8fb6564a9e94');
+  background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2Ftest123.png?alt=media&token=7093fa0c-f84d-4a57-a1bc-671d7f32c3d4');
+
+  /* background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2FiStock-1987991143.jpg?alt=media&token=72d3cb3f-f061-47a9-b927-8fb6564a9e94'); */
   background-size: cover; /* 確保圖片完全覆蓋 */
   background-position: center; /* 居中對齊 */
   width: 100%;

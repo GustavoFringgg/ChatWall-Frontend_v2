@@ -20,16 +20,40 @@ const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
 const comments = ref([]) // 留言列表
 
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime) // 啟用相對時間插件
+dayjs.locale('zh-tw') // 設定為台灣地區（可選）
+
 const getPost = async (timeSort = 'desc') => {
   const res = await axios.get(`${localurl}/posts/`, {
     params: { timeSort, keyword: searchPost.value },
   })
   comments.value = res.data.message
   try {
-    getUserPost.value = res.data.message.map((post) => ({
-      ...post,
-      formattedDate: dayjs(post.createdAt).format('YYYY-MM-DD HH:mm'),
-    })) // 格式化日期
+    getUserPost.value = res.data.message.map((post) => {
+      const postTime = dayjs(post.createdAt)
+      const now = dayjs()
+
+      // 計算時間差
+      const diffMinutes = now.diff(postTime, 'minute')
+      const diffHours = now.diff(postTime, 'hour')
+      const diffSeconds = now.diff(postTime, 'second')
+
+      const formattedTime =
+        diffSeconds < 60
+          ? `${diffSeconds}秒鐘前`
+          : diffMinutes < 60
+            ? `${diffMinutes} 分鐘前`
+            : diffHours < 24
+              ? `${diffHours} 小時前`
+              : postTime.format('YYYY-MM-DD HH:mm')
+
+      return {
+        ...post,
+        formattedDate: formattedTime,
+      }
+    }) // 格式化日期
+    console.log('    getUserPost.value', getUserPost.value)
   } catch (error) {
     showAlert(`${comments.value}`, 'error')
   }
