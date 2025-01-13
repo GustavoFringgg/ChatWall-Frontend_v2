@@ -42,6 +42,10 @@ const router = createRouter({
       path: '/mylikelist',
       component: () => import('../views/MyLikeListView.vue'),
     },
+    {
+      path: '/certainpost/:id',
+      component: () => import('../views/CertainPostView.vue'),
+    },
   ],
 })
 export default router

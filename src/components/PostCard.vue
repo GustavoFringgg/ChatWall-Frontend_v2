@@ -61,7 +61,7 @@ const goToUserPage = (id) => {
 
 <template>
   <div class="card">
-    <div class="card-body border-style">
+    <div class="card-body border-style position-relative">
       <div class="d-flex align-items-center mb-3">
         <img
           :src="post.user.photo"
@@ -78,6 +78,13 @@ const goToUserPage = (id) => {
         </div>
       </div>
       <p>{{ post.content }}</p>
+      <button
+        @click="deletePost(post.id)"
+        class="btn btn-outline-danger btn-sm position-absolute"
+        style="top: 10px; right: 10px"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
       <img :src="post.image" class="img-fluid rounded" v-if="post.image" />
       <!-- 按讚區域 -->
       <div class="d-flex align-items-center-3">

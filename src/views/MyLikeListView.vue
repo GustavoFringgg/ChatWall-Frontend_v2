@@ -13,7 +13,7 @@ const router = useRouter()
 const localurl = 'http://localhost:3000'
 const getUserData = ref('') //user 個人資料存取
 const userStore = useUserStore()
-const isLoading = ref(false)
+const isLoading = ref(true)
 const getUserLikeListData = ref() //取得個人按讚列表
 
 const signCheck = async () => {
@@ -41,12 +41,12 @@ onMounted(async () => {
     console.log('這是按讚列表的onMounted')
     userStore.loadUserInfo()
     if (signInToken.value) {
-      console.log('ready')
+      await getUserLikeList()
     } else {
-      router.push({ path: '/login' })
+      router.push({ path: '/' })
     }
-  } catch (error) {
-    console.log(error)
+  } finally {
+    isLoading.value = false
   }
 })
 
@@ -55,29 +55,32 @@ const goBack = () => {
   history.back()
 }
 
+const goToLikePage = (id) => {
+  router.push(`/certainpost/${id}`) // 跳轉到 URL，並附上 postID
+}
+
 const getUserLikeList = async () => {
-  const res = await axios.get(`${localurl}/users/getFollowingList`, {
+  const res = await axios.get(`${localurl}/users/getLikeList`, {
     headers: {
       Authorization: `Bearer ${userStore.token}`,
     },
   })
-  console.log(' res.data.followingList', res.data.followingList)
-  getUserLikeListData.value = res.data.followingList.map((list) => ({
+
+  getUserLikeListData.value = res.data.likeList.map((list) => ({
     ...list,
     formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
   }))
-  console.log('getUserLikeListData.value', getUserLikeListData.value)
 }
 
-const toggleUnfollow = async (userId) => {
+const toggleUnlike = async (postId) => {
   try {
-    const res = await axios.delete(`${localurl}/users/${userId}/unfollow`, {
+    const res = await axios.delete(`${localurl}/posts/${postId}/unlikes`, {
       headers: {
         Authorization: `Bearer ${userStore.token}`,
       },
     })
-    getUserFollowListData.value = res.data.followingList
-    showAlert(`已取消追蹤`, 'success', 2000)
+    getUserLikeList()
+    showAlert(`已取消讚`, 'success', 1500)
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error', 2000)
   }
@@ -95,7 +98,7 @@ const toggleUnfollow = async (userId) => {
         <div class="row mt-4">
           <!-- Main Content -->
           <main class="col-lg-9">
-            <div v-if="!getUserLikeListData.length">
+            <div v-if="!getUserLikeListData?.length">
               <div class="text-center mt-5 d-flex justify-content-center">
                 <div class="back-button text-center">
                   <button @click="goBack">⬅ 返回</button>
@@ -110,7 +113,7 @@ const toggleUnfollow = async (userId) => {
             <div v-else>
               <div class="row">
                 <div class="col text-center">
-                  <h2 class="fw-bold">按讚文章</h2>
+                  <h2 class="fw-bold">{{ userStore.username }}按讚的文章</h2>
                 </div>
               </div>
               <!-- 追蹤項目列表 -->
@@ -129,21 +132,21 @@ const toggleUnfollow = async (userId) => {
                         />
                         <div class="ms-3">
                           <p class="mb-1 fw-bold">{{ list.user.name }}</p>
-                          <p class="text-muted mb-0">追蹤時間：{{ list.formattedDate }}</p>
+                          <p class="text-muted mb-0">發文時間：{{ list.formattedDate }}</p>
                         </div>
                       </div>
                       <div>
                         <button
                           class="btn btn-outline-success btn-sm me-1"
-                          @click="goToUserPage(list.user._id)"
+                          @click="goToLikePage(list._id)"
                         >
-                          查看個人資料
+                          查看貼文
                         </button>
                         <button
                           class="btn btn-outline-danger btn-sm"
-                          @click="toggleUnfollow(list.user._id)"
+                          @click="toggleUnlike(list._id)"
                         >
-                          取消追蹤
+                          取消按讚
                         </button>
                       </div>
                     </div>

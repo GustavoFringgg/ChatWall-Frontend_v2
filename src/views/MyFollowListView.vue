@@ -100,7 +100,7 @@ const goBack = () => {
         <div class="row mt-4">
           <!-- Main Content -->
           <main class="col-lg-9">
-            <div v-if="!getUserFollowListData.length">
+            <div v-if="!getUserFollowListData?.length">
               <div class="text-center mt-5 d-flex justify-content-center">
                 <div class="back-button text-center">
                   <button @click="goBack">⬅ 返回</button>
