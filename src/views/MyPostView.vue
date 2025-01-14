@@ -8,6 +8,8 @@ import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import { useUserStore } from '@/stores/userStore'
+import { useformatTime } from '@/Composables/useformatTime.js'
+const { formatTime } = useformatTime()
 const userStore = useUserStore()
 const { showAlert } = useAlert()
 const router = useRouter()
@@ -18,7 +20,6 @@ const getUserId = ref('') //user 個人id存取
 const searchPost = ref('') //收尋文章關鍵字存取
 const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
-const comments = ref([]) // 留言列表
 
 const getPost = async (timeSort = 'desc') => {
   const res = await axios.get(`${localurl}/posts/${userStore.userid}/user`, {
@@ -27,14 +28,24 @@ const getPost = async (timeSort = 'desc') => {
       Authorization: `Bearer ${signInToken.value}`,
     },
   })
-  comments.value = res.data.message
+
   try {
-    getUserPost.value = res.data.message.map((post) => ({
-      ...post,
-      formattedDate: dayjs(post.createdAt).format('YYYY-MM-DD HH:mm'),
-    })) // 格式化日期
+    getUserPost.value = res.data.message.map((post) => {
+      const formattedPostTime = formatTime(post.createdAt)
+      post.comments = post.comments.map((comment) => {
+        const formattedCommentTime = formatTime(comment.createdAt)
+        return {
+          ...comment,
+          formattedCommentDate: formattedCommentTime,
+        }
+      })
+      return {
+        ...post,
+        formattedDate: formattedPostTime,
+      }
+    }) // 格式化日期
   } catch (error) {
-    showAlert(`${comments.value}`, 'error')
+    showAlert(`${error}`, 'error')
   }
 }
 

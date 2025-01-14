@@ -8,11 +8,13 @@ const route = useRoute()
 const userId = route.params.id // 從路由中獲取 ID
 
 import axios from 'axios'
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
 import dayjs from 'dayjs'
 import { useUserStore } from '@/stores/userStore'
+import { useformatTime } from '@/Composables/useformatTime.js'
+const { formatTime } = useformatTime()
 const userStore = useUserStore()
 const { showAlert } = useAlert()
 const router = useRouter()
@@ -23,7 +25,6 @@ const getUserId = ref('') //user 個人id存取
 const searchPost = ref('') //收尋文章關鍵字存取
 const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
-const comments = ref([]) // 留言列表
 
 const isFollowing = ref(false) //判斷有無追蹤
 const followersCount = ref(0)
@@ -53,16 +54,24 @@ const getPost = async (timeSort = 'desc') => {
       Authorization: `Bearer ${signInToken.value}`,
     },
   })
-  // getUserData.value = res.data
-  // console.log('  getUserData.value ', getUserData.value)
-  comments.value = res.data.message
+
   try {
-    getUserPost.value = res.data.message.map((post) => ({
-      ...post,
-      formattedDate: dayjs(post.createdAt).format('YYYY-MM-DD HH:mm'),
-    })) // 格式化日期
+    getUserPost.value = res.data.message.map((post) => {
+      const formattedPostTime = formatTime(post.createdAt)
+      post.comments = post.comments.map((comment) => {
+        const formattedCommentTime = formatTime(comment.createdAt)
+        return {
+          ...comment,
+          formattedCommentDate: formattedCommentTime,
+        }
+      })
+      return {
+        ...post,
+        formattedDate: formattedPostTime,
+      }
+    }) // 格式化日期
   } catch (error) {
-    showAlert(`${comments.value}`, 'error')
+    showAlert(`${error}`, 'error')
   }
 }
 
@@ -88,11 +97,6 @@ const signCheck = async () => {
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
-    // setTimeout(() => {
-    //   nextTick(() => {
-    //     location.reload() // 強制刷新頁面，保證渲染完成後再重新加載
-    //   })
-    // }, 500)
   }
 }
 
@@ -129,11 +133,10 @@ const submitComment = async (postId, commentText) => {
 onMounted(async () => {
   try {
     await signCheck()
-    const userStore = useUserStore()
-    userStore.loadUserInfo()
+    // const userStore = useUserStore()
+    // userStore.loadUserInfo()
     if (signInToken.value) {
       await getPost()
-
       await getOtherUserData()
     } else {
       router.push({ path: '/' })
@@ -209,14 +212,12 @@ const toggleFollow = async () => {
                   style="width: 50px; height: 50px"
                 />
                 <span class="username pe-2">{{ getUserData.data.name }}</span>
-                <span v-if="!getUserData.data.followers.length" class="user-followers"
-                  >目前還沒有人追蹤~~</span
-                >
+                <span v-if="followersCount === 0" class="user-followers">目前還沒有人追蹤~~</span>
                 <span v-else class="user-followers">{{ followersCount }} 人追隨</span>
               </div>
 
               <!-- 右側 操作按鈕 -->
-              <div class="actions">
+              <div class="actions" v-if="getUserData.data._id !== userStore.userid">
                 <button class="follow-button" @click="toggleFollow">
                   {{ isFollowing ? '已追隨' : '追隨' }}
                 </button>

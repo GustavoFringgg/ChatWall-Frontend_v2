@@ -1,6 +1,6 @@
 @import './base.css';
 body {
-  background-color: #ffd370 !important;
+  background-color: #87ceeb !important;
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0.05) 2px, transparent 2px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
   background-size: 80px 80px; /* 每個格子寬高 */

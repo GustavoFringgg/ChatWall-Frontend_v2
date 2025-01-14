@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios'
-import { defineProps, ref, defineEmits } from 'vue'
+import { defineProps, ref, defineEmits, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 const router = useRouter()
@@ -11,18 +11,21 @@ const props = defineProps({
   post: Object, // 接收父層傳遞的 post 資料
   userId: String,
 })
-
-const emit = defineEmits(['submit-comment']) // 定義事件
+const isOwner = computed(() => props.post.user._id === userStore.userid)
+console.log('isOwner', isOwner.value)
+const emit = defineEmits(['submit-comment', 'delete-post']) // 定義事件
 const newComment = ref('') // 子元件內部儲存新留言
 // 點擊按鈕觸發事件，將 post ID 和留言內容發送給父層
-const handleSubmit = () => {
-  emit('submit-comment', props.post._id, newComment.value)
+const handleSubmit = (postId) => {
+  emit('submit-comment', postId, newComment.value)
   newComment.value = '' // 清空留言框
 }
 
+const handleDeletePost = (postId) => {
+  emit('delete-post', postId)
+}
 const isLiked = ref(props.post.likes?.some((like) => like._id === userStore.userid))
 const likeCount = ref(props.post.likes.length)
-// console.log(likeCount.value)
 
 const toggleLike = async () => {
   try {
@@ -34,7 +37,6 @@ const toggleLike = async () => {
       })
       likeCount.value -= 1
       isLiked.value = false
-      console.log('togglelike-res', res)
     } else {
       await axios.post(
         `${localurl}/posts/${props.post._id}/likes`,
@@ -61,7 +63,7 @@ const goToUserPage = (id) => {
 
 <template>
   <div class="card">
-    <div class="card-body border-style position-relative">
+    <div class="card-body position-relative shadow-lg">
       <div class="d-flex align-items-center mb-3">
         <img
           :src="post.user.photo"
@@ -70,17 +72,21 @@ const goToUserPage = (id) => {
           style="width: 50px; height: 50px"
         />
         <div>
-          <span @click="goToUserPage(post.user._id)" style="cursor: pointer; color: blue">
+          <h6
+            @click="goToUserPage(post.user._id)"
+            class="m-0"
+            style="cursor: pointer; color: black"
+          >
             {{ post.user.name }}
-          </span>
-          <h6 class="m-0">{{ post.user.name }}</h6>
+          </h6>
           <small class="text-muted"> {{ post.formattedDate }}</small>
         </div>
       </div>
       <p>{{ post.content }}</p>
       <button
-        @click="deletePost(post.id)"
-        class="btn btn-outline-danger btn-sm position-absolute"
+        v-if="isOwner"
+        @click="handleDeletePost(post.id)"
+        class="btn btn-outline-secondary btn-sm position-absolute"
         style="top: 10px; right: 10px"
       >
         <i class="bi bi-x-lg"></i>
@@ -92,26 +98,53 @@ const goToUserPage = (id) => {
           <span v-if="isLiked" class="text-primary">
             <i class="bi bi-hand-thumbs-up-fill"></i> {{ likeCount }}</span
           >
-          <span v-else class="text-primary">
-            <i class="bi bi-hand-thumbs-up"></i> {{ likeCount }}</span
+          <span v-else class="text-secondary">
+            <i class="bi bi-hand-thumbs-up"></i> 當第一個按讚的人吧</span
           >
         </button>
       </div>
 
       <!-- 留言區域 -->
       <div class="card-footer">
-        <div class="mb-3">
-          <input type="text" v-model="newComment" class="form-control" placeholder="留言..." />
+        <div class="mb-3 d-flex align-items-center">
+          <img
+            :src="userStore.photo"
+            alt="頭像"
+            class="rounded-circle me-2"
+            style="width: 40px; height: 40px; object-fit: cover"
+          />
+          <input
+            type="text"
+            v-model="newComment"
+            class="form-control me-2"
+            style="flex: 1"
+            placeholder="留言..."
+          />
+          <button class="btn btn-primary" @click="handleSubmit(post._id)">留言</button>
         </div>
-        <button class="btn btn-primary" @click="handleSubmit(post._id)">留言</button>
         <!-- 顯示留言列表 -->
-        <ul class="list-group list-group-flush mt-3 comment-list-body">
-          <li v-for="comment in post.comments" :key="comment.id" class="list-group-item">
-            <img :src="comment.user.photo" alt="" style="width: 30px; height: 30px" />{{
-              comment.user.name
-            }}:
-            <strong>{{ comment.comment }}</strong>
-            <span class="text-muted"> {{ comment.createdAt }}</span>
+        <ul class="list-group list-group-flush mt-3 comment-list-body gap-3">
+          <li
+            v-for="comment in post.comments"
+            :key="comment.id"
+            class="d-flex p-2 rounded-3"
+            style="background-color: #f8f6f4"
+          >
+            <div class="d-flex align-items-center text-center me-2">
+              <img
+                :src="comment.user.photo"
+                alt="userphoto"
+                style="width: 35px; height: 35px"
+                class="rounded-circle me-2"
+              />
+            </div>
+            <div>
+              <strong>{{ comment.user.name }}</strong>
+              <p class="text-muted mb-0" style="font-size: 12px">
+                {{ comment.formattedCommentDate }}
+              </p>
+              <p class="text-break mb-0">{{ comment.comment }}</p>
+            </div>
           </li>
         </ul>
       </div>
@@ -128,7 +161,7 @@ const goToUserPage = (id) => {
 
 .comment-list-body {
   /*留言的區塊*/
-  max-height: 200px;
+  max-height: 300px;
   overflow-y: auto;
 }
 </style>

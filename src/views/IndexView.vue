@@ -3,11 +3,13 @@ import axios from 'axios'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import { useUserStore } from '@/stores/userStore'
+import { useformatTime } from '@/Composables/useformatTime.js'
+const { formatTime } = useformatTime()
 const userStore = useUserStore()
 const { showAlert } = useAlert()
 const router = useRouter()
@@ -18,44 +20,36 @@ const getUserId = ref('') //user 個人id存取
 const searchPost = ref('') //收尋文章關鍵字存取
 const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
-const comments = ref([]) // 留言列表
 
-import relativeTime from 'dayjs/plugin/relativeTime'
-dayjs.extend(relativeTime) // 啟用相對時間插件
-dayjs.locale('zh-tw') // 設定為台灣地區（可選）
+// import relativeTime from 'dayjs/plugin/relativeTime'
+// dayjs.extend(relativeTime) // 啟用相對時間插件
+// dayjs.locale('zh-tw') // 設定為台灣地區（可選）
 
 const getPost = async (timeSort = 'desc') => {
   const res = await axios.get(`${localurl}/posts/`, {
     params: { timeSort, keyword: searchPost.value },
   })
-  comments.value = res.data.message
+
   try {
     getUserPost.value = res.data.message.map((post) => {
-      const postTime = dayjs(post.createdAt)
-      const now = dayjs()
+      const formattedPostTime = formatTime(post.createdAt)
+      post.comments = post.comments.map((comment) => {
+        const formattedCommentTime = formatTime(comment.createdAt)
 
-      // 計算時間差
-      const diffMinutes = now.diff(postTime, 'minute')
-      const diffHours = now.diff(postTime, 'hour')
-      const diffSeconds = now.diff(postTime, 'second')
-
-      const formattedTime =
-        diffSeconds < 60
-          ? `${diffSeconds}秒鐘前`
-          : diffMinutes < 60
-            ? `${diffMinutes} 分鐘前`
-            : diffHours < 24
-              ? `${diffHours} 小時前`
-              : postTime.format('YYYY-MM-DD HH:mm')
-
+        // 新增格式化comments時間
+        return {
+          ...comment,
+          formattedCommentDate: formattedCommentTime,
+        }
+      })
+      // 格式化 posts 的時間
       return {
         ...post,
-        formattedDate: formattedTime,
+        formattedDate: formattedPostTime,
       }
-    }) // 格式化日期
-    console.log('    getUserPost.value', getUserPost.value)
+    })
   } catch (error) {
-    showAlert(`${comments.value}`, 'error')
+    showAlert(`${error}`, 'error')
   }
 }
 
@@ -68,8 +62,8 @@ const signCheck = async () => {
   signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
 
   if (!signInToken.value) {
-    showAlert(`請登入`, 'error')
-    router.push({ path: '/login' })
+    showAlert(`請登入`, 'error', 1500)
+    router.push({ path: '/' })
   }
   try {
     const res = await axios.get(`${localurl}/users/checkout`, {
@@ -88,6 +82,22 @@ const signCheck = async () => {
     //     location.reload() // 強制刷新頁面，保證渲染完成後再重新加載
     //   })
     // }, 500)
+  }
+}
+
+//刪除貼文
+const deletePost = async (postId) => {
+  try {
+    console.log('postid', postId)
+    const res = await axios.delete(`${localurl}/posts/${postId}/post`, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`,
+      },
+    })
+    console.log('deletepost', res)
+    getPost()
+  } catch (error) {
+    console.log(error)
   }
 }
 
@@ -142,22 +152,6 @@ onMounted(async () => {
       <div class="loading-text">載入中...</div>
     </div>
     <div v-else>
-      <!-- <header class="row align-items-center border-bottom border-3 border-dark p-3 bg-white">
-        <div class="col">
-          <h1 class="fs-4 m-0">MetaWall</h1>
-          <RouterLink class="fs-4 m-0" to="/index">MetaWall</RouterLink>
-        </div>
-        <div class="col-auto d-flex align-items-center">
-          <span class="me-2">{{ userStore.username }}</span>
-
-          <img
-            :src="userStore.photo"
-            alt="Avatar"
-            class="rounded-circle"
-            style="width: 40px; height: 40px"
-          />
-        </div>
-      </header> -->
       <!-- Header -->
       <NavbarCard></NavbarCard>
 
@@ -188,7 +182,12 @@ onMounted(async () => {
 
             <!-- Posts -->
             <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-              <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
+              <PostCard
+                :post="post"
+                :userId="getUserId"
+                @submit-comment="submitComment"
+                @delete-post="deletePost"
+              ></PostCard>
             </div>
           </main>
 

@@ -1,13 +1,28 @@
 <script setup>
 import { useUserStore } from '@/stores/userStore'
+import { useAlert } from '@/Composables/useAlert.js'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 const userStore = useUserStore()
+const { showAlert } = useAlert()
 userStore.loadUserInfo()
+
+const signOut = async () => {
+  document.cookie = 'Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;'
+  console.log('After deletion:', document.cookie) // 確認刪除狀態
+  userStore.clearUserInfo()
+  showAlert('登出成功，導回登入頁', 'success', 1500)
+  setTimeout(() => {
+    router.push({ path: '/' })
+  }, 1500)
+}
 </script>
 
 <template>
   <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
+      <div class="container">
         <!-- 左側 LOGO -->
         <RouterLink class="fs-4 m-0 text-decoration-none" to="/index">ChatWall雀窩</RouterLink>
         <!-- 右側內容 -->
@@ -42,7 +57,7 @@ userStore.loadUserInfo()
                 >
               </li>
               <li><hr class="dropdown-divider" /></li>
-              <li><a class="dropdown-item" href="#">登出</a></li>
+              <li><button type="button" class="dropdown-item" @click="signOut">登出</button></li>
             </ul>
           </div>
         </div>

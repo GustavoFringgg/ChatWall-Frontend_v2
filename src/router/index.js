@@ -46,6 +46,10 @@ const router = createRouter({
       path: '/certainpost/:id',
       component: () => import('../views/CertainPostView.vue'),
     },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('../views/errorView/404PageView.vue'),
+    },
   ],
 })
 export default router
