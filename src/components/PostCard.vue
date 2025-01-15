@@ -1,18 +1,30 @@
 <script setup>
+import Swal from 'sweetalert2'
 import axios from 'axios'
 import { defineProps, ref, defineEmits, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import { useAlert } from '@/Composables/useAlert.js'
+const { showDeleteAlert } = useAlert()
 const router = useRouter()
 const userStore = useUserStore()
 const localurl = 'http://localhost:3000'
 // defineProps(['post'])
 const props = defineProps({
   post: Object, // 接收父層傳遞的 post 資料
-  userId: String,
 })
+
+//只有自己的post才能刪除
 const isOwner = computed(() => props.post.user._id === userStore.userid)
-console.log('isOwner', isOwner.value)
+
+//post內容過長縮減
+const maxLength = 100
+const isExpanded = ref(false)
+const expandContent = computed(() => props.post.content.slice(0, maxLength) + ' ....')
+const toggleExpand = () => {
+  isExpanded.value = !isExpanded.value
+}
+
 const emit = defineEmits(['submit-comment', 'delete-post']) // 定義事件
 const newComment = ref('') // 子元件內部儲存新留言
 // 點擊按鈕觸發事件，將 post ID 和留言內容發送給父層
@@ -22,8 +34,18 @@ const handleSubmit = (postId) => {
 }
 
 const handleDeletePost = (postId) => {
-  emit('delete-post', postId)
+  showDeleteAlert().then((result) => {
+    if (result.isConfirmed) {
+      emit('delete-post', postId)
+      Swal.fire({
+        title: 'Deleted!',
+        text: '此貼文已刪除',
+        icon: 'success',
+      })
+    }
+  })
 }
+
 const isLiked = ref(props.post.likes?.some((like) => like._id === userStore.userid))
 const likeCount = ref(props.post.likes.length)
 
@@ -82,7 +104,17 @@ const goToUserPage = (id) => {
           <small class="text-muted"> {{ post.formattedDate }}</small>
         </div>
       </div>
-      <p>{{ post.content }}</p>
+
+      <p v-if="post.content.length < maxLength">{{ post.content }}</p>
+      <p v-else>{{ isExpanded ? post.content : expandContent }}</p>
+      <button
+        type="button"
+        class="btn btn-outline-primary btn-sm rounded-pill"
+        v-if="post.content.length > maxLength"
+        @click="toggleExpand"
+      >
+        {{ isExpanded ? '收起來' : '閱讀更多' }}
+      </button>
       <button
         v-if="isOwner"
         @click="handleDeletePost(post.id)"

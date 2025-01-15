@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useformatTime } from '@/Composables/useformatTime.js'
 const { formatTime } = useformatTime()
@@ -129,64 +130,39 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-text">載入中...</div>
-    </div>
-    <div v-else>
-      <!-- <header class="row align-items-center border-bottom border-3 border-dark p-3 bg-white">
-        <div class="col">
-          <h1 class="fs-4 m-0">MetaWall</h1>
-          <RouterLink class="fs-4 m-0" to="/index">MetaWall</RouterLink>
-        </div>
-        <div class="col-auto d-flex align-items-center">
-          <span class="me-2">{{ userStore.username }}</span>
+  <LoadingOverlay :is-loading="isLoading" />
+  <div v-if="!isLoading">
+    <!-- Header -->
+    <NavbarCard></NavbarCard>
 
-          <img
-            :src="userStore.photo"
-            alt="Avatar"
-            class="rounded-circle"
-            style="width: 40px; height: 40px"
-          />
-        </div>
-      </header> -->
-      <!-- Header -->
-      <NavbarCard></NavbarCard>
-
-      <div class="container">
-        <!-- Main Section -->
-        <div class="row mt-4">
-          <!-- Main Content -->
-          <main class="col-lg-9">
-            <!-- Filter and Search -->
-            <div class="d-flex mb-4">
-              <select class="form-select w-auto me-2" @change="handleSortChange">
-                <option value="desc">最新貼文</option>
-                <option value="asc">最舊貼文</option>
-                <option value="hot">熱門貼文</option>
-              </select>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="搜尋貼文"
-                  v-model="searchPost"
-                />
-                <button class="btn btn-primary" @click="getPost">
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
+    <div class="container">
+      <!-- Main Section -->
+      <div class="row mt-4">
+        <!-- Main Content -->
+        <main class="col-lg-9">
+          <!-- Filter and Search -->
+          <div class="d-flex mb-4">
+            <select class="form-select w-auto me-2" @change="handleSortChange">
+              <option value="desc">最新貼文</option>
+              <option value="asc">最舊貼文</option>
+              <option value="hot">熱門貼文</option>
+            </select>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="搜尋貼文" v-model="searchPost" />
+              <button class="btn btn-primary" @click="getPost">
+                <i class="bi bi-search"></i>
+              </button>
             </div>
+          </div>
 
-            <!-- Posts -->
-            <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-              <PostCard :post="post" @submit-comment="submitComment"></PostCard>
-            </div>
-          </main>
+          <!-- Posts -->
+          <div class="mb-3" v-for="post in getUserPost" :key="post._id">
+            <PostCard :post="post" @submit-comment="submitComment"></PostCard>
+          </div>
+        </main>
 
-          <!-- Sidebar -->
-          <SidebarCard></SidebarCard>
-        </div>
+        <!-- Sidebar -->
+        <SidebarCard></SidebarCard>
       </div>
     </div>
   </div>

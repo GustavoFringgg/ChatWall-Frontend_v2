@@ -4,10 +4,10 @@ import { useRoute } from 'vue-router'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
-import dayjs from 'dayjs'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useformatTime } from '@/Composables/useformatTime.js'
 const { formatTime } = useformatTime()
@@ -126,33 +126,29 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-text">載入中...</div>
-    </div>
-    <div v-else>
-      <!-- Header -->
-      <NavbarCard></NavbarCard>
+  <LoadingOverlay :is-loading="isLoading" />
+  <div v-if="!isLoading">
+    <!-- Header -->
+    <NavbarCard></NavbarCard>
 
-      <div class="container">
-        <!-- Main Section -->
-        <div class="row mt-4">
-          <!-- Main Content -->
-          <main class="col-lg-9">
-            <div class="row">
-              <div class="col text-center">
-                <h2 class="fw-bold">{{ getUserPost[0].user.name }}的文章</h2>
-              </div>
+    <div class="container">
+      <!-- Main Section -->
+      <div class="row mt-4">
+        <!-- Main Content -->
+        <main class="col-lg-9">
+          <div class="row">
+            <div class="col text-center">
+              <h2 class="fw-bold">{{ getUserPost[0].user.name }}的文章</h2>
             </div>
-            <!-- Posts -->
-            <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-              <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
-            </div>
-          </main>
+          </div>
+          <!-- Posts -->
+          <div class="mb-3" v-for="post in getUserPost" :key="post._id">
+            <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
+          </div>
+        </main>
 
-          <!-- Sidebar -->
-          <SidebarCard></SidebarCard>
-        </div>
+        <!-- Sidebar -->
+        <SidebarCard></SidebarCard>
       </div>
     </div>
   </div>

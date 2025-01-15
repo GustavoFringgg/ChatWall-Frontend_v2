@@ -88,24 +88,22 @@ video {
 }
 
 .formControls_btnSubmit {
-  width: 128px;
-  height: 48px;
+  width: 200px;
   border: none;
   border-radius: 10px;
   -ms-flex-item-align: center;
   -ms-grid-row-align: center;
   align-self: center;
-  margin: 24px 0;
+  margin: 10px 0;
   font-weight: bold;
   cursor: pointer;
   text-align: center;
-  font-size: 1rem;
 }
 
 .formControls_label {
   font-size: 0.875rem;
   font-weight: bold;
-  margin: 16px 0 4px 0;
+  margin: 4px 0 4px 0;
   display: block;
 }
 
@@ -129,25 +127,6 @@ video {
 .img-fluid {
   max-height: 300px; /* 限制預覽圖片高度 */
   object-fit: cover;
-}
-
-/* Loading 樣式 */
-.loading-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #ffd370;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.loading-text {
-  font-size: 24px;
-  color: #333;
 }
 
 /*profile樣式*/
@@ -199,4 +178,21 @@ video {
   .card {
     max-width: 1000px; /* 非常大螢幕上最大寬度為 1000px */
   }
+}
+
+.relative {
+  position: relative;
+}
+#toggleEye {
+  position: absolute;
+  top: 55%;
+  right: 20px;
+  transform: translateY(-50%);
+}
+
+#registerToggleEye {
+  position: absolute;
+  top: 70%;
+  right: 20px;
+  transform: translateY(-50%);
 }

@@ -9,7 +9,7 @@ const { showAlert } = useAlert()
 userStore.loadUserInfo()
 
 const signOut = async () => {
-  document.cookie = 'Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;'
+  document.cookie = 'Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;'
   console.log('After deletion:', document.cookie) // 確認刪除狀態
   userStore.clearUserInfo()
   showAlert('登出成功，導回登入頁', 'success', 1500)
@@ -21,7 +21,7 @@ const signOut = async () => {
 
 <template>
   <header>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom border-3 border-dark">
       <div class="container">
         <!-- 左側 LOGO -->
         <RouterLink class="fs-4 m-0 text-decoration-none" to="/index">ChatWall雀窩</RouterLink>

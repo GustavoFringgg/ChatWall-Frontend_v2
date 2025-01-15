@@ -12,13 +12,15 @@ const userSotre = useUserStore()
         >
         <div class="d-flex flex-column align-items-start">
           <div class="d-flex align-items-center mb-3">
-            <img
-              :src="userSotre.photo"
-              alt="Avatar"
-              class="rounded-circle me-2"
-              style="width: 50px; height: 50px"
-            />
-            <span>{{ userSotre.username }}</span>
+            <RouterLink to="/mypost" class="text-decoration-none" style="color: black">
+              <img
+                :src="userSotre.photo"
+                alt="Avatar"
+                class="rounded-circle me-2"
+                style="width: 50px; height: 50px"
+              />
+              <span>{{ userSotre.username }}</span>
+            </RouterLink>
           </div>
           <RouterLink class="btn btn-light w-100 text-start mb-2" to="/myfollowlist"
             ><i class="bi bi-bell"></i>追蹤名單</RouterLink

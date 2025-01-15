@@ -1,6 +1,7 @@
 <script setup>
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import { useUserStore } from '@/stores/userStore'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -89,78 +90,74 @@ const goBack = () => {
 }
 </script>
 <template>
-  <div>
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-text">載入中...</div>
-    </div>
-    <div v-else>
-      <NavbarCard></NavbarCard>
-      <div class="container">
-        <!-- Main Section -->
-        <div class="row mt-4">
-          <!-- Main Content -->
-          <main class="col-lg-9">
-            <div v-if="!getUserFollowListData?.length">
-              <div class="text-center mt-5 d-flex justify-content-center">
-                <div class="back-button text-center">
-                  <button @click="goBack">⬅ 返回</button>
-                </div>
-                <img
-                  src="https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/DALL%C2%B7E%202025-01-10%2016.19.28%20-%20A%20minimalistic%20web%20design%20with%20only%20the%20text%20'No%20Following'%20in%20bold%2C%20clean%20font%20at%20the%20exact%20center.%20The%20background%20is%20a%20plain%20soft%20yellow%20(%23FFF9DB)%2C%20.webp?alt=media&token=b91934d5-b82a-4ff1-b134-aa4e58d733bb"
-                  alt=""
-                  class="w-50 h-50"
-                />
+  <LoadingOverlay :is-loading="isLoading" />
+  <div v-if="!isLoading">
+    <NavbarCard></NavbarCard>
+    <div class="container">
+      <!-- Main Section -->
+      <div class="row mt-4">
+        <!-- Main Content -->
+        <main class="col-lg-9">
+          <div v-if="!getUserFollowListData?.length">
+            <div class="text-center mt-5 d-flex justify-content-center">
+              <div class="back-button text-center">
+                <button @click="goBack">⬅ 返回</button>
+              </div>
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/DALL%C2%B7E%202025-01-10%2016.19.28%20-%20A%20minimalistic%20web%20design%20with%20only%20the%20text%20'No%20Following'%20in%20bold%2C%20clean%20font%20at%20the%20exact%20center.%20The%20background%20is%20a%20plain%20soft%20yellow%20(%23FFF9DB)%2C%20.webp?alt=media&token=b91934d5-b82a-4ff1-b134-aa4e58d733bb"
+                alt=""
+                class="w-50 h-50"
+              />
+            </div>
+          </div>
+          <div v-else>
+            <div class="row">
+              <div class="col text-center">
+                <h2 class="fw-bold">追蹤名單</h2>
               </div>
             </div>
-            <div v-else>
-              <div class="row">
-                <div class="col text-center">
-                  <h2 class="fw-bold">追蹤名單</h2>
-                </div>
-              </div>
-              <!-- 追蹤項目列表 -->
-              <div class="row mt-2" v-for="list in getUserFollowListData" :key="list._id">
-                <!-- 單個追蹤項目 -->
-                <div class="col-12">
-                  <div class="card p-3 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <!-- 左側內容 -->
-                      <div class="d-flex align-items-center">
-                        <img
-                          :src="list.user.photo"
-                          alt="用戶頭像"
-                          class="rounded-circle border"
-                          style="width: 50px; height: 50px"
-                        />
-                        <div class="ms-3">
-                          <p class="mb-1 fw-bold">{{ list.user.name }}</p>
-                          <p class="text-muted mb-0">追蹤時間：{{ list.formattedDate }}</p>
-                        </div>
+            <!-- 追蹤項目列表 -->
+            <div class="row mt-2" v-for="list in getUserFollowListData" :key="list._id">
+              <!-- 單個追蹤項目 -->
+              <div class="col-12">
+                <div class="card p-3 shadow-sm">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <!-- 左側內容 -->
+                    <div class="d-flex align-items-center">
+                      <img
+                        :src="list.user.photo"
+                        alt="用戶頭像"
+                        class="rounded-circle border"
+                        style="width: 50px; height: 50px"
+                      />
+                      <div class="ms-3">
+                        <p class="mb-1 fw-bold">{{ list.user.name }}</p>
+                        <p class="text-muted mb-0">追蹤時間：{{ list.formattedDate }}</p>
                       </div>
-                      <div>
-                        <button
-                          class="btn btn-outline-success btn-sm me-1"
-                          @click="goToUserPage(list.user._id)"
-                        >
-                          查看個人資料
-                        </button>
-                        <button
-                          class="btn btn-outline-danger btn-sm"
-                          @click="toggleUnfollow(list.user._id)"
-                        >
-                          取消追蹤
-                        </button>
-                      </div>
+                    </div>
+                    <div>
+                      <button
+                        class="btn btn-outline-success btn-sm me-1"
+                        @click="goToUserPage(list.user._id)"
+                      >
+                        查看個人資料
+                      </button>
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        @click="toggleUnfollow(list.user._id)"
+                      >
+                        取消追蹤
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </main>
+          </div>
+        </main>
 
-          <!-- Sidebar -->
-          <SidebarCard></SidebarCard>
-        </div>
+        <!-- Sidebar -->
+        <SidebarCard></SidebarCard>
       </div>
     </div>
   </div>

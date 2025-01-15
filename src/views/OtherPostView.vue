@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import NavbarCard from '@/components/NavbarCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import PostCard from '@/components/PostCard.vue'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const route = useRoute()
 const userId = route.params.id // 從路由中獲取 ID
 
@@ -186,72 +187,63 @@ const toggleFollow = async () => {
 </script>
 
 <template>
-  <div>
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-text">載入中...</div>
-    </div>
-    <div v-else>
-      <NavbarCard></NavbarCard>
-      <div class="container">
-        <!-- Main Section -->
-        <div class="row mt-4">
-          <!-- Main Content -->
-          <main class="col-lg-9">
-            <div class="back-button">
-              <button @click="goBack">⬅ 返回</button>
-            </div>
-            <div class="header-container mb-3">
-              <!-- 左側 回退按鈕 -->
+  <LoadingOverlay :is-loading="isLoading" />
+  <div v-if="!isLoading">
+    <NavbarCard></NavbarCard>
+    <div class="container">
+      <!-- Main Section -->
+      <div class="row mt-4">
+        <!-- Main Content -->
+        <main class="col-lg-9">
+          <div class="back-button">
+            <button @click="goBack">⬅ 返回</button>
+          </div>
+          <div class="header-container mb-3">
+            <!-- 左側 回退按鈕 -->
 
-              <!-- 中間 主要資訊 -->
-              <div class="user-info">
-                <img
-                  :src="getUserData.data.photo"
-                  alt="Avatar"
-                  class="rounded-circle me-2"
-                  style="width: 50px; height: 50px"
-                />
-                <span class="username pe-2">{{ getUserData.data.name }}</span>
-                <span v-if="followersCount === 0" class="user-followers">目前還沒有人追蹤~~</span>
-                <span v-else class="user-followers">{{ followersCount }} 人追隨</span>
-              </div>
-
-              <!-- 右側 操作按鈕 -->
-              <div class="actions" v-if="getUserData.data._id !== userStore.userid">
-                <button class="follow-button" @click="toggleFollow">
-                  {{ isFollowing ? '已追隨' : '追隨' }}
-                </button>
-              </div>
-            </div>
-            <!-- Filter and Search -->
-            <div class="d-flex mb-4">
-              <select class="form-select w-auto me-2" @change="handleSortChange">
-                <option value="desc">最新貼文</option>
-                <option value="asc">最舊貼文</option>
-                <option value="hot">熱門貼文</option>
-              </select>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="搜尋貼文"
-                  v-model="searchPost"
-                />
-                <button class="btn btn-primary" @click="getPost">
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
+            <!-- 中間 主要資訊 -->
+            <div class="user-info">
+              <img
+                :src="getUserData.data.photo"
+                alt="Avatar"
+                class="rounded-circle me-2"
+                style="width: 50px; height: 50px"
+              />
+              <span class="username pe-2">{{ getUserData.data.name }}</span>
+              <span v-if="followersCount === 0" class="user-followers">目前還沒有人追蹤~~</span>
+              <span v-else class="user-followers">{{ followersCount }} 人追隨</span>
             </div>
 
-            <!-- Posts -->
-            <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-              <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
+            <!-- 右側 操作按鈕 -->
+            <div class="actions" v-if="getUserData.data._id !== userStore.userid">
+              <button class="follow-button" @click="toggleFollow">
+                {{ isFollowing ? '已追隨' : '追隨' }}
+              </button>
             </div>
-          </main>
+          </div>
+          <!-- Filter and Search -->
+          <div class="d-flex mb-4">
+            <select class="form-select w-auto me-2" @change="handleSortChange">
+              <option value="desc">最新貼文</option>
+              <option value="asc">最舊貼文</option>
+              <option value="hot">熱門貼文</option>
+            </select>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="搜尋貼文" v-model="searchPost" />
+              <button class="btn btn-primary" @click="getPost">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
 
-          <!-- Sidebar -->
-          <SidebarCard></SidebarCard>
-        </div>
+          <!-- Posts -->
+          <div class="mb-3" v-for="post in getUserPost" :key="post._id">
+            <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
+          </div>
+        </main>
+
+        <!-- Sidebar -->
+        <SidebarCard></SidebarCard>
       </div>
     </div>
   </div>

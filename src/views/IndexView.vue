@@ -9,6 +9,7 @@ import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import { useUserStore } from '@/stores/userStore'
 import { useformatTime } from '@/Composables/useformatTime.js'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const { formatTime } = useformatTime()
 const userStore = useUserStore()
 const { showAlert } = useAlert()
@@ -16,7 +17,7 @@ const router = useRouter()
 const localurl = 'http://localhost:3000'
 const signInToken = ref('') //user token存取
 const getUserData = ref('') //user 個人資料存取
-const getUserId = ref('') //user 個人id存取
+
 const searchPost = ref('') //收尋文章關鍵字存取
 const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
@@ -73,7 +74,6 @@ const signCheck = async () => {
     })
     getUserData.value = res.data
     userStore.setUserInfo(getUserData.value.user, signInToken.value)
-    getUserId.value = res.data.user._id
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
@@ -147,53 +147,43 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-text">載入中...</div>
-    </div>
-    <div v-else>
-      <!-- Header -->
-      <NavbarCard></NavbarCard>
+  <LoadingOverlay :is-loading="isLoading" />
+  <div v-if="!isLoading">
+    <!-- Header -->
+    <NavbarCard></NavbarCard>
 
-      <div class="container">
-        <!-- Main Section -->
-        <div class="row mt-4">
-          <!-- Main Content -->
-          <main class="col-lg-9">
-            <!-- Filter and Search -->
-            <div class="d-flex mb-4">
-              <select class="form-select w-auto me-2" @change="handleSortChange">
-                <option value="desc">最新貼文</option>
-                <option value="asc">最舊貼文</option>
-                <option value="hot">熱門貼文</option>
-              </select>
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  placeholder="搜尋貼文"
-                  v-model="searchPost"
-                />
-                <button class="btn btn-primary" @click="getPost">
-                  <i class="bi bi-search"></i>
-                </button>
-              </div>
+    <div class="container">
+      <!-- Main Section -->
+      <div class="row mt-4">
+        <!-- Main Content -->
+        <main class="col-lg-9">
+          <!-- Filter and Search -->
+          <div class="d-flex mb-4">
+            <select class="form-select w-auto me-2" @change="handleSortChange">
+              <option value="desc">最新貼文</option>
+              <option value="asc">最舊貼文</option>
+              <option value="hot">熱門貼文</option>
+            </select>
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="搜尋貼文" v-model="searchPost" />
+              <button class="btn btn-primary" @click="getPost">
+                <i class="bi bi-search"></i>
+              </button>
             </div>
+          </div>
 
-            <!-- Posts -->
-            <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-              <PostCard
-                :post="post"
-                :userId="getUserId"
-                @submit-comment="submitComment"
-                @delete-post="deletePost"
-              ></PostCard>
-            </div>
-          </main>
+          <!-- Posts -->
+          <div class="mb-3" v-for="post in getUserPost" :key="post._id">
+            <PostCard
+              :post="post"
+              @submit-comment="submitComment"
+              @delete-post="deletePost"
+            ></PostCard>
+          </div>
+        </main>
 
-          <!-- Sidebar -->
-          <SidebarCard></SidebarCard>
-        </div>
+        <!-- Sidebar -->
+        <SidebarCard></SidebarCard>
       </div>
     </div>
   </div>

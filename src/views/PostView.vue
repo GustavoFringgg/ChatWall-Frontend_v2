@@ -85,7 +85,7 @@ const submitPost = async () => {
   <div class="container">
     <!-- Main Section -->
     <div class="row mt-4">
-      <!-- Main Content --> 
+      <!-- Main Content -->
       <main class="col-lg-9">
         <!-- Filter and Search -->
         <div class="card">
@@ -100,7 +100,9 @@ const submitPost = async () => {
                 id="postContent"
                 v-model="postContent"
                 class="form-control"
-                rows="4"
+                cols="20"
+                rows="10"
+                style="resize: none"
                 placeholder="輸入您的貼文內容"
               ></textarea>
             </div>
