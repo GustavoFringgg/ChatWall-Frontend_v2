@@ -84,7 +84,7 @@ const goToUserPage = (id) => {
 </script>
 
 <template>
-  <div class="card">
+  <div class="card border border-3 border-dark">
     <div class="card-body position-relative shadow-lg">
       <div class="d-flex align-items-center mb-3">
         <img
@@ -104,7 +104,6 @@ const goToUserPage = (id) => {
           <small class="text-muted"> {{ post.formattedDate }}</small>
         </div>
       </div>
-
       <p v-if="post.content.length < maxLength">{{ post.content }}</p>
       <p v-else>{{ isExpanded ? post.content : expandContent }}</p>
       <button
@@ -123,16 +122,16 @@ const goToUserPage = (id) => {
       >
         <i class="bi bi-x-lg"></i>
       </button>
-      <img :src="post.image" class="img-fluid rounded" v-if="post.image" />
+      <div v-if="post.image" class="mb-3 img-container border border-3 border-dark text-center">
+        <img :src="post.image" alt="Image Preview" class="img-fluid-cos rounded" />
+      </div>
       <!-- 按讚區域 -->
       <div class="d-flex align-items-center-3">
         <button type="button" class="btn btn-link text-decoration-none" @click="toggleLike">
-          <span v-if="isLiked" class="text-primary">
-            <i class="bi bi-hand-thumbs-up-fill"></i> {{ likeCount }}</span
-          >
-          <span v-else class="text-secondary">
-            <i class="bi bi-hand-thumbs-up"></i> 當第一個按讚的人吧</span
-          >
+          <i v-if="isLiked" class="bi bi-hand-thumbs-up-fill me-2"></i>
+          <i v-else class="bi bi-hand-thumbs-up text-secondary me-2"></i>
+          <span v-if="!likeCount" class="text-secondary">成為第一個按讚的人吧</span>
+          <span v-else>{{ likeCount }} 人</span>
         </button>
       </div>
 

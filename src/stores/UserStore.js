@@ -6,6 +6,9 @@ export const useUserStore = defineStore('userStore', {
     userid: null,
     token: '',
     photo: '',
+    formatTime: '',
+    followers: [],
+    following: [],
   }),
   actions: {
     setUserInfo(payload, usertoken) {
@@ -13,6 +16,9 @@ export const useUserStore = defineStore('userStore', {
       this.userid = payload._id
       this.token = usertoken
       this.photo = payload.photo
+      this.formatTime = payload.formatTime
+      this.followers = payload.followers
+      this.following = payload.following
 
       // 儲存到 localStorage
       localStorage.setItem(
@@ -22,6 +28,9 @@ export const useUserStore = defineStore('userStore', {
           userid: this.userid,
           token: this.token,
           photo: this.photo,
+          formatTime: this.formatTime,
+          followers: this.followers,
+          following: this.following,
         }),
       )
     },
@@ -40,6 +49,9 @@ export const useUserStore = defineStore('userStore', {
         this.userid = userInfo.userid
         this.token = userInfo.token
         this.photo = userInfo.photo
+        this.formatTime = userInfo.formatTime
+        this.followers = userInfo.followers
+        this.following = userInfo.following
       }
     },
   },

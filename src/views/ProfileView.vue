@@ -33,7 +33,6 @@ const updateUserPassword = async () => {
     })
     userPassword.value.oldPassword = ''
     userPassword.value.newPassword = ''
-    console.log('Passwordupdate', res)
     showAlert('更新密碼成功，導回首頁', 'success', 2000)
     setTimeout(() => {
       router.push({ path: '/index' })
@@ -54,6 +53,7 @@ const updateUserInfo = async () => {
         Authorization: `Bearer ${userStore.token}`,
       },
     })
+    userStore.username = userData.value.name
     userData.value.name = ''
     userData.value.sex = '男'
     showAlert(`${resdata.data.message}，將導回首頁`, 'success', 1500)
@@ -61,12 +61,8 @@ const updateUserInfo = async () => {
       router.push({ path: '/index' })
     }, 1500)
   } catch (error) {
-    if (error.response) {
-      switch (error.response.status) {
-        case 400:
-          showAlert('密碼輸入錯誤', 'error', 2000)
-      }
-    } else showAlert('無法連接到伺服器', 'error', 2000)
+    console.log('error:', error)
+    showAlert(`${error.message}`, 'error')
   }
 }
 
@@ -113,12 +109,14 @@ const uploadImage = async () => {
   }
 }
 /*上傳大頭照↑*/
+
+const goBack = () => {
+  // 返回上一頁邏輯
+  history.back()
+}
 </script>
 <template>
   <div>
-    <!-- <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-text">載入中...</div>
-    </div> -->
     <div>
       <!-- Header -->
       <NavbarCard></NavbarCard>
@@ -129,38 +127,30 @@ const uploadImage = async () => {
           <!-- Main Content -->
           <main class="col-lg-9">
             <!-- Filter and Search -->
-            <h2 class="text-center mb-4">{{ userStore.username }}的個人資料</h2>
             <div class="mb-4">
               <div class="row justify-content-center">
                 <!-- Tabs -->
                 <div class="col-md-8">
+                  <div class="col text-center relative">
+                    <button class="btn btn-success rounded-pill mb-2 absolute" @click="goBack">
+                      <i class="bi bi-arrow-90deg-left me-2"></i>返回
+                    </button>
+                    <h2 class="fw-bold">{{ userStore.username }}的個人資料</h2>
+                  </div>
                   <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <!-- 個人資料 -->
-                    <li class="nav-item" role="presentation">
-                      <button
-                        class="nav-link active"
-                        id="personal-tab"
-                        data-bs-toggle="tab"
-                        data-bs-target="#personal"
-                        type="button"
-                        role="tab"
-                        aria-controls="personal"
-                        aria-selected="true"
-                      >
-                        個人資料
-                      </button>
-                    </li>
+
                     <!-- 暱稱修改 Tab -->
                     <li class="nav-item" role="presentation">
                       <button
-                        class="nav-link"
+                        class="nav-link active"
                         id="nickname-tab"
                         data-bs-toggle="tab"
                         data-bs-target="#nickname"
                         type="button"
                         role="tab"
                         aria-controls="nickname"
-                        aria-selected="false"
+                        aria-selected="true"
                       >
                         暱稱修改
                       </button>
@@ -187,27 +177,29 @@ const uploadImage = async () => {
                 <div class="col-md-8 tab-content border border-top-0 p-4">
                   <!-- 暱稱修改內容 -->
                   <div
-                    class="tab-pane fade"
+                    class="tab-pane fade show active"
                     id="nickname"
                     role="tabpanel"
                     aria-labelledby="nickname-tab"
                   >
                     <form>
                       <div class="text-center mb-4">
-                        <img
-                          v-if="uploadedFileUrl"
-                          :src="uploadedFileUrl"
-                          alt="頭像"
-                          class="rounded-circle"
-                          style="width: 120px; height: 120px"
-                        />
-                        <img
-                          v-else
-                          :src="userStore.photo"
-                          alt="頭像"
-                          class="rounded-circle"
-                          style="width: 120px; height: 120px"
-                        />
+                        <div class="img-container" style="height: 140px">
+                          <img
+                            v-if="uploadedFileUrl"
+                            :src="uploadedFileUrl"
+                            alt="頭像"
+                            class="rounded-circle img-fluid-cos"
+                            style="width: 200px; height: 200px"
+                          />
+                          <img
+                            v-else
+                            :src="userStore.photo"
+                            alt="頭像"
+                            class="rounded-circle img-fluid-cos"
+                            style="width: 120px; height: 120px"
+                          />
+                        </div>
                         <div class="mt-4">
                           <!-- 上傳檔案按鈕 -->
                           <button class="btn btn-primary" @click="triggerFileUpload">
@@ -315,15 +307,6 @@ const uploadImage = async () => {
                         送出資訊
                       </button>
                     </form>
-                  </div>
-                  <!-- 個人資料 -->
-                  <div
-                    class="tab-pane fade show active"
-                    id="personal"
-                    role="tabpanel"
-                    aria-labelledby="personal-tab"
-                  >
-                    <div>測試</div>
                   </div>
                 </div>
               </div>

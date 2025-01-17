@@ -47,7 +47,9 @@ watch(isActiveForPassword, () => {
 <template>
   <main>
     <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row shadow rounded p-4 border-dark w-75 h-75 yellow-box">
+      <div
+        class="row shadow rounded p-4 border-dark w-75 h-75 background-box border border-3 border-dark"
+      >
         <div class="col-md-6 d-flex flex-column ms-auto justify-content-center">
           <!-- 登入表單 -->
           <div class="text-center">
@@ -121,10 +123,3 @@ watch(isActiveForPassword, () => {
     </div>
   </main>
 </template>
-<style scope>
-.yellow-box {
-  background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2Ftest123.png?alt=media&token=7093fa0c-f84d-4a57-a1bc-671d7f32c3d4');
-  background-size: cover; /* 確保圖片完全覆蓋 */
-  background-position: center; /* 居中對齊 */
-}
-</style>

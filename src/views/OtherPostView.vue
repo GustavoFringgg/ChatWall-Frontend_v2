@@ -1,34 +1,43 @@
 <script setup>
-// 接收路由參數
-import { useRoute } from 'vue-router'
+//vue
+import { onMounted, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+
+//components
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import PostCard from '@/components/PostCard.vue'
-import LoadingOverlay from '@/components/LoadingOverlay.vue'
-const route = useRoute()
-const userId = route.params.id // 從路由中獲取 ID
-
-import axios from 'axios'
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
-import dayjs from 'dayjs'
-import { useUserStore } from '@/stores/userStore'
-import { useformatTime } from '@/Composables/useformatTime.js'
-const { formatTime } = useformatTime()
-const userStore = useUserStore()
-const { showAlert } = useAlert()
-const router = useRouter()
-const localurl = 'http://localhost:3000'
-const signInToken = ref('') //user token存取
-const getUserData = ref('') //user 個人資料存取
-const getUserId = ref('') //user 個人id存取
-const searchPost = ref('') //收尋文章關鍵字存取
-const getUserPost = ref([]) //取的使用者文章
+//components-loading
 const isLoading = ref(true) //判斷是否在loding
 
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+import { useformatTime } from '@/Composables/useformatTime.js'
+const { showAlert } = useAlert()
+const { formatTime } = useformatTime()
+
+//axios
+import axios from 'axios'
+
+//stores
+import { useUserStore } from '@/stores/userStore'
+const userStore = useUserStore()
+
+//const
+const localurl = 'http://localhost:3000'
+const signInToken = ref('') //user token存取
+
+//forfunction
+const getUserData = ref('') //user 個人資料存取
+const getUserPost = ref([]) //取的使用者文章
+const searchPost = ref('') //收尋文章關鍵字存取
 const isFollowing = ref(false) //判斷有無追蹤
 const followersCount = ref(0)
+const userId = route.params.id // 從路由中獲取 ID
+
 const getOtherUserData = async () => {
   try {
     const res = await axios.get(`${localurl}/users/profile/${userId}`, {
@@ -38,9 +47,6 @@ const getOtherUserData = async () => {
     })
     getUserData.value = res.data
     followersCount.value = getUserData.value.data.followers.length
-    console.log('followersCount.value', followersCount.value)
-    console.log('function裡面的getUserData-followers', getUserData.value.data.followers)
-    console.log('userStore.userid:', userStore.userid)
     isFollowing.value = getUserData.value.data?.followers.some(
       (followers) => followers.user === userStore.userid,
     )
@@ -55,7 +61,17 @@ const getPost = async (timeSort = 'desc') => {
       Authorization: `Bearer ${signInToken.value}`,
     },
   })
+  console.log('res.data', res.data)
+  if (res.data.message.length === 0) {
+    showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
+    searchPost.value = ''
+    return
+  }
 
+  if (searchPost.value) {
+    showAlert(`找到關於${searchPost.value}的${res.data.message.length}則貼文`, 'success', 1500)
+    searchPost.value = ''
+  }
   try {
     getUserPost.value = res.data.message.map((post) => {
       const formattedPostTime = formatTime(post.createdAt)
@@ -77,8 +93,8 @@ const getPost = async (timeSort = 'desc') => {
 }
 
 const handleSortChange = (event) => {
-  const selectedSort = event.target.value // 獲取選中的排序條件
-  getPost(selectedSort) // 呼叫 API，傳入對應的排序條件
+  const selectedSort = event.target.value
+  getPost(selectedSort)
 }
 
 const signCheck = async () => {
@@ -94,7 +110,6 @@ const signCheck = async () => {
         Authorization: `Bearer ${signInToken.value}`,
       },
     })
-    getUserId.value = res.data.user._id
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
@@ -134,8 +149,7 @@ const submitComment = async (postId, commentText) => {
 onMounted(async () => {
   try {
     await signCheck()
-    // const userStore = useUserStore()
-    // userStore.loadUserInfo()
+    userStore.loadUserInfo()
     if (signInToken.value) {
       await getPost()
       await getOtherUserData()
@@ -148,7 +162,6 @@ onMounted(async () => {
 })
 
 const goBack = () => {
-  // 返回上一頁邏輯
   history.back()
 }
 
@@ -166,6 +179,7 @@ const toggleFollow = async () => {
         },
       )
       followersCount.value += 1
+      userStore.following.length += 1
     } else {
       console.log('here')
       const res = await axios.delete(
@@ -179,6 +193,7 @@ const toggleFollow = async () => {
       )
       console.log('res', res)
       followersCount.value -= 1
+      userStore.following.length -= 1
     }
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error', 2000)
@@ -195,12 +210,13 @@ const toggleFollow = async () => {
       <div class="row mt-4">
         <!-- Main Content -->
         <main class="col-lg-9">
-          <div class="back-button">
-            <button @click="goBack">⬅ 返回</button>
-          </div>
-          <div class="header-container mb-3">
-            <!-- 左側 回退按鈕 -->
+          {{ userStore.following.length }}
+          <button class="btn btn-success rounded-pill mb-2" @click="goBack">
+            <i class="bi bi-arrow-90deg-left me-2"></i>返回
+          </button>
 
+          <div class="header-container mb-3 border border-3 border-dark rounded-3">
+            <!-- 左側 回退按鈕 -->
             <!-- 中間 主要資訊 -->
             <div class="user-info">
               <img
@@ -215,20 +231,23 @@ const toggleFollow = async () => {
             </div>
 
             <!-- 右側 操作按鈕 -->
-            <div class="actions" v-if="getUserData.data._id !== userStore.userid">
-              <button class="follow-button" @click="toggleFollow">
+            <div v-if="getUserData.data._id !== userStore.userid">
+              <button class="btn btn-warning rounded-pill" @click="toggleFollow">
                 {{ isFollowing ? '已追隨' : '追隨' }}
               </button>
             </div>
           </div>
           <!-- Filter and Search -->
           <div class="d-flex mb-4">
-            <select class="form-select w-auto me-2" @change="handleSortChange">
+            <select
+              class="form-select w-auto me-2 border border-3 border-dark"
+              @change="handleSortChange"
+            >
               <option value="desc">最新貼文</option>
               <option value="asc">最舊貼文</option>
               <option value="hot">熱門貼文</option>
             </select>
-            <div class="input-group">
+            <div class="input-group border border-3 border-dark rounded-3">
               <input type="text" class="form-control" placeholder="搜尋貼文" v-model="searchPost" />
               <button class="btn btn-primary" @click="getPost">
                 <i class="bi bi-search"></i>
@@ -238,7 +257,7 @@ const toggleFollow = async () => {
 
           <!-- Posts -->
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-            <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
+            <PostCard :post="post" @submit-comment="submitComment"></PostCard>
           </div>
         </main>
 

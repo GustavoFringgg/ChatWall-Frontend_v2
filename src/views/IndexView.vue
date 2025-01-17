@@ -22,15 +22,21 @@ const searchPost = ref('') //收尋文章關鍵字存取
 const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
 
-// import relativeTime from 'dayjs/plugin/relativeTime'
-// dayjs.extend(relativeTime) // 啟用相對時間插件
-// dayjs.locale('zh-tw') // 設定為台灣地區（可選）
-
 const getPost = async (timeSort = 'desc') => {
   const res = await axios.get(`${localurl}/posts/`, {
     params: { timeSort, keyword: searchPost.value },
   })
+  console.log('getPostres', res)
+  if (res.data.data.length === 0) {
+    showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
+    searchPost.value = ''
+    return
+  }
 
+  if (searchPost.value) {
+    showAlert(`找到關於${searchPost.value}的${res.data.message.length}則貼文`, 'success', 1500)
+    searchPost.value = ''
+  }
   try {
     getUserPost.value = res.data.message.map((post) => {
       const formattedPostTime = formatTime(post.createdAt)
@@ -50,6 +56,7 @@ const getPost = async (timeSort = 'desc') => {
       }
     })
   } catch (error) {
+    console.log(error)
     showAlert(`${error}`, 'error')
   }
 }
@@ -64,7 +71,9 @@ const signCheck = async () => {
 
   if (!signInToken.value) {
     showAlert(`請登入`, 'error', 1500)
-    router.push({ path: '/' })
+    setTimeout(() => {
+      router.push({ path: '/' })
+    }, 1500)
   }
   try {
     const res = await axios.get(`${localurl}/users/checkout`, {
@@ -73,6 +82,7 @@ const signCheck = async () => {
       },
     })
     getUserData.value = res.data
+    getUserData.value.user.formatTime = formatTime(res.data.user.createdAt)
     userStore.setUserInfo(getUserData.value.user, signInToken.value)
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
@@ -88,13 +98,11 @@ const signCheck = async () => {
 //刪除貼文
 const deletePost = async (postId) => {
   try {
-    console.log('postid', postId)
     const res = await axios.delete(`${localurl}/posts/${postId}/post`, {
       headers: {
         Authorization: `Bearer ${userStore.token}`,
       },
     })
-    console.log('deletepost', res)
     getPost()
   } catch (error) {
     console.log(error)
@@ -133,7 +141,6 @@ const submitComment = async (postId, commentText) => {
 onMounted(async () => {
   try {
     await signCheck()
-    console.log('這是Index的onMounted')
     userStore.loadUserInfo()
     if (signInToken.value) {
       await getPost()
@@ -159,12 +166,15 @@ onMounted(async () => {
         <main class="col-lg-9">
           <!-- Filter and Search -->
           <div class="d-flex mb-4">
-            <select class="form-select w-auto me-2" @change="handleSortChange">
+            <select
+              class="form-select w-auto me-2 border border-3 border-dark"
+              @change="handleSortChange"
+            >
               <option value="desc">最新貼文</option>
               <option value="asc">最舊貼文</option>
               <option value="hot">熱門貼文</option>
             </select>
-            <div class="input-group">
+            <div class="input-group border border-3 border-dark rounded-3">
               <input type="text" class="form-control" placeholder="搜尋貼文" v-model="searchPost" />
               <button class="btn btn-primary" @click="getPost">
                 <i class="bi bi-search"></i>

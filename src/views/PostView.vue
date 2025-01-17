@@ -88,7 +88,7 @@ const submitPost = async () => {
       <!-- Main Content -->
       <main class="col-lg-9">
         <!-- Filter and Search -->
-        <div class="card">
+        <div class="card border border-3 border-dark">
           <div class="card-header text-center">
             <h5 class="m-0">張貼動態</h5>
           </div>
@@ -100,7 +100,7 @@ const submitPost = async () => {
                 id="postContent"
                 v-model="postContent"
                 class="form-control"
-                cols="20"
+                cols="10"
                 rows="10"
                 style="resize: none"
                 placeholder="輸入您的貼文內容"
@@ -116,11 +116,14 @@ const submitPost = async () => {
               </div>
             </div>
             <!-- 圖片預覽 -->
-            <div v-if="uploadedFileUrl" class="mb-3">
-              <img :src="uploadedFileUrl" alt="Image Preview" class="img-fluid rounded" />
+            <div
+              v-if="uploadedFileUrl"
+              class="mb-3 img-container border border-3 border-dark text-center"
+            >
+              <img :src="uploadedFileUrl" alt="Image Preview" class="img-fluid-cos" />
             </div>
             <!-- 送出貼文 -->
-            <button class="btn btn-secondary w-100" @click="submitPost">送出貼文</button>
+            <button class="btn btn-success w-100" @click="submitPost">送出貼文</button>
           </div>
         </div>
       </main>

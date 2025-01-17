@@ -183,6 +183,11 @@ video {
 .relative {
   position: relative;
 }
+
+.absolute {
+  position: absolute;
+  left: 10px;
+}
 #toggleEye {
   position: absolute;
   top: 55%;
@@ -195,4 +200,24 @@ video {
   top: 70%;
   right: 20px;
   transform: translateY(-50%);
+}
+
+.img-fluid-cos {
+  position: absolute; /* 絕對定位 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 讓圖片居中 */
+}
+
+.img-container {
+  width: 100%; /* 固定寬度 */
+  height: 300px; /* 固定高度 */
+  overflow: hidden;
+  position: relative; /* 為子元素設定定位參考 */
+}
+
+.background-box {
+  background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2Ftest123.png?alt=media&token=7093fa0c-f84d-4a57-a1bc-671d7f32c3d4');
+  background-size: cover; /* 確保圖片完全覆蓋 */
+  background-position: center; /* 居中對齊 */
 }

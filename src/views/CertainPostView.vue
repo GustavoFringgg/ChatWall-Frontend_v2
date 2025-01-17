@@ -16,14 +16,12 @@ const { showAlert } = useAlert()
 const router = useRouter()
 const localurl = 'http://localhost:3000'
 const signInToken = ref('') //user token存取
-const getUserData = ref('') //user 個人資料存取
-const getUserId = ref('') //user 個人id存取
 const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
 const route = useRoute()
 
 const getOnePost = async () => {
-  const post_id = route.params.id // 從路由中獲取 ID
+  const post_id = route.params.id
   const res = await axios.get(`${localurl}/posts/${post_id}`, {
     headers: {
       Authorization: `Bearer ${signInToken.value}`,
@@ -66,9 +64,6 @@ const signCheck = async () => {
         Authorization: `Bearer ${signInToken.value}`,
       },
     })
-    getUserData.value = res.data
-    userStore.setUserInfo(getUserData.value.user, signInToken.value)
-    getUserId.value = res.data.user._id
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
@@ -143,7 +138,7 @@ onMounted(async () => {
           </div>
           <!-- Posts -->
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-            <PostCard :post="post" :userId="getUserId" @submit-comment="submitComment"></PostCard>
+            <PostCard :post="post" @submit-comment="submitComment"></PostCard>
           </div>
         </main>
 

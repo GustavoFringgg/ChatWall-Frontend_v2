@@ -12,7 +12,7 @@ const signInToken = ref('') //user token存取
 const { showAlert } = useAlert()
 const router = useRouter()
 const localurl = 'http://localhost:3000'
-const getUserData = ref('') //user 個人資料存取
+
 const userStore = useUserStore()
 const isLoading = ref(true)
 const getUserFollowListData = ref() //取得個人追蹤列表
@@ -28,8 +28,6 @@ const signCheck = async () => {
         Authorization: `Bearer ${signInToken.value}`,
       },
     })
-    getUserData.value = res.data
-    userStore.setUserInfo(getUserData.value.user, signInToken.value)
   } catch (error) {
     console.log(error)
   }
@@ -65,11 +63,9 @@ const toggleUnfollow = async (userId) => {
 onMounted(async () => {
   try {
     await signCheck()
-    await getUserFollowList()
-    console.log('這是追蹤列表的onMounted')
     userStore.loadUserInfo()
     if (signInToken.value) {
-      console.log('ready')
+      await getUserFollowList()
     } else {
       router.push({ path: '/' })
     }
@@ -81,11 +77,10 @@ onMounted(async () => {
 })
 
 const goToUserPage = (id) => {
-  router.push(`/otherpost/${id}`) // 跳轉到 URL，並附上 ID
+  router.push(`/otherpost/${id}`)
 }
 
 const goBack = () => {
-  // 返回上一頁邏輯
   history.back()
 }
 </script>
@@ -112,15 +107,18 @@ const goBack = () => {
           </div>
           <div v-else>
             <div class="row">
-              <div class="col text-center">
-                <h2 class="fw-bold">追蹤名單</h2>
+              <div class="col text-center relative">
+                <button class="btn btn-success rounded-pill mb-2 absolute" @click="goBack">
+                  <i class="bi bi-arrow-90deg-left me-2"></i>返回
+                </button>
+                <h2 class="fw-bold">您追蹤的名單</h2>
               </div>
             </div>
             <!-- 追蹤項目列表 -->
             <div class="row mt-2" v-for="list in getUserFollowListData" :key="list._id">
               <!-- 單個追蹤項目 -->
               <div class="col-12">
-                <div class="card p-3 shadow-sm">
+                <div class="card p-3 shadow-sm border border-3 border-dark">
                   <div class="d-flex justify-content-between align-items-center">
                     <!-- 左側內容 -->
                     <div class="d-flex align-items-center">

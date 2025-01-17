@@ -12,7 +12,7 @@ const signInToken = ref('') //user token存取
 const { showAlert } = useAlert()
 const router = useRouter()
 const localurl = 'http://localhost:3000'
-const getUserData = ref('') //user 個人資料存取
+
 const userStore = useUserStore()
 const isLoading = ref(true)
 const getUserLikeListData = ref() //取得個人按讚列表
@@ -29,8 +29,6 @@ const signCheck = async () => {
         Authorization: `Bearer ${signInToken.value}`,
       },
     })
-    getUserData.value = res.data
-    userStore.setUserInfo(getUserData.value.user, signInToken.value)
   } catch (error) {
     console.log(error)
   }
@@ -39,7 +37,6 @@ const signCheck = async () => {
 onMounted(async () => {
   try {
     await signCheck()
-    console.log('這是按讚列表的onMounted')
     userStore.loadUserInfo()
     if (signInToken.value) {
       await getUserLikeList()
@@ -52,12 +49,11 @@ onMounted(async () => {
 })
 
 const goBack = () => {
-  // 返回上一頁邏輯
   history.back()
 }
 
 const goToLikePage = (id) => {
-  router.push(`/certainpost/${id}`) // 跳轉到 URL，並附上 postID
+  router.push(`/certainpost/${id}`)
 }
 
 const getUserLikeList = async () => {
@@ -110,15 +106,18 @@ const toggleUnlike = async (postId) => {
           </div>
           <div v-else>
             <div class="row">
-              <div class="col text-center">
-                <h2 class="fw-bold">{{ userStore.username }}按讚的文章</h2>
+              <div class="col text-center relative">
+                <button class="btn btn-success rounded-pill mb-2 absolute" @click="goBack">
+                  <i class="bi bi-arrow-90deg-left me-2"></i>返回
+                </button>
+                <h2 class="fw-bold">您按讚的文章</h2>
               </div>
             </div>
             <!-- 追蹤項目列表 -->
             <div class="row mt-2" v-for="list in getUserLikeListData" :key="list._id">
               <!-- 單個追蹤項目 -->
               <div class="col-12">
-                <div class="card p-3 shadow-sm">
+                <div class="card p-3 shadow-sm border border-3 border-dark">
                   <div class="d-flex justify-content-between align-items-center">
                     <!-- 左側內容 -->
                     <div class="d-flex align-items-center">

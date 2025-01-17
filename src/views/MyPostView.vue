@@ -3,7 +3,6 @@ import axios from 'axios'
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
-import dayjs from 'dayjs'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
@@ -16,8 +15,6 @@ const { showAlert } = useAlert()
 const router = useRouter()
 const localurl = 'http://localhost:3000'
 const signInToken = ref('') //user token存取
-const getUserData = ref('') //user 個人資料存取
-const getUserId = ref('') //user 個人id存取
 const searchPost = ref('') //收尋文章關鍵字存取
 const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
@@ -30,6 +27,16 @@ const getPost = async (timeSort = 'desc') => {
     },
   })
 
+  if (res.data.message.length === 0) {
+    showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
+    searchPost.value = ''
+    return
+  }
+  console.log('searchPost.value', searchPost.value)
+  if (searchPost.value) {
+    showAlert(`找到關於${searchPost.value}的${res.data.message.length}則貼文`, 'success', 1500)
+    searchPost.value = ''
+  }
   try {
     getUserPost.value = res.data.message.map((post) => {
       const formattedPostTime = formatTime(post.createdAt)
@@ -68,9 +75,6 @@ const signCheck = async () => {
         Authorization: `Bearer ${signInToken.value}`,
       },
     })
-    getUserData.value = res.data
-    userStore.setUserInfo(getUserData.value.user, signInToken.value)
-    getUserId.value = res.data.user._id
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
@@ -111,6 +115,20 @@ const submitComment = async (postId, commentText) => {
     console.error(`留言失敗：`, error)
   }
 }
+//刪除貼文
+const deletePost = async (postId) => {
+  try {
+    const res = await axios.delete(`${localurl}/posts/${postId}/post`, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`,
+      },
+    })
+    getPost()
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 //
 onMounted(async () => {
   try {
@@ -142,12 +160,15 @@ onMounted(async () => {
         <main class="col-lg-9">
           <!-- Filter and Search -->
           <div class="d-flex mb-4">
-            <select class="form-select w-auto me-2" @change="handleSortChange">
+            <select
+              class="form-select w-auto me-2 border border-3 border-dark"
+              @change="handleSortChange"
+            >
               <option value="desc">最新貼文</option>
               <option value="asc">最舊貼文</option>
               <option value="hot">熱門貼文</option>
             </select>
-            <div class="input-group">
+            <div class="input-group border border-3 border-dark rounded-3">
               <input type="text" class="form-control" placeholder="搜尋貼文" v-model="searchPost" />
               <button class="btn btn-primary" @click="getPost">
                 <i class="bi bi-search"></i>
@@ -157,7 +178,11 @@ onMounted(async () => {
 
           <!-- Posts -->
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-            <PostCard :post="post" @submit-comment="submitComment"></PostCard>
+            <PostCard
+              :post="post"
+              @submit-comment="submitComment"
+              @delete-post="deletePost"
+            ></PostCard>
           </div>
         </main>
 

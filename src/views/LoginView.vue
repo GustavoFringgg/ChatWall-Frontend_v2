@@ -57,14 +57,14 @@ const signInFromGoogle = async () => {
 <template>
   <main>
     <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row shadow rounded p-4 w-75 h-75 yellow-box">
+      <div class="row shadow rounded p-4 w-75 h-75 background-box border border-3 border-dark">
         <div class="col-md-6 d-flex flex-column ms-auto justify-content-center">
           <!-- 登入表單 -->
           <div class="text-center">
             <h1 class="text-primary fw-bold">ChatWall</h1>
             <p class="text-secondary">聊天、交朋友</p>
           </div>
-          <form @submit.prevent="handleLogin">
+          <form>
             <div class="mb-3 mt-auto ms-4 me-4">
               <input
                 type="email"
@@ -111,15 +111,3 @@ const signInFromGoogle = async () => {
     </div>
   </main>
 </template>
-
-<style scope>
-.yellow-box {
-  background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2Ftest123.png?alt=media&token=7093fa0c-f84d-4a57-a1bc-671d7f32c3d4');
-
-  /* background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2FiStock-1987991143.jpg?alt=media&token=72d3cb3f-f061-47a9-b927-8fb6564a9e94'); */
-  background-size: cover; /* 確保圖片完全覆蓋 */
-  background-position: center; /* 居中對齊 */
-  width: 100%;
-  height: 100%;
-}
-</style>
