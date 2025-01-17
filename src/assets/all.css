@@ -221,3 +221,18 @@ video {
   background-size: cover; /* 確保圖片完全覆蓋 */
   background-position: center; /* 居中對齊 */
 }
+
+/* 無資料共用的card */
+.custom-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-content {
+  text-align: center;
+  color: #555;
+  padding: 20px;
+}

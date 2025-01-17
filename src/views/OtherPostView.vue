@@ -209,10 +209,10 @@ const toggleFollow = async () => {
       <!-- Main Section -->
       <div class="row mt-4">
         <!-- Main Content -->
+
         <main class="col-lg-9">
-          {{ userStore.following.length }}
-          <button class="btn btn-success rounded-pill mb-2" @click="goBack">
-            <i class="bi bi-arrow-90deg-left me-2"></i>返回
+          <button class="btn btn-success rounded-3 mb-2" @click="goBack">
+            <i class="bi bi-arrow-left"></i>
           </button>
 
           <div class="header-container mb-3 border border-3 border-dark rounded-3">

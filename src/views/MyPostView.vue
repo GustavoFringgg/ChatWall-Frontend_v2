@@ -26,10 +26,17 @@ const getPost = async (timeSort = 'desc') => {
       Authorization: `Bearer ${signInToken.value}`,
     },
   })
-
-  if (res.data.message.length === 0) {
+  console.log('這是搜尋的valuesearchPost.value', searchPost.value)
+  console.log('這是搜尋的message.length', res.data)
+  if (res.data.data.length === 0 && searchPost.value) {
     showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
     searchPost.value = ''
+    return
+  }
+
+  if (res.data.data.length === 0) {
+    searchPost.value = ''
+    getUserPost.value = ''
     return
   }
   console.log('searchPost.value', searchPost.value)
@@ -52,6 +59,7 @@ const getPost = async (timeSort = 'desc') => {
         formattedDate: formattedPostTime,
       }
     }) // 格式化日期
+    console.log('沒有貼文的getUserPost.value', getUserPost.value)
   } catch (error) {
     showAlert(`${error}`, 'error')
   }
@@ -123,6 +131,7 @@ const deletePost = async (postId) => {
         Authorization: `Bearer ${userStore.token}`,
       },
     })
+    console.log('傳回來的deletePost', res)
     getPost()
   } catch (error) {
     console.log(error)
@@ -145,6 +154,10 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
+
+const goBack = () => {
+  history.back()
+}
 </script>
 
 <template>
@@ -158,31 +171,54 @@ onMounted(async () => {
       <div class="row mt-4">
         <!-- Main Content -->
         <main class="col-lg-9">
-          <!-- Filter and Search -->
-          <div class="d-flex mb-4">
-            <select
-              class="form-select w-auto me-2 border border-3 border-dark"
-              @change="handleSortChange"
-            >
-              <option value="desc">最新貼文</option>
-              <option value="asc">最舊貼文</option>
-              <option value="hot">熱門貼文</option>
-            </select>
-            <div class="input-group border border-3 border-dark rounded-3">
-              <input type="text" class="form-control" placeholder="搜尋貼文" v-model="searchPost" />
-              <button class="btn btn-primary" @click="getPost">
-                <i class="bi bi-search"></i>
+          <div v-if="!getUserPost?.length">
+            <div class="container p-0">
+              <button class="btn btn-success rounded-3 mb-2" @click="goBack">
+                <i class="bi bi-arrow-left"></i>
               </button>
             </div>
+            <div class="custom-card border border-3 border-dark">
+              <div class="card-content">目前尚無動態，新增一則貼文吧！</div>
+            </div>
           </div>
+          <div v-else>
+            <div class="col text-center relative mb-3">
+              <button class="btn btn-success rounded-3 mb-2 absolute" @click="goBack">
+                <i class="bi bi-arrow-left"></i>
+              </button>
+              <h2 class="fw-bold">您的貼文牆</h2>
+            </div>
+            <!-- Filter and Search -->
+            <div class="d-flex mb-4">
+              <select
+                class="form-select w-auto me-2 border border-3 border-dark"
+                @change="handleSortChange"
+              >
+                <option value="desc">最新貼文</option>
+                <option value="asc">最舊貼文</option>
+                <option value="hot">熱門貼文</option>
+              </select>
+              <div class="input-group border border-3 border-dark rounded-3">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="搜尋貼文"
+                  v-model="searchPost"
+                />
+                <button class="btn btn-primary" @click="getPost">
+                  <i class="bi bi-search"></i>
+                </button>
+              </div>
+            </div>
 
-          <!-- Posts -->
-          <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-            <PostCard
-              :post="post"
-              @submit-comment="submitComment"
-              @delete-post="deletePost"
-            ></PostCard>
+            <!-- Posts -->
+            <div class="mb-3" v-for="post in getUserPost" :key="post._id">
+              <PostCard
+                :post="post"
+                @submit-comment="submitComment"
+                @delete-post="deletePost"
+              ></PostCard>
+            </div>
           </div>
         </main>
 

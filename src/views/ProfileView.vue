@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import { useRouter } from 'vue-router'
@@ -33,9 +33,9 @@ const updateUserPassword = async () => {
     })
     userPassword.value.oldPassword = ''
     userPassword.value.newPassword = ''
-    showAlert('更新密碼成功，導回首頁', 'success', 2000)
+    showAlert('更新密碼成功，兩秒後導回登入頁', 'success', 2000)
     setTimeout(() => {
-      router.push({ path: '/index' })
+      router.push({ path: '/' })
     }, 2000)
   } catch (error) {
     if (error.response) {
@@ -56,10 +56,10 @@ const updateUserInfo = async () => {
     userStore.username = userData.value.name
     userData.value.name = ''
     userData.value.sex = '男'
-    showAlert(`${resdata.data.message}，將導回首頁`, 'success', 1500)
+    showAlert(`${resdata.data.message}，兩秒後導回頁`, 'success', 2000)
     setTimeout(() => {
       router.push({ path: '/index' })
-    }, 1500)
+    }, 2000)
   } catch (error) {
     console.log('error:', error)
     showAlert(`${error.message}`, 'error')
@@ -109,11 +109,26 @@ const uploadImage = async () => {
   }
 }
 /*上傳大頭照↑*/
-
+const isActiveForPassword = ref(false)
 const goBack = () => {
   // 返回上一頁邏輯
   history.back()
 }
+
+watch(isActiveForPassword, () => {
+  const currentPassword = document.getElementById('currentPassword')
+  const newPassword = document.getElementById('newPassword')
+  const confirmPassword = document.getElementById('confirmPassword')
+  if (isActiveForPassword.value) {
+    currentPassword?.setAttribute('type', 'text')
+    newPassword?.setAttribute('type', 'text')
+    confirmPassword?.setAttribute('type', 'text')
+  } else {
+    currentPassword?.setAttribute('type', 'password')
+    newPassword?.setAttribute('type', 'password')
+    confirmPassword?.setAttribute('type', 'password')
+  }
+})
 </script>
 <template>
   <div>
@@ -130,11 +145,15 @@ const goBack = () => {
             <div class="mb-4">
               <div class="row justify-content-center">
                 <!-- Tabs -->
-                <div class="col-md-8">
-                  <div class="col text-center relative">
-                    <button class="btn btn-success rounded-pill mb-2 absolute" @click="goBack">
-                      <i class="bi bi-arrow-90deg-left me-2"></i>返回
-                    </button>
+                <div class="col-md-8 relative">
+                  <button
+                    class="btn btn-success rounded-3 mb-2 absolute"
+                    style="left: 0"
+                    @click="goBack"
+                  >
+                    <i class="bi bi-arrow-left"></i>
+                  </button>
+                  <div class="col text-center">
                     <h2 class="fw-bold">{{ userStore.username }}的個人資料</h2>
                   </div>
                   <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -269,7 +288,12 @@ const goBack = () => {
                     aria-labelledby="password-tab"
                   >
                     <form>
-                      <div class="mb-3">
+                      <div class="mb-3 relative">
+                        <i
+                          id="registerToggleEye"
+                          :class="isActiveForPassword ? ' bi bi-eye-fill' : ' bi bi-eye-slash'"
+                          @click="isActiveForPassword = !isActiveForPassword"
+                        ></i>
                         <label for="currentPassword" class="form-label">目前密碼</label>
                         <input
                           type="password"

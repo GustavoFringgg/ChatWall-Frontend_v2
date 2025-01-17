@@ -104,8 +104,8 @@ const goToUserPage = (id) => {
           <small class="text-muted"> {{ post.formattedDate }}</small>
         </div>
       </div>
-      <p v-if="post.content.length < maxLength">{{ post.content }}</p>
-      <p v-else>{{ isExpanded ? post.content : expandContent }}</p>
+      <p v-if="post.content.length < maxLength" style="white-space: pre-wrap">{{ post.content }}</p>
+      <p v-else style="white-space: pre-wrap">{{ isExpanded ? post.content : expandContent }}</p>
       <button
         type="button"
         class="btn btn-outline-primary btn-sm rounded-pill"

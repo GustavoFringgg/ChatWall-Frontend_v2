@@ -55,7 +55,7 @@ const signOut = async () => {
               </li>
               <li>
                 <RouterLink class="dropdown-item text-decoration-none" to="/profile"
-                  >個人資料</RouterLink
+                  >修改個人資料</RouterLink
                 >
               </li>
               <li><hr class="dropdown-divider" /></li>

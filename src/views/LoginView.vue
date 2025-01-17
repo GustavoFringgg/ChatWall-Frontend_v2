@@ -27,16 +27,17 @@ watch(isActiveForPassword, () => {
 })
 const signIn = async () => {
   try {
+    console.log('signInField', signInField.value)
     const res = await axios.post(`${localurl}/auth/sign_In`, signInField.value)
     sigInToken.value = res.data.data.user.token
     document.cookie = `Token=${res.data.data.user.token}`
-    showAlert(`歡迎回來${res.data.data.user.name}`, 'success')
+    showAlert(`歡迎回來${res.data.data.user.name}`, 'success', 2000)
     setTimeout(() => {
       router.push({ path: '/index' })
-    }, 1000)
+    }, 2000)
   } catch (error) {
     console.log(error)
-    showAlert(`${error.response.data.message}`, 'error')
+    showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
 

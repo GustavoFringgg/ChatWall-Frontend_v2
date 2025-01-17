@@ -39,7 +39,6 @@ const getUserFollowList = async () => {
       Authorization: `Bearer ${userStore.token}`,
     },
   })
-  console.log(' res.data.followingList', res.data.followingList)
   getUserFollowListData.value = res.data.followingList.map((list) => ({
     ...list,
     formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
@@ -55,6 +54,7 @@ const toggleUnfollow = async (userId) => {
       },
     })
     getUserFollowListData.value = res.data.followingList
+    userStore.following.length -= 1
     showAlert(`已取消追蹤`, 'success', 2000)
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error', 2000)
@@ -94,22 +94,20 @@ const goBack = () => {
         <!-- Main Content -->
         <main class="col-lg-9">
           <div v-if="!getUserFollowListData?.length">
-            <div class="text-center mt-5 d-flex justify-content-center">
-              <div class="back-button text-center">
-                <button @click="goBack">⬅ 返回</button>
-              </div>
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/DALL%C2%B7E%202025-01-10%2016.19.28%20-%20A%20minimalistic%20web%20design%20with%20only%20the%20text%20'No%20Following'%20in%20bold%2C%20clean%20font%20at%20the%20exact%20center.%20The%20background%20is%20a%20plain%20soft%20yellow%20(%23FFF9DB)%2C%20.webp?alt=media&token=b91934d5-b82a-4ff1-b134-aa4e58d733bb"
-                alt=""
-                class="w-50 h-50"
-              />
+            <div class="container p-0">
+              <button class="btn btn-success rounded-3 mb-2" @click="goBack">
+                <i class="bi bi-arrow-left"></i>
+              </button>
+            </div>
+            <div class="custom-card border border-3 border-dark">
+              <div class="card-content">目前沒有追蹤的對象，趕快追蹤一個人吧！</div>
             </div>
           </div>
           <div v-else>
             <div class="row">
               <div class="col text-center relative">
-                <button class="btn btn-success rounded-pill mb-2 absolute" @click="goBack">
-                  <i class="bi bi-arrow-90deg-left me-2"></i>返回
+                <button class="btn btn-success rounded-3 mb-2 absolute" @click="goBack">
+                  <i class="bi bi-arrow-left"></i>
                 </button>
                 <h2 class="fw-bold">您追蹤的名單</h2>
               </div>

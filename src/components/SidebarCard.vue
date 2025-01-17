@@ -49,12 +49,13 @@ const userStore = useUserStore()
                     :src="userStore.photo"
                     alt="userphoto"
                     class="rounded-circle mt-2 me-2"
-                    style="width: 300px; height: 300px"
+                    style="width: 200px; height: 200px"
                   />
                 </div>
-                <div class="text-start">註冊時間:{{ userStore.formatTime }}</div>
-                <div class="text-start">粉絲{{ userStore.followers.length }}</div>
-                <div class="text-start">追蹤人數{{ userStore.following.length }}</div>
+                <div>註冊時間:{{ userStore.formatTime }}</div>
+
+                <div>粉絲{{ userStore.followers.length }}</div>
+                <div>追蹤人數{{ userStore.following.length }}</div>
               </div>
             </div>
             <!-- test end -->
