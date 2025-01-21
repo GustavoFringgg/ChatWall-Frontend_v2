@@ -16,7 +16,7 @@ const router = createRouter({
     },
     {
       path: '/index',
-      component: () => import('../views/IndexView.vue'),
+      component: () => import('@/views/IndexView.vue'),
     },
     {
       path: '/userpost',

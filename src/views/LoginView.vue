@@ -33,7 +33,7 @@ const signIn = async () => {
     document.cookie = `Token=${res.data.data.user.token}`
     showAlert(`歡迎回來${res.data.data.user.name}`, 'success', 2000)
     setTimeout(() => {
-      router.push({ path: '/ChatWall-Frontend/index' })
+      router.push({ path: '/index' })
     }, 2000)
   } catch (error) {
     console.log(error)
