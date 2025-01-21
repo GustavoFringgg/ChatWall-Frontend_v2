@@ -7,7 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/ChatWall-Frontend_v2/',
+  base: '/',
   plugins: [vue(), vueJsx(), vueDevTools()],
   resolve: {
     alias: {
