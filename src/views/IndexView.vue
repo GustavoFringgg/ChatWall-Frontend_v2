@@ -8,7 +8,7 @@ import ChatRoom from '@/components/ChatRoom.vue'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/userStore.js'
 import { useformatTime } from '@/Composables/useformatTime.js'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const { formatTime } = useformatTime()

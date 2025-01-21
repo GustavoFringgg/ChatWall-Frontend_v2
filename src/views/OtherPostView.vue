@@ -23,7 +23,7 @@ const { formatTime } = useformatTime()
 import axios from 'axios'
 
 //stores
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
 
 //const
