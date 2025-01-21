@@ -5,7 +5,7 @@ import SidebarCard from '@/components/SidebarCard.vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
 import NavbarCard from '@/components/NavbarCard.vue' //導入側邊card
-import { useUserStore } from '@/stores/userStore.js'
+import { useUserStore } from '@/stores/tempStore..js'
 
 const userStore = useUserStore()
 const { showAlert } = useAlert()

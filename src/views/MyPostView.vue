@@ -7,7 +7,7 @@ import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
-import { useUserStore } from '@/stores/userStore.js'
+import { useUserStore } from '@/stores/tempStore..js'
 import { useformatTime } from '@/Composables/useformatTime.js'
 const { formatTime } = useformatTime()
 const userStore = useUserStore()

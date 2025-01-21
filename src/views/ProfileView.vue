@@ -4,7 +4,7 @@ import { ref, watch } from 'vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore.js'
+import { useUserStore } from '@/stores/tempStore..js'
 import { useAlert } from '@/Composables/useAlert'
 const router = useRouter()
 const userStore = useUserStore()

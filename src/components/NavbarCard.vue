@@ -1,5 +1,5 @@
 <script setup>
-import { useUserStore } from '@/stores/userStore.js'
+import { useUserStore } from '@/stores/tempStore..js'
 import { useAlert } from '@/Composables/useAlert.js'
 import { useRouter } from 'vue-router'
 
