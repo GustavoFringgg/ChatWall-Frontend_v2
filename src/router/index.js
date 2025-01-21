@@ -16,7 +16,7 @@ const router = createRouter({
     },
     {
       path: '/index',
-      component: () => import('../views/IndexView.vue'),
+      component: () => import('@/views/IndexView.vue'),
     },
     {
       path: '/userpost',
@@ -24,7 +24,7 @@ const router = createRouter({
     },
     {
       path: '/mypost',
-      component: () => import('../views/MyPostView.vue'),
+      component: () => import('@/views/MyPostView.vue'),
     },
     {
       path: '/profile',
