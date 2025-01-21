@@ -1,5 +1,5 @@
 import { createRouter } from 'vue-router'
-import HomeView from '../views/LoginView.vue'
+import HomeView from '@/views/LoginView.vue'
 import { createWebHashHistory } from 'vue-router'
 
 const router = createRouter({
@@ -12,7 +12,7 @@ const router = createRouter({
     },
     {
       path: '/register',
-      component: () => import('../views/RegisterView.vue'),
+      component: () => import('@/views/RegisterView.vue'),
     },
     {
       path: '/index',
@@ -20,7 +20,7 @@ const router = createRouter({
     },
     {
       path: '/userpost',
-      component: () => import('../views/PostView.vue'),
+      component: () => import('@/views/PostView.vue'),
     },
     {
       path: '/mypost',
@@ -28,27 +28,27 @@ const router = createRouter({
     },
     {
       path: '/profile',
-      component: () => import('../views/ProfileView.vue'),
+      component: () => import('@/views/ProfileView.vue'),
     },
     {
       path: '/otherpost/:id',
-      component: () => import('../views/OtherPostView.vue'),
+      component: () => import('@/views/OtherPostView.vue'),
     },
     {
       path: '/myfollowlist',
-      component: () => import('../views/MyFollowListView.vue'),
+      component: () => import('@/views/MyFollowListView.vue'),
     },
     {
       path: '/mylikelist',
-      component: () => import('../views/MyLikeListView.vue'),
+      component: () => import('@/views/MyLikeListView.vue'),
     },
     {
       path: '/certainpost/:id',
-      component: () => import('../views/CertainPostView.vue'),
+      component: () => import('@/views/CertainPostView.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
-      component: () => import('../views/errorView/404PageView.vue'),
+      component: () => import('@/views/errorView/404PageView.vue'),
     },
   ],
 })
