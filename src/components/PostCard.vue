@@ -150,6 +150,7 @@ const goToUserPage = (id) => {
             class="form-control me-2"
             style="flex: 1"
             placeholder="留言..."
+            @keyup.enter="handleSubmit(post._id)"
           />
           <button class="btn btn-primary" @click="handleSubmit(post._id)">留言</button>
         </div>

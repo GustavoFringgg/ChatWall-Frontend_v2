@@ -4,6 +4,7 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
 // import dayjs from 'dayjs'
+import ChatRoom from '@/components/ChatRoom.vue'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
@@ -196,5 +197,6 @@ onMounted(async () => {
         <SidebarCard></SidebarCard>
       </div>
     </div>
+    <ChatRoom></ChatRoom>
   </div>
 </template>
