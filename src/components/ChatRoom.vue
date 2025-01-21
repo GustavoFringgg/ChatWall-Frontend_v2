@@ -1,10 +1,9 @@
 <script setup>
 import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import io from 'socket.io-client'
-import Swal from 'sweetalert2'
 import { useAlert } from '@/Composables/useAlert'
 import { getMessages } from '@/apis/message'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/userStore.js'
 import { useformatTime } from '@/Composables/useformatTime.js'
 const { formatTime } = useformatTime()
 const { showAlert } = useAlert()

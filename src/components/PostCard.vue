@@ -3,7 +3,7 @@ import Swal from 'sweetalert2'
 import axios from 'axios'
 import { defineProps, ref, defineEmits, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import { useUserStore } from '@/stores/userStore.js'
 import { useAlert } from '@/Composables/useAlert.js'
 const { showDeleteAlert } = useAlert()
 const router = useRouter()
