@@ -236,3 +236,24 @@ video {
   color: #555;
   padding: 20px;
 }
+
+.bg-color {
+  background-image: linear-gradient(to bottom right, #f1f1f1, #f1e3c7) !important;
+}
+.bg-header {
+  background-image: linear-gradient(to bottom right, #f1f1f1, #a2defb) !important;
+}
+
+.navbar-header {
+  background-color: #0d6efd;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+  &:hover {
+    background-color: white;
+    color: #0d6efd;
+  }
+}

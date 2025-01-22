@@ -181,7 +181,6 @@ const toggleFollow = async () => {
       followersCount.value += 1
       userStore.following.length += 1
     } else {
-      console.log('here')
       const res = await axios.delete(
         `${localurl}/users/${userId}/unfollow`,
 
@@ -191,7 +190,6 @@ const toggleFollow = async () => {
           },
         },
       )
-      console.log('res', res)
       followersCount.value -= 1
       userStore.following.length -= 1
     }

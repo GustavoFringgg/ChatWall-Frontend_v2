@@ -31,6 +31,10 @@ const router = createRouter({
       component: () => import('../views/ProfileView.vue'),
     },
     {
+      path: '/callback',
+      component: () => import('../views/AuthCallback.vue'),
+    },
+    {
       path: '/otherpost/:id',
       component: () => import('../views/OtherPostView.vue'),
     },

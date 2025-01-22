@@ -27,7 +27,6 @@ const getOnePost = async () => {
       Authorization: `Bearer ${signInToken.value}`,
     },
   })
-  console.log('取的特定貼文的資料', res)
 
   try {
     getUserPost.value = res.data.message.map((post) => {
@@ -103,6 +102,20 @@ const submitComment = async (postId, commentText) => {
     console.error(`留言失敗：`, error)
   }
 }
+
+//刪除貼文
+const deletePost = async (postId) => {
+  try {
+    const res = await axios.delete(`${localurl}/posts/${postId}/post`, {
+      headers: {
+        Authorization: `Bearer ${userStore.token}`,
+      },
+    })
+    getOnePost()
+  } catch (error) {
+    console.log(error)
+  }
+}
 //
 onMounted(async () => {
   try {
@@ -138,7 +151,11 @@ onMounted(async () => {
           </div>
           <!-- Posts -->
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-            <PostCard :post="post" @submit-comment="submitComment"></PostCard>
+            <PostCard
+              :post="post"
+              @submit-comment="submitComment"
+              @delete-post="deletePost"
+            ></PostCard>
           </div>
         </main>
 

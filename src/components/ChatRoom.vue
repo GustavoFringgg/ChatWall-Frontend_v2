@@ -34,15 +34,12 @@ onMounted(() => {
   userStore.loadUserInfo()
   socket = io(URL, { transports: ['websocket'] })
   socket.on('chatMessage', (message) => {
-    console.log('前端io收到的資料', message)
-    // messages.value.push(message)
     messages.value.push({
       user: {
         name: message.user.username,
         photo: message.user.photo,
       },
       content: message.content,
-      // formattedDate: formatTime(message.createdAt)
       formattedDate: new Date().toLocaleString(), // 假設格式化處理
     })
   })
@@ -60,7 +57,7 @@ watch(messages, () => {
   // 判斷是否滾動到底部
   const isScrolledToBottom =
     messageArea.value.scrollTop + messageArea.value.offsetHeight >=
-    messageArea.value.scrollHeight - 5 // 允許 10px 容錯
+    messageArea.value.scrollHeight - 5
   console.log('isScrolledToBottom', isScrolledToBottom)
 
   if (isScrolledToBottom) {

@@ -33,7 +33,7 @@ const userStore = useUserStore()
               id="offcanvasRight"
               aria-labelledby="offcanvasRightLabel"
             >
-              <div class="offcanvas-header">
+              <div class="offcanvas-header bg-header">
                 <h5 id="offcanvasRightLabel">{{ userStore.username }}的個人資料</h5>
                 <button
                   type="button"
@@ -42,20 +42,22 @@ const userStore = useUserStore()
                   aria-label="Close"
                 ></button>
               </div>
-              <div class="offcanvas-body">
+              <div class="offcanvas-body bg-color">
                 <div>姓名:{{ userStore.username }}</div>
-                <div>
-                  <img
-                    :src="userStore.photo"
-                    alt="userphoto"
-                    class="rounded-circle mt-2 me-2"
-                    style="width: 200px; height: 200px"
-                  />
-                </div>
-                <div>註冊時間:{{ userStore.formatTime }}</div>
 
-                <div>粉絲{{ userStore.followers.length }}</div>
-                <div>追蹤人數{{ userStore.following.length }}</div>
+                <img
+                  :src="userStore.photo"
+                  alt="userphoto"
+                  class="rounded-circle mt-2 mb-3"
+                  style="width: 200px; height: 200px"
+                />
+
+                <div style="width: 200px" class="mx-auto text-start">
+                  <div class="mb-3">註冊時間: {{ userStore.formatTime }}</div>
+
+                  <div class="mb-3">粉絲: {{ userStore.followers.length }}</div>
+                  <div>追蹤人數: {{ userStore.following.length }}</div>
+                </div>
               </div>
             </div>
             <!-- test end -->

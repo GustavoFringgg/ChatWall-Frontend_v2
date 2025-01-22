@@ -5,9 +5,7 @@ import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert'
 import axios from 'axios'
 const { showAlert } = useAlert()
-const img = ref(
-  'https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2FiStock-1987991143.jpg?alt=media&token=72d3cb3f-f061-47a9-b927-8fb6564a9e94',
-)
+
 const isActiveForPassword = ref(false)
 const localurl = 'http://localhost:3000'
 const router = useRouter()
@@ -25,6 +23,7 @@ watch(isActiveForPassword, () => {
     inputPassword?.setAttribute('type', 'password')
   }
 })
+
 const signIn = async () => {
   try {
     console.log('signInField', signInField.value)
@@ -40,19 +39,6 @@ const signIn = async () => {
     showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
-
-const signInFromGoogle = async () => {
-  try {
-    const res = await axios.get(`${localurl}/googleClient/callback`)
-    sigInToken.value = res.data.data.user.token
-    document.cookie = `Token=${res.data.data.user.token}` //儲存cookie
-    showAlert(`歡迎回來${res.data.data.user.name}`, 'success')
-    router.push({ path: '/index' })
-  } catch (error) {
-    console.log(error)
-    showAlert(`${error.response.data.message}`, 'error')
-  }
-}
 </script>
 
 <template>
@@ -62,8 +48,8 @@ const signInFromGoogle = async () => {
         <div class="col-md-6 d-flex flex-column ms-auto justify-content-center">
           <!-- 登入表單 -->
           <div class="text-center">
-            <h1 class="text-primary fw-bold">ChatWall</h1>
-            <p class="text-secondary">聊天、交朋友</p>
+            <h1 class="rounded-3 navbar-header fs-4 fw-bold">ChatWall</h1>
+            <p class="text-light">聊天、交朋友</p>
           </div>
           <form>
             <div class="mb-3 mt-auto ms-4 me-4">
@@ -99,12 +85,16 @@ const signInFromGoogle = async () => {
               @click="signIn"
               value="登入"
             />
-            <input
-              class="btn btn-primary w-75 mt-2 mb-3"
-              type="button"
-              @click="signInFromGoogle"
-              value="google登入"
-            />
+            <a
+              class="btn btn-primary google-login-btn w-75 mt-2 mb-3"
+              href="http://127.0.0.1:3000/users/google"
+            >
+              <img
+                src="https://developers.google.com/identity/images/g-logo.png"
+                alt="Google Icon"
+              />
+              Sign in with Google
+            </a>
             <RouterLink class="btn btn-primary w-75 mt-2 mb-3" to="/register">註冊</RouterLink>
           </div>
         </div>
@@ -112,3 +102,10 @@ const signInFromGoogle = async () => {
     </div>
   </main>
 </template>
+
+<style scope>
+.google-login-btn img {
+  width: 20px;
+  height: 20px;
+}
+</style>
