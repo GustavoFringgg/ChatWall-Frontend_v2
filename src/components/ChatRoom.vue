@@ -130,7 +130,12 @@ const sendMessage = (user, content) => {
       ref="messageArea"
       style="max-height: calc(100% - 95px); padding-bottom: 80px"
     >
-      <div class="mb-1" v-for="(msg, index) in messages" :key="index">
+      <div
+        class="mb-1"
+        :class="{ 'text-end': msg.user.name === userStore.username }"
+        v-for="(msg, index) in messages"
+        :key="index"
+      >
         <div>
           <img
             :src="msg.user.photo"
@@ -138,10 +143,13 @@ const sendMessage = (user, content) => {
             class="rounded-circle me-1"
             style="width: 20px; height: 20px"
           />
-          <strong>{{ msg.user.name || msg.user.username }}:</strong> {{ msg.content }}
-          <div class="text-muted small">
-            {{ msg.formattedDate }}
+          <strong>{{ msg.user.name }}</strong>
+          <div class="text-wrap text-break">
+            {{ msg.content }}
           </div>
+          <span class="text-muted small">
+            {{ msg.formattedDate }}
+          </span>
         </div>
       </div>
     </div>
