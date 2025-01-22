@@ -111,7 +111,9 @@ const deletePost = async (postId) => {
         Authorization: `Bearer ${userStore.token}`,
       },
     })
-    getOnePost()
+    setTimeout(() => {
+      router.push({ path: '/mylikelist' })
+    }, 1500)
   } catch (error) {
     console.log(error)
   }
