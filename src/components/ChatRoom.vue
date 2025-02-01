@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref, watch, nextTick } from 'vue'
 import io from 'socket.io-client'
 import { useAlert } from '@/Composables/useAlert'
-import { getMessages } from '@/apis/message'
+import { getMessages } from '@/apis'
 import { useUserStore } from '@/stores/userStore.js'
 import { useformatTime } from '@/Composables/useformatTime.js'
 const { formatTime } = useformatTime()

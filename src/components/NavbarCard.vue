@@ -19,7 +19,8 @@ const signOut = async () => {
   }, 1500)
 }
 
-const isMobile = ref(window.innerWidth < 992) // 判斷是否為手機版
+// 判斷螢幕寬度是否小於992px
+const isMobile = ref(window.innerWidth < 992)
 const handleResize = () => {
   isMobile.value = window.innerWidth < 992
 }

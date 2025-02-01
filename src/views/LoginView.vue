@@ -3,13 +3,12 @@ import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert'
-import axios from 'axios'
+
+import { signInUser } from '@/apis'
 const { showAlert } = useAlert()
 
 const isActiveForPassword = ref(false)
-const localurl = 'http://localhost:3000'
 const router = useRouter()
-const sigInToken = ref('')
 const signInField = ref({
   email: '',
   password: '',
@@ -26,16 +25,14 @@ watch(isActiveForPassword, () => {
 
 const signIn = async () => {
   try {
-    console.log('signInField', signInField.value)
-    const res = await axios.post(`${localurl}/auth/sign_In`, signInField.value)
-    sigInToken.value = res.data.data.user.token
-    document.cookie = `Token=${res.data.data.user.token}`
-    showAlert(`歡迎回來${res.data.data.user.name}`, 'success', 2000)
+    const { data } = await signInUser(signInField.value)
+    document.cookie = `Token=${data.user.token}`
+    showAlert(`歡迎回來${data.user.name}`, 'success', 2000)
     setTimeout(() => {
       router.push({ path: '/index' })
     }, 2000)
   } catch (error) {
-    console.log(error)
+    console.error(error)
     showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }

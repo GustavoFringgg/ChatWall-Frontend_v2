@@ -44,7 +44,6 @@ const getOnePost = async () => {
         formattedDate: formattedPostTime,
       }
     }) // 格式化日期
-    console.log('    getUserPost.value', getUserPost.value)
   } catch (error) {
     console.error(error)
     showAlert(`${error}`, 'error')
@@ -66,11 +65,6 @@ const signCheck = async () => {
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
-    // setTimeout(() => {
-    //   nextTick(() => {
-    //     location.reload() // 強制刷新頁面，保證渲染完成後再重新加載
-    //   })
-    // }, 500)
   }
 }
 

@@ -60,7 +60,6 @@ const userStore = useUserStore()
                 </div>
               </div>
             </div>
-            <!-- test end -->
           </div>
           <RouterLink class="btn btn-light w-100 text-start mb-2" to="/myfollowlist"
             ><i class="bi bi-bell me-2"></i>追蹤名單</RouterLink

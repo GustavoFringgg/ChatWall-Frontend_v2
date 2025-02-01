@@ -6,47 +6,25 @@ import { useUserStore } from '@/stores/userStore.js'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
-import axios from 'axios'
+import { fetchUserLikeList, unlikePost, verifyToken } from '@/apis'
 import dayjs from 'dayjs'
-const signInToken = ref('') //user token存取
 const { showAlert } = useAlert()
 const router = useRouter()
-const localurl = 'http://localhost:3000'
 
 const userStore = useUserStore()
 const isLoading = ref(true)
-const getUserLikeListData = ref() //取得個人按讚列表
+const userLikeListData = ref() //取得個人按讚列表
 
-const signCheck = async () => {
-  signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
-  if (!signInToken.value) {
-    showAlert('請登入', 'error')
+//確認token是否過期
+const checkSignInStatus = async () => {
+  try {
+    await verifyToken(userStore.token)
+    console.log('here')
+  } catch (error) {
+    showAlert(error.response?.data?.message || '登入驗證失敗', 'error', 2000)
     router.push({ path: '/' })
   }
-  try {
-    const res = await axios.get(`${localurl}/users/checkout`, {
-      headers: {
-        Authorization: `Bearer ${signInToken.value}`,
-      },
-    })
-  } catch (error) {
-    console.log(error)
-  }
 }
-
-onMounted(async () => {
-  try {
-    await signCheck()
-    userStore.loadUserInfo()
-    if (signInToken.value) {
-      await getUserLikeList()
-    } else {
-      router.push({ path: '/' })
-    }
-  } finally {
-    isLoading.value = false
-  }
-})
 
 const goBack = () => {
   history.back()
@@ -56,44 +34,47 @@ const goToLikePage = (id) => {
   router.push(`/certainpost/${id}`)
 }
 
+// 取得使用者按讚的文章列表
 const getUserLikeList = async () => {
-  const res = await axios.get(`${localurl}/users/getLikeList`, {
-    headers: {
-      Authorization: `Bearer ${userStore.token}`,
-    },
-  })
-  console.log('如果沒有喜歡的文章的話', res.data.likeList)
-  getUserLikeListData.value = res.data.likeList.map((list) => ({
+  const { likeList } = await fetchUserLikeList()
+  console.log(likeList)
+
+  userLikeListData.value = likeList.map((list) => ({
     ...list,
     formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
   }))
-  console.log('沒有喜歡文章的getUserLikeListData', getUserLikeListData.value)
 }
 
-const toggleUnlike = async (postId) => {
+// 取消使用者按讚的文章
+const handleUnlikePost = async (postId) => {
   try {
-    const res = await axios.delete(`${localurl}/posts/${postId}/unlikes`, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
-    getUserLikeList()
+    await unlikePost(postId)
+    userLikeListData.value = userLikeListData.value.filter((post) => post._id !== postId)
     showAlert(`已取消讚`, 'success', 1500)
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
+
+onMounted(async () => {
+  try {
+    userStore.loadUserInfo()
+    await checkSignInStatus()
+    await getUserLikeList()
+  } finally {
+    isLoading.value = false
+  }
+})
 </script>
+
 <template>
   <LoadingOverlay :is-loading="isLoading" />
   <div v-if="!isLoading">
     <NavbarCard></NavbarCard>
     <div class="container">
-      <!-- Main Section -->
       <div class="row mt-4">
-        <!-- Main Content -->
         <main class="col-lg-9">
-          <div v-if="!getUserLikeListData?.length">
+          <div v-if="!userLikeListData?.length">
             <div class="container p-0">
               <button class="btn btn-success rounded-3 mb-2" @click="goBack">
                 <i class="bi bi-arrow-left"></i>
@@ -112,13 +93,10 @@ const toggleUnlike = async (postId) => {
                 <h2 class="fw-bold">您按讚的文章</h2>
               </div>
             </div>
-            <!-- 追蹤項目列表 -->
-            <div class="row mt-2" v-for="list in getUserLikeListData" :key="list._id">
-              <!-- 單個追蹤項目 -->
+            <div class="row mt-2" v-for="list in userLikeListData" :key="list._id">
               <div class="col-12">
                 <div class="card p-3 shadow-sm border border-3 border-dark">
                   <div class="d-flex justify-content-between align-items-center">
-                    <!-- 左側內容 -->
                     <div class="d-flex align-items-center">
                       <img
                         :src="list.user.photo"
@@ -138,7 +116,10 @@ const toggleUnlike = async (postId) => {
                       >
                         查看貼文
                       </button>
-                      <button class="btn btn-outline-danger btn-sm" @click="toggleUnlike(list._id)">
+                      <button
+                        class="btn btn-outline-danger btn-sm"
+                        @click="handleUnlikePost(list._id)"
+                      >
                         取消按讚
                       </button>
                     </div>
@@ -148,8 +129,6 @@ const toggleUnlike = async (postId) => {
             </div>
           </div>
         </main>
-
-        <!-- Sidebar -->
         <SidebarCard></SidebarCard>
       </div>
     </div>

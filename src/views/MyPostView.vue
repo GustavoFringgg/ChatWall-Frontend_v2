@@ -37,7 +37,6 @@ const getPost = async (timeSort = 'desc') => {
     getUserPost.value = ''
     return
   }
-  console.log('searchPost.value', searchPost.value)
   if (searchPost.value) {
     showAlert(`找到關於${searchPost.value}的${res.data.message.length}則貼文`, 'success', 1500)
     searchPost.value = ''
