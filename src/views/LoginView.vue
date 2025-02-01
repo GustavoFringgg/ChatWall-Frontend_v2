@@ -44,15 +44,15 @@ const signIn = async () => {
 <template>
   <main>
     <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row shadow rounded p-4 w-75 h-75 login-box border border-3 border-dark">
-        <div class="relative d-flex justify-content-center">
+      <div class="row shadow rounded p-md-4 w-75 h-75 login-box border border-3 border-dark">
+        <div class="relative d-md-flex justify-content-center">
           <!-- 登入表單 -->
           <div class="text-center absolute-cus">
             <h1 class="navbar-header">ChatWall</h1>
           </div>
-          <form style="height: 177px; width: 350px" class="align-content-center">
+          <form style="height: 177px; width: 100%; max-width: 350px" class="align-content-center">
             <div>
-              <div class="my-4 mx-4">
+              <div class="my-4 mx-md-4">
                 <input
                   type="email"
                   id="email"
@@ -62,7 +62,7 @@ const signIn = async () => {
                   placeholder="請輸入email"
                 />
               </div>
-              <div class="mb-2 ms-4 me-4 relative">
+              <div class="mb-2 mx-md-4 relative">
                 <input
                   type="password"
                   id="password"

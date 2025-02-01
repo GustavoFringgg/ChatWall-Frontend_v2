@@ -2,6 +2,7 @@
 import { useUserStore } from '@/stores/userStore.js'
 import { useAlert } from '@/Composables/useAlert.js'
 import { useRouter } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -17,6 +18,19 @@ const signOut = async () => {
     router.push({ path: '/' })
   }, 1500)
 }
+
+const isMobile = ref(window.innerWidth < 992) // 判斷是否為手機版
+const handleResize = () => {
+  isMobile.value = window.innerWidth < 992
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <template>
@@ -56,6 +70,22 @@ const signOut = async () => {
               <li>
                 <RouterLink class="dropdown-item text-decoration-none" to="/profile"
                   >修改個人資料</RouterLink
+                >
+              </li>
+              <li v-if="isMobile"><hr class="dropdown-divider" /></li>
+              <li v-if="isMobile">
+                <RouterLink class="btn btn-light w-100 text-start mb-2" to="/userpost"
+                  ><i class="bi bi-card-text me-2"></i>張貼動態</RouterLink
+                >
+              </li>
+              <li v-if="isMobile">
+                <RouterLink class="btn btn-light w-100 text-start mb-2" to="/myfollowlist"
+                  ><i class="bi bi-bell me-2"></i>追蹤名單</RouterLink
+                >
+              </li>
+              <li v-if="isMobile">
+                <RouterLink class="btn btn-light w-100 text-start mb-2" to="/mylikelist"
+                  ><i class="bi bi-hand-thumbs-up me-2"></i>按讚的文章</RouterLink
                 >
               </li>
               <li><hr class="dropdown-divider" /></li>

@@ -156,30 +156,6 @@ video {
   max-width: 100%; /* 預設寬度為 100% */
 }
 
-@media (min-width: 576px) {
-  .card {
-    max-width: 540px; /* 小型裝置上最大寬度為 540px */
-  }
-}
-
-@media (min-width: 768px) {
-  .card {
-    max-width: 600px; /* 中型裝置上最大寬度為 600px */
-  }
-}
-
-@media (min-width: 992px) {
-  .card {
-    max-width: 800px; /* 更大螢幕上最大寬度為 800px */
-  }
-}
-
-@media (min-width: 1200px) {
-  .card {
-    max-width: 1000px; /* 非常大螢幕上最大寬度為 1000px */
-  }
-}
-
 .relative {
   position: relative;
 }
@@ -267,5 +243,14 @@ video {
     color 0.3s;
   &:hover {
     color: white;
+  }
+}
+
+/* RWD */
+
+@media (max-width: 768px) {
+  .absolute-cus {
+    top: 0px;
+    left: 0px;
   }
 }

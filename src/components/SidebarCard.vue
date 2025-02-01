@@ -4,7 +4,7 @@ const userStore = useUserStore()
 </script>
 
 <template>
-  <aside class="col-lg-3">
+  <aside class="col-lg-3 d-none d-lg-block">
     <div class="card border border-3 border-dark">
       <div class="card-body text-center">
         <RouterLink class="btn btn-primary w-100 mb-3 text-decoration-none" to="/userpost"
