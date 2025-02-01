@@ -23,10 +23,10 @@ const getUserPost = ref([]) //取的使用者文章
 const isLoading = ref(true) //判斷是否在loding
 
 const getPost = async (timeSort = 'desc') => {
+  console.log('timeSort', timeSort)
   const res = await axios.get(`${localurl}/posts/`, {
     params: { timeSort, keyword: searchPost.value },
   })
-  console.log('getPostres', res)
   if (res.data.data.length === 0) {
     showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
     searchPost.value = ''

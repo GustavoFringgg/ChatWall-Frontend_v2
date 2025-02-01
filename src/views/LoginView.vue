@@ -44,58 +44,56 @@ const signIn = async () => {
 <template>
   <main>
     <div class="container d-flex justify-content-center align-items-center vh-100">
-      <div class="row shadow rounded p-4 w-75 h-75 background-box border border-3 border-dark">
-        <div class="col-md-6 d-flex flex-column ms-auto justify-content-center">
+      <div class="row shadow rounded p-4 w-75 h-75 login-box border border-3 border-dark">
+        <div class="relative d-flex justify-content-center">
           <!-- 登入表單 -->
-          <div class="text-center">
-            <h1 class="rounded-3 navbar-header fs-4 fw-bold">ChatWall</h1>
-            <p class="text-light">聊天、交朋友</p>
+          <div class="text-center absolute-cus">
+            <h1 class="navbar-header">ChatWall</h1>
           </div>
-          <form>
-            <div class="mb-3 mt-auto ms-4 me-4">
-              <input
-                type="email"
-                id="email"
-                class="form-control"
-                v-model="signInField.email"
-                required
-                placeholder="請輸入email"
-              />
-            </div>
-            <div class="mb-2 ms-4 me-4 relative">
-              <input
-                type="password"
-                id="password"
-                class="form-control"
-                v-model="signInField.password"
-                required
-                placeholder="請輸入密碼"
-              />
-              <i
-                id="toggleEye"
-                :class="isActiveForPassword ? ' bi bi-eye-fill' : ' bi bi-eye-slash'"
-                @click="isActiveForPassword = !isActiveForPassword"
-              ></i>
+          <form style="height: 177px; width: 350px" class="align-content-center">
+            <div>
+              <div class="my-4 mx-4">
+                <input
+                  type="email"
+                  id="email"
+                  class="form-control"
+                  v-model="signInField.email"
+                  required
+                  placeholder="請輸入email"
+                />
+              </div>
+              <div class="mb-2 ms-4 me-4 relative">
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  v-model="signInField.password"
+                  required
+                  placeholder="請輸入密碼"
+                />
+                <i
+                  id="toggleEye"
+                  :class="isActiveForPassword ? ' bi bi-eye-fill' : ' bi bi-eye-slash'"
+                  @click="isActiveForPassword = !isActiveForPassword"
+                ></i>
+              </div>
             </div>
           </form>
-          <div class="text-center mt-1 mb-3">
-            <input
-              class="btn btn-success w-75 mt-2 mb-3"
-              type="button"
-              @click="signIn"
-              value="登入"
-            />
-            <a
-              class="btn btn-primary google-login-btn w-75 mt-2 mb-3"
-              href="http://127.0.0.1:3000/users/google"
-            >
-              <img
-                src="https://developers.google.com/identity/images/g-logo.png"
-                alt="Google Icon"
-              />
-              Sign in with Google
-            </a>
-            <RouterLink class="btn btn-primary w-75 mt-2 mb-3" to="/register">註冊</RouterLink>
+          <div>
+            <div class="text-center mt-1 mb-3">
+              <input class="btn btn-success w-75 mb-3" type="button" @click="signIn" value="登入" />
+              <a
+                class="btn btn-primary google-login-btn w-75 mt-2 mb-3"
+                href="http://127.0.0.1:3000/users/google"
+              >
+                <img
+                  src="https://developers.google.com/identity/images/g-logo.png"
+                  alt="Google Icon"
+                />
+                Sign in with Google
+              </a>
+              <RouterLink class="btn btn-primary w-75 mt-2 mb-3" to="/register">註冊</RouterLink>
+            </div>
           </div>
         </div>
       </div>

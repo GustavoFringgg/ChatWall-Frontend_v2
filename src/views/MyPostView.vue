@@ -26,8 +26,6 @@ const getPost = async (timeSort = 'desc') => {
       Authorization: `Bearer ${signInToken.value}`,
     },
   })
-  console.log('這是搜尋的valuesearchPost.value', searchPost.value)
-  console.log('這是搜尋的message.length', res.data)
   if (res.data.data.length === 0 && searchPost.value) {
     showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
     searchPost.value = ''

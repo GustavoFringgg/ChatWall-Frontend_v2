@@ -188,6 +188,13 @@ video {
   position: absolute;
   left: 10px;
 }
+
+.absolute-cus {
+  position: absolute;
+  top: -25px;
+  left: -25px;
+}
+
 #toggleEye {
   position: absolute;
   top: 55%;
@@ -222,6 +229,11 @@ video {
   background-position: center; /* 居中對齊 */
 }
 
+.login-box {
+  background-image: url('https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2FiStock-1987991143.jpg?alt=media&token=72d3cb3f-f061-47a9-b927-8fb6564a9e94');
+  background-size: cover; /* 確保圖片完全覆蓋 */
+  background-position: center; /* 居中對齊 */
+}
 /* 無資料共用的card */
 .custom-card {
   border: 1px solid #ccc;
@@ -245,15 +257,15 @@ video {
 }
 
 .navbar-header {
-  background-color: #0d6efd;
-  color: white;
+  font-size: 32px;
+  font-weight: 900;
+  color: #0d6efd;
   padding: 10px;
   cursor: pointer;
   transition:
     background-color 0.3s,
     color 0.3s;
   &:hover {
-    background-color: white;
-    color: #0d6efd;
+    color: white;
   }
 }
