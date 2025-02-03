@@ -19,7 +19,6 @@ const userLikeListData = ref() //取得個人按讚列表
 const checkSignInStatus = async () => {
   try {
     await verifyToken(userStore.token)
-    console.log('here')
   } catch (error) {
     showAlert(error.response?.data?.message || '登入驗證失敗', 'error', 2000)
     router.push({ path: '/' })
@@ -36,10 +35,10 @@ const goToLikePage = (id) => {
 
 // 取得使用者按讚的文章列表
 const getUserLikeList = async (token) => {
-  const { likeList } = await fetchUserLikeList(token)
-  console.log(likeList)
+  const data = await fetchUserLikeList(token)
+  console.log('likeList', data)
 
-  userLikeListData.value = likeList.map((list) => ({
+  userLikeListData.value = data.likeList.map((list) => ({
     ...list,
     formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
   }))

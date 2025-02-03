@@ -57,6 +57,7 @@ const toggleUnfollow = async (userId) => {
     userStore.following.length -= 1
     showAlert(`已取消追蹤`, 'success', 2000)
   } catch (error) {
+    console.log('error', error)
     showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }

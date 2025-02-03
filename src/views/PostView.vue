@@ -20,7 +20,6 @@ const { showAlert } = useAlert()
 //Store
 import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
-
 //forfunction
 const postContent = ref('')
 
