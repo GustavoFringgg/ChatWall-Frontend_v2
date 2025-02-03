@@ -1,18 +1,29 @@
 <script setup>
-import axios from 'axios'
-import { computed, nextTick, onMounted, ref } from 'vue'
-import SidebarCard from '@/components/SidebarCard.vue'
-import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
-import NavbarCard from '@/components/NavbarCard.vue' //導入側邊card
-import { useUserStore } from '@/stores/userStore.js'
+//Vue-核心
+import { nextTick, ref } from 'vue'
 
-const userStore = useUserStore()
-const { showAlert } = useAlert()
+//Vue-Router
+import { useRouter } from 'vue-router'
 const router = useRouter()
-const localurl = 'http://localhost:3000'
+
+//Components
+import SidebarCard from '@/components/SidebarCard.vue'
+import NavbarCard from '@/components/NavbarCard.vue'
+
+//API
+import { postPostData, updateUserPhoto } from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+const { showAlert } = useAlert()
+
+//Store
+import { useUserStore } from '@/stores/userStore.js'
+const userStore = useUserStore()
+
+//forfunction
 const postContent = ref('')
-///////////////////////////////////
+
 const selectedImage = ref(null) // 儲存選擇的圖片檔案
 const fileInput = ref(null) // 引用隱藏的檔案輸入框
 const uploadedFileUrl = ref(null) // 從後端返回的圖片 URL
@@ -20,80 +31,59 @@ const uploadedFileUrl = ref(null) // 從後端返回的圖片 URL
 const triggerFileUpload = () => {
   fileInput.value.click() // 觸發檔案輸入框的點擊事件
 }
+
 // 處理檔案選擇
 const handleImageUpload = (event) => {
   const file = event.target.files[0]
-  if (!file) {
-    alert('請選擇圖片！')
-    return
-  }
   selectedImage.value = file // 儲存檔案
   uploadImage() // 自動上傳
 }
 
 // 上傳圖片到後端
 const uploadImage = async () => {
-  if (!selectedImage.value) {
-    showAlert('未選擇圖片！', 'error')
-    return
-  }
   const formData = new FormData()
   formData.append('file', selectedImage.value) // 添加檔案
   formData.append('type', 'post') // 指定上傳類型
   try {
-    const response = await axios.post(`${localurl}/upload/file`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
-    uploadedFileUrl.value = response.data.fileUrl // 獲取圖片 URL
+    const data = await updateUserPhoto(formData, userStore.token)
+    uploadedFileUrl.value = data.fileUrl // 獲取圖片 URL
     showAlert('圖片上傳成功', 'success')
   } catch (error) {
-    console.error('上傳失敗：', error)
-    showAlert('圖片上傳失敗！', 'error')
+    console.log('上傳失敗：', error)
+    showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
-// 送出貼文
+
 const submitPost = async () => {
   if (!postContent.value) {
-    showAlert('請輸入貼文內容', 'error')
-    return
+    return showAlert('請輸入貼文內容', 'error', 1500)
   }
   const postData = {
     content: postContent.value,
-    image: uploadedFileUrl.value, // 圖片 base64
+    image: uploadedFileUrl.value,
   }
-  const res = await axios.post(`${localurl}/posts/`, postData, {
-    headers: {
-      Authorization: `Bearer ${userStore.token}`,
-    },
-  })
+  await postPostData(postData, userStore.token)
   postContent.value = ''
   uploadedFileUrl.value = ''
-  showAlert('新增貼文成功，導回首頁', 'success')
-  setTimeout(() => {
-    router.push({ path: '/index' })
-  }, 1000)
+  showAlert('新增貼文成功，導回首頁', 'success', 1500)
+  nextTick(() => {
+    setTimeout(() => {
+      router.push({ path: '/index' })
+    }, 1500)
+  })
 }
 </script>
 
 <template>
-  <!-- Header -->
   <NavbarCard></NavbarCard>
-
   <div class="container">
-    <!-- Main Section -->
     <div class="row mt-4">
-      <!-- Main Content -->
       <main class="col-lg-9">
-        <!-- Filter and Search -->
         <div class="card border border-3 border-dark">
           <div class="card-header text-center">
             <h5 class="m-0">張貼動態</h5>
           </div>
           <div class="card-body">
-            <!-- 貼文內容 -->
             <div class="mb-3">
               <label for="postContent" class="form-label">貼文內容</label>
               <textarea
@@ -127,7 +117,6 @@ const submitPost = async () => {
           </div>
         </div>
       </main>
-      <!-- Sidebar -->
       <SidebarCard></SidebarCard>
     </div>
   </div>

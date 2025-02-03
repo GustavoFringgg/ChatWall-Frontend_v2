@@ -80,7 +80,7 @@ const getPost = async (timeSort = 'desc') => {
     searchPost.value = ''
   }
   try {
-    getUserPost.value = res.data.message.map((post) => {
+    getUserPost.value = res.data.message?.map((post) => {
       const formattedPostTime = formatTime(post.createdAt)
       post.comments = post.comments.map((comment) => {
         const formattedCommentTime = formatTime(comment.createdAt)

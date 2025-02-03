@@ -71,3 +71,12 @@ export const updateUserPhoto = async (formData, token) => {
   })
   return data
 }
+
+//PostView
+export const postPostData = async (postData, token) => {
+  return await axios.post(`${baseURL}/posts/`, postData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
