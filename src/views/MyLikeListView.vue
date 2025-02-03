@@ -35,8 +35,8 @@ const goToLikePage = (id) => {
 }
 
 // 取得使用者按讚的文章列表
-const getUserLikeList = async () => {
-  const { likeList } = await fetchUserLikeList()
+const getUserLikeList = async (token) => {
+  const { likeList } = await fetchUserLikeList(token)
   console.log(likeList)
 
   userLikeListData.value = likeList.map((list) => ({
@@ -46,9 +46,9 @@ const getUserLikeList = async () => {
 }
 
 // 取消使用者按讚的文章
-const handleUnlikePost = async (postId) => {
+const handleUnlikePost = async (postId, token) => {
   try {
-    await unlikePost(postId)
+    await unlikePost(postId, token)
     userLikeListData.value = userLikeListData.value.filter((post) => post._id !== postId)
     showAlert(`已取消讚`, 'success', 1500)
   } catch (error) {
@@ -60,7 +60,7 @@ onMounted(async () => {
   try {
     userStore.loadUserInfo()
     await checkSignInStatus()
-    await getUserLikeList()
+    await getUserLikeList(userStore.token)
   } finally {
     isLoading.value = false
   }
@@ -118,7 +118,7 @@ onMounted(async () => {
                       </button>
                       <button
                         class="btn btn-outline-danger btn-sm"
-                        @click="handleUnlikePost(list._id)"
+                        @click="handleUnlikePost(list._id, userStore.token)"
                       >
                         取消按讚
                       </button>

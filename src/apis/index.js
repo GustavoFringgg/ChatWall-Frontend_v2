@@ -1,6 +1,5 @@
 import { useUserStore } from '@/stores/userStore'
 import axios from 'axios'
-const userStore = useUserStore()
 const baseURL = 'http://localhost:3000'
 
 export const getMessages = (query) => {
@@ -18,19 +17,19 @@ export const verifyToken = async (token) => {
 }
 
 //MyLikeListView
-export const fetchUserLikeList = async () => {
+export const fetchUserLikeList = async (token) => {
   const { data } = await axios.get(`${baseURL}/users/getLikeList`, {
     headers: {
-      Authorization: `Bearer ${userStore.token}`,
+      Authorization: `Bearer ${token}`,
     },
   })
   return data
 }
 
-export const unlikePost = async (postId) => {
+export const unlikePost = async (postId, token) => {
   return axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
     headers: {
-      Authorization: `Bearer ${userStore.token}`,
+      Authorization: `Bearer ${token}`,
     },
   })
 }
@@ -38,5 +37,12 @@ export const unlikePost = async (postId) => {
 //LoginView
 export const signInUser = async (signInData) => {
   const { data } = await axios.post(`${baseURL}/auth/sign_in`, signInData)
+  return data
+}
+
+//RegisterView
+export const signUpUser = async (signUpData) => {
+  const { data } = await axios.post(`${baseURL}/auth/sign_Up`, signUpData)
+  console.log('RegisterViewerror', data)
   return data
 }

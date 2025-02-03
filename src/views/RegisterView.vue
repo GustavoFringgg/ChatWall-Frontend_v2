@@ -4,13 +4,11 @@ import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/Composables/useAlert.js'
+import { signUpUser } from '@/apis'
 const { showAlert } = useAlert()
 const router = useRouter()
 const isActiveForPassword = ref(false)
 const local = 'http://localhost:3000'
-const img = ref(
-  'https://firebasestorage.googleapis.com/v0/b/metawall-a2771.appspot.com/o/local%2Fimg.svg?alt=media&token=0cd7e380-7158-4632-9b3c-3f5766bc954c',
-)
 const registerField = ref({
   name: '',
   email: '',
@@ -20,10 +18,9 @@ const registerField = ref({
 const registerToken = ref('')
 const registerUser = async () => {
   try {
-    const res = await axios.post(`${local}/auth/sign_Up`, registerField.value)
-    registerToken.value = res.data.data.user.token
-    console.log('token', registerToken.value)
-    showAlert('註冊成功', 'success')
+    const {data} = await signUpUser(registerField.value)
+    registerToken.value =data.user.token
+    showAlert('歡迎您，註冊成功，將導回登入頁', 'success',2000)
     router.push({ path: '/' })
   } catch (error) {
     if (error.response) {
@@ -32,7 +29,9 @@ const registerUser = async () => {
           showAlert('欄位未填寫正確', 'error', 2000)
           break
         case 422:
-          console.log('error', error.response)
+          showAlert(`${error.response.data.message}`, 'error', 2000)
+          break
+          case 409:
           showAlert(`${error.response.data.message}`, 'error', 2000)
           break
         default:
@@ -59,14 +58,13 @@ watch(isActiveForPassword, () => {
   <main>
     <div class="container d-flex justify-content-center align-items-center vh-100">
       <div
-        class="row shadow rounded p-4 border-dark w-75 h-75 background-box border border-3 border-dark"
+        class="row shadow rounded p-md-4 border-dark w-75 h-75 background-box border border-3 border-dark"
       >
         <div class="col-md-6 d-flex flex-column ms-auto justify-content-center">
-          <!-- 登入表單 -->
           <div class="text-center">
             <h1 class="text-primary fw-bold">註冊</h1>
           </div>
-          <form action="index.html" class="mb-3 mt-auto ms-3 me-3">
+          <form action="index.html" class="mb-3 mt-md-auto ms-3 me-3">
             <div class="mb-3">
               <label for="name" class="formControls_label">你的姓名</label>
               <input
