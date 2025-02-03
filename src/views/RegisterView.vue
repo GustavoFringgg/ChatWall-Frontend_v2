@@ -1,16 +1,38 @@
 <script setup>
+//Vue-核心
 import { ref, watch } from 'vue'
+
+//Vue-Router
 import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
-import { signUpUser } from '@/apis'
-const { showAlert } = useAlert()
 const router = useRouter()
+
+//API
+import { signUpUser } from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+const { showAlert } = useAlert()
+
+//forfunction
 const isActiveForPassword = ref(false)
 const registerField = ref({
   name: '',
   email: '',
   confirmPassword: '',
+})
+
+//監聽密碼屬性
+watch(isActiveForPassword, () => {
+  const inputPassword = document.getElementById('password')
+  const confirmPassword = document.getElementById('confirmpassword')
+  if (isActiveForPassword.value) {
+    inputPassword?.setAttribute('type', 'text')
+    confirmPassword?.setAttribute('type', 'text')
+  } else {
+    inputPassword?.setAttribute('type', 'password')
+    confirmPassword?.setAttribute('type', 'password')
+  }
 })
 
 const registerUser = async () => {
@@ -29,18 +51,6 @@ const registerUser = async () => {
     showAlert(showMessage, 'error', 2000)
   }
 }
-
-watch(isActiveForPassword, () => {
-  const inputPassword = document.getElementById('password')
-  const confirmPassword = document.getElementById('confirmpassword')
-  if (isActiveForPassword.value) {
-    inputPassword?.setAttribute('type', 'text')
-    confirmPassword?.setAttribute('type', 'text')
-  } else {
-    inputPassword?.setAttribute('type', 'password')
-    confirmPassword?.setAttribute('type', 'password')
-  }
-})
 </script>
 
 <template>
