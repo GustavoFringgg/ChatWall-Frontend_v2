@@ -1,19 +1,32 @@
 <script setup>
-import axios from 'axios'
-import { ref, watch } from 'vue'
+//Vue-核心
+import { ref, watch, nextTick } from 'vue'
+
+//Vue-Router
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+//Components
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore.js'
+
+//API
+import { updatePassword, updateUserData, updateUserPhoto } from '@/apis'
+
+//Composables
 import { useAlert } from '@/Composables/useAlert'
-const router = useRouter()
-const userStore = useUserStore()
 const { showAlert } = useAlert()
-const localurl = 'http://localhost:3000'
+
+//Store
+import { useUserStore } from '@/stores/userStore.js'
+const userStore = useUserStore()
+
+//forfunction
 const uploadedFileUrl = ref(null) // 從後端返回的圖片 URL
+const isActiveForPassword = ref(false) //顯示密碼
 const userData = ref({
   name: '',
-  sex: '男',
+  sex: 'male',
 })
 const userPassword = ref({
   oldPassword: '',
@@ -21,45 +34,63 @@ const userPassword = ref({
   confirmPassword: '',
 })
 
+//back router
+const goBack = () => {
+  router.back()
+}
+
+//監聽密碼屬性
+watch(isActiveForPassword, () => {
+  const currentPassword = document.getElementById('currentPassword')
+  const newPassword = document.getElementById('newPassword')
+  const confirmPassword = document.getElementById('confirmPassword')
+  if (isActiveForPassword.value) {
+    currentPassword?.setAttribute('type', 'text')
+    newPassword?.setAttribute('type', 'text')
+    confirmPassword?.setAttribute('type', 'text')
+  } else {
+    currentPassword?.setAttribute('type', 'password')
+    newPassword?.setAttribute('type', 'password')
+    confirmPassword?.setAttribute('type', 'password')
+  }
+})
+
 const updateUserPassword = async () => {
   if (userPassword.value.newPassword != userPassword.value.confirmPassword) {
-    showAlert('確認密碼不符新密碼', 'error', 2000)
+    return showAlert('確認密碼不符新密碼', 'error', 2000)
   }
   try {
-    const res = await axios.patch(`${localurl}/users/updatePassword`, userPassword.value, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
+    await updatePassword(userPassword.value, userStore.token)
     userPassword.value.oldPassword = ''
     userPassword.value.newPassword = ''
     showAlert('更新密碼成功，兩秒後導回登入頁', 'success', 2000)
-    setTimeout(() => {
-      router.push({ path: '/' })
-    }, 2000)
+    nextTick(() => {
+      setTimeout(() => {
+        router.push({ path: '/' })
+      }, 2000)
+    })
   } catch (error) {
-    if (error.response) {
-      switch (error.response.status) {
-        case 401:
-          showAlert('密碼輸入錯誤', 'error', 2000)
-      }
-    } else showAlert('無法連接到伺服器', 'error', 2000)
+    const { message } = error.response.data
+    const errorMessages = {
+      400: message,
+      401: message,
+    }
+    const showMessage = errorMessages[error.response.status] || '發生未知錯誤'
+    showAlert(showMessage, 'error', 2000)
   }
 }
 const updateUserInfo = async () => {
   try {
-    const resdata = await axios.patch(`${localurl}/users/profile/`, userData.value, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
+    const { data } = await updateUserData(userData.value, userStore.token)
     userStore.username = userData.value.name
     userData.value.name = ''
-    userData.value.sex = '男'
-    showAlert(`${resdata.data.message}，兩秒後導回頁`, 'success', 2000)
-    setTimeout(() => {
-      router.push({ path: '/index' })
-    }, 2000)
+    userData.value.sex = 'male'
+    showAlert(`${data.message}，兩秒後導回頁`, 'success', 2000)
+    nextTick(() => {
+      setTimeout(() => {
+        router.push({ path: '/index' })
+      }, 2000)
+    })
   } catch (error) {
     console.log('error:', error)
     showAlert(`${error.message}`, 'error')
@@ -76,75 +107,35 @@ const triggerFileUpload = () => {
 // 處理檔案選擇
 const handleImageUpload = (event) => {
   const file = event.target.files[0]
-  if (!file) {
-    alert('請選擇圖片！')
-    return
-  }
   selectedImage.value = file // 儲存檔案
   uploadImage() // 自動上傳
 }
 
 // 上傳圖片到後端
 const uploadImage = async () => {
-  if (!selectedImage.value) {
-    showAlert('未選擇圖片！', 'error')
-    return
-  }
   const formData = new FormData()
   formData.append('file', selectedImage.value) // 添加檔案
-  formData.append('type', 'user') // 指定上傳類型
+  formData.append('type', 'user')
   try {
-    const response = await axios.post(`${localurl}/upload/file`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
-    uploadedFileUrl.value = response.data.fileUrl // 獲取圖片 URL
+    const data = await updateUserPhoto(formData, userStore.token)
+    uploadedFileUrl.value = data.fileUrl // 獲取圖片 URL
     showAlert('圖片上傳成功', 'success')
-    userData.value.photo = uploadedFileUrl.value
+    userData.value.photo = uploadedFileUrl.value //增加回後端的物件photo
   } catch (error) {
-    console.error('上傳失敗：', error)
-    showAlert('圖片上傳失敗！', 'error')
+    console.log('上傳失敗：', error)
+    showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
-/*上傳大頭照↑*/
-const isActiveForPassword = ref(false)
-const goBack = () => {
-  // 返回上一頁邏輯
-  history.back()
-}
-
-watch(isActiveForPassword, () => {
-  const currentPassword = document.getElementById('currentPassword')
-  const newPassword = document.getElementById('newPassword')
-  const confirmPassword = document.getElementById('confirmPassword')
-  if (isActiveForPassword.value) {
-    currentPassword?.setAttribute('type', 'text')
-    newPassword?.setAttribute('type', 'text')
-    confirmPassword?.setAttribute('type', 'text')
-  } else {
-    currentPassword?.setAttribute('type', 'password')
-    newPassword?.setAttribute('type', 'password')
-    confirmPassword?.setAttribute('type', 'password')
-  }
-})
 </script>
 <template>
   <div>
     <div>
-      <!-- Header -->
       <NavbarCard></NavbarCard>
-
       <div class="container">
-        <!-- Main Section -->
         <div class="row mt-4">
-          <!-- Main Content -->
           <main class="col-lg-9">
-            <!-- Filter and Search -->
             <div class="mb-4">
               <div class="row justify-content-center">
-                <!-- Tabs -->
                 <div class="col-md-8 relative">
                   <button
                     class="btn btn-success rounded-3 mb-2 absolute"
@@ -157,8 +148,6 @@ watch(isActiveForPassword, () => {
                     <h2 class="fw-bold">{{ userStore.username }}的個人資料</h2>
                   </div>
                   <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <!-- 個人資料 -->
-
                     <!-- 暱稱修改 Tab -->
                     <li class="nav-item" role="presentation">
                       <button
@@ -174,8 +163,7 @@ watch(isActiveForPassword, () => {
                         暱稱修改
                       </button>
                     </li>
-                    <!-- 重設密碼 Tab -->
-                    <li class="nav-item" role="presentation">
+                    <li v-if="!userStore.googleId" class="nav-item" role="presentation">
                       <button
                         class="nav-link"
                         id="password-tab"
@@ -192,9 +180,7 @@ watch(isActiveForPassword, () => {
                   </ul>
                 </div>
 
-                <!-- Tab Content -->
                 <div class="col-md-8 tab-content border border-top-0 p-4">
-                  <!-- 暱稱修改內容 -->
                   <div
                     class="tab-pane fade show active"
                     id="nickname"
@@ -220,11 +206,9 @@ watch(isActiveForPassword, () => {
                           />
                         </div>
                         <div class="mt-4">
-                          <!-- 上傳檔案按鈕 -->
                           <button class="btn btn-primary" @click="triggerFileUpload">
                             上傳大頭照
                           </button>
-                          <!-- 隱藏檔案選擇框 -->
                           <input
                             ref="fileInput"
                             type="file"
@@ -336,7 +320,6 @@ watch(isActiveForPassword, () => {
               </div>
             </div>
           </main>
-          <!-- Sidebar -->
           <SidebarCard></SidebarCard>
         </div>
       </div>

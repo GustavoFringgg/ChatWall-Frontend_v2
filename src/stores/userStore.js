@@ -19,6 +19,7 @@ export const useUserStore = defineStore('userStore', {
       this.formatTime = payload.formatTime
       this.followers = payload.followers
       this.following = payload.following
+      this.googleId = payload.googleId || null
 
       // 儲存到 localStorage
       localStorage.setItem(
@@ -31,6 +32,7 @@ export const useUserStore = defineStore('userStore', {
           formatTime: this.formatTime,
           followers: this.followers,
           following: this.following,
+          googleId: this.googleId,
         }),
       )
     },
@@ -52,6 +54,7 @@ export const useUserStore = defineStore('userStore', {
         this.formatTime = userInfo.formatTime
         this.followers = userInfo.followers
         this.following = userInfo.following
+        this.googleId = userInfo.googleId
       }
     },
   },

@@ -1,16 +1,21 @@
 <script setup>
-//vue
+//Vue-核心
 import { onMounted, ref } from 'vue'
+
+//Vue-Router
 import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-//components
+//Axios
+import axios from 'axios'
+
+//Components
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import PostCard from '@/components/PostCard.vue'
-//components-loading
+//Components-loading
 const isLoading = ref(true) //判斷是否在loding
 
 //Composables
@@ -19,10 +24,7 @@ import { useformatTime } from '@/Composables/useformatTime.js'
 const { showAlert } = useAlert()
 const { formatTime } = useformatTime()
 
-//axios
-import axios from 'axios'
-
-//stores
+//Store
 import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
 
@@ -37,6 +39,11 @@ const searchPost = ref('') //收尋文章關鍵字存取
 const isFollowing = ref(false) //判斷有無追蹤
 const followersCount = ref(0)
 const userId = route.params.id // 從路由中獲取 ID
+
+//back router
+const goBack = () => {
+  router.back()
+}
 
 const getOtherUserData = async () => {
   try {
@@ -160,10 +167,6 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
-
-const goBack = () => {
-  history.back()
-}
 
 const toggleFollow = async () => {
   isFollowing.value = !isFollowing.value

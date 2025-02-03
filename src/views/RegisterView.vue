@@ -1,5 +1,4 @@
 <script setup>
-import axios from 'axios'
 import { ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
@@ -8,36 +7,26 @@ import { signUpUser } from '@/apis'
 const { showAlert } = useAlert()
 const router = useRouter()
 const isActiveForPassword = ref(false)
-const local = 'http://localhost:3000'
 const registerField = ref({
   name: '',
   email: '',
   confirmPassword: '',
 })
 
-const registerToken = ref('')
 const registerUser = async () => {
   try {
-    const {data} = await signUpUser(registerField.value)
-    registerToken.value =data.user.token
-    showAlert('歡迎您，註冊成功，將導回登入頁', 'success',2000)
+    await signUpUser(registerField.value)
+    showAlert('歡迎您，註冊成功，將導回登入頁', 'success', 2000)
     router.push({ path: '/' })
   } catch (error) {
-    if (error.response) {
-      switch (error.response.status) {
-        case 402:
-          showAlert('欄位未填寫正確', 'error', 2000)
-          break
-        case 422:
-          showAlert(`${error.response.data.message}`, 'error', 2000)
-          break
-          case 409:
-          showAlert(`${error.response.data.message}`, 'error', 2000)
-          break
-        default:
-          break
-      }
+    const { message } = error.response.data
+    const errorMessages = {
+      402: message,
+      422: message,
+      409: message,
     }
+    const showMessage = errorMessages[error.response.status] || '發生未知錯誤'
+    showAlert(showMessage, 'error', 2000)
   }
 }
 

@@ -142,6 +142,7 @@ onMounted(async () => {
   try {
     await signCheck()
     userStore.loadUserInfo()
+    console.log('userStore', userStore)
     if (signInToken.value) {
       await getPost()
     } else {

@@ -27,7 +27,7 @@ export const fetchUserLikeList = async (token) => {
 }
 
 export const unlikePost = async (postId, token) => {
-  return axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
+  return await axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -43,6 +43,31 @@ export const signInUser = async (signInData) => {
 //RegisterView
 export const signUpUser = async (signUpData) => {
   const { data } = await axios.post(`${baseURL}/auth/sign_Up`, signUpData)
-  console.log('RegisterViewerror', data)
+  return data
+}
+
+//ProfileView
+export const updatePassword = async (passwordtData, token) => {
+  return await axios.patch(`${baseURL}/users/updatePassword`, passwordtData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+export const updateUserData = async (userInfo, token) => {
+  return await axios.patch(`${baseURL}/users/profile/`, userInfo, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+
+export const updateUserPhoto = async (formData, token) => {
+  const { data } = await axios.post(`${baseURL}/upload/file`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
+  })
   return data
 }
