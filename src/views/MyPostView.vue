@@ -1,37 +1,47 @@
 <script setup>
-import axios from 'axios'
+//Vue-核心
 import { computed, nextTick, onMounted, ref } from 'vue'
+
+//Vue-Router
 import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
+const router = useRouter()
+
+//Components
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
-import { useUserStore } from '@/stores/userStore.js'
-import { useformatTime } from '@/Composables/useformatTime.js'
-const { formatTime } = useformatTime()
-const userStore = useUserStore()
-const { showAlert } = useAlert()
-const router = useRouter()
-const localurl = 'http://localhost:3000'
-const signInToken = ref('') //user token存取
-const searchPost = ref('') //收尋文章關鍵字存取
-const getUserPost = ref([]) //取的使用者文章
+//Components-loading
 const isLoading = ref(true) //判斷是否在loding
 
+//API
+import { postCommentData, fetchMemberPost, fetchMemberOnePost, deleteMemberPost } from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+import { useformatTime } from '@/Composables/useformatTime.js'
+const { showAlert } = useAlert()
+const { formatTime } = useformatTime()
+//Store
+import { useUserStore } from '@/stores/userStore.js'
+const userStore = useUserStore()
+
+//forfunction
+const searchPost = ref('') //收尋文章關鍵字存取
+const getUserPost = ref([]) //取的使用者文章
+
+//back router
+const goBack = () => {
+  router.back()
+}
+
 const getPost = async (timeSort = 'desc') => {
-  const res = await axios.get(`${localurl}/posts/${userStore.userid}/user`, {
-    params: { timeSort, keyword: searchPost.value },
-    headers: {
-      Authorization: `Bearer ${signInToken.value}`,
-    },
-  })
+  const res = await fetchMemberPost(timeSort, searchPost.value, userStore.userid, userStore.token)
   if (res.data.data.length === 0 && searchPost.value) {
     showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
     searchPost.value = ''
     return
   }
-
   if (res.data.data.length === 0) {
     searchPost.value = ''
     getUserPost.value = ''
@@ -55,10 +65,9 @@ const getPost = async (timeSort = 'desc') => {
         ...post,
         formattedDate: formattedPostTime,
       }
-    }) // 格式化日期
-    console.log('沒有貼文的getUserPost.value', getUserPost.value)
+    })
   } catch (error) {
-    showAlert(`${error}`, 'error')
+    showAlert(`${error.response.message}`, 'error')
   }
 }
 
@@ -67,106 +76,63 @@ const handleSortChange = (event) => {
   getPost(selectedSort) // 呼叫 API，傳入對應的排序條件
 }
 
-const signCheck = async () => {
-  signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
-
-  if (!signInToken.value) {
-    showAlert(`請登入`, 'error')
-    router.push({ path: '/' })
-  }
-  try {
-    const res = await axios.get(`${localurl}/users/checkout`, {
-      headers: {
-        Authorization: `Bearer ${signInToken.value}`,
-      },
-    })
-  } catch (error) {
-    showAlert(`${error.response.data.message}`, 'error')
-    router.push({ path: '/' })
-    // setTimeout(() => {
-    //   nextTick(() => {
-    //     location.reload() // 強制刷新頁面，保證渲染完成後再重新加載
-    //   })
-    // }, 500)
-  }
-}
-
 // 提交留言
-
 const submitComment = async (postId, commentText) => {
   if (!commentText || !commentText.trim()) {
-    alert('請輸入留言！')
-    return
+    return showAlert('請輸入留言~', 'error', 1500)
   }
   try {
-    const res = await axios.post(
-      `${localurl}/posts/${postId}/comment`,
-      { comment: commentText },
-      {
-        headers: {
-          Authorization: `Bearer ${signInToken.value}`,
-        },
-      },
-    )
-
-    // 將新留言加入到對應的貼文留言列表中
-    // const post = post.value.find((post) => post.id === postId)
-    // if (post) {
-    //   post.comments.push(res.data.comment)
-    // }
-
-    getPost()
+    await postCommentData(postId, commentText, userStore.token)
+    updatePostComments(postId)
   } catch (error) {
     console.error(`留言失敗：`, error)
   }
 }
-//刪除貼文
-const deletePost = async (postId) => {
+
+//更新留言列表
+const updatePostComments = async (postId) => {
   try {
-    const res = await axios.delete(`${localurl}/posts/${postId}/post`, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
-    console.log('傳回來的deletePost', res)
-    getPost()
+    const data = await fetchMemberOnePost(postId, userStore.token)
+    const updateComments = data.comments.map((comment) => ({
+      ...comment,
+      formattedCommentDate: formatTime(comment.createdAt),
+    }))
+    const postIndex = getUserPost.value.findIndex((post) => post._id === postId)
+    if (postIndex !== -1) {
+      getUserPost.value[postIndex].comments = updateComments
+    }
   } catch (error) {
-    console.log(error)
+    console.log('更新留言區域失敗:', error)
+    showAlert('留言更新失敗，請稍後再試', 'error', 1500)
   }
 }
 
-//
+//刪除貼文
+const deletePost = async (postId) => {
+  try {
+    await deleteMemberPost(postId, userStore.token)
+    getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
+  } catch (error) {
+    showAlert(`${error.response.data.message}`, 'error', 2000)
+  }
+}
+
 onMounted(async () => {
   try {
-    await signCheck()
-    console.log('這是onMounted')
-    const userStore = useUserStore()
     userStore.loadUserInfo()
-    if (signInToken.value) {
-      await getPost()
-    } else {
-      router.push({ path: '/' })
-    }
+    await getPost()
   } finally {
     isLoading.value = false
   }
 })
-
-const goBack = () => {
-  history.back()
-}
 </script>
 
 <template>
   <LoadingOverlay :is-loading="isLoading" />
   <div v-if="!isLoading">
-    <!-- Header -->
     <NavbarCard></NavbarCard>
-
     <div class="container">
-      <!-- Main Section -->
       <div class="row mt-4">
-        <!-- Main Content -->
         <main class="col-lg-9">
           <div v-if="!getUserPost?.length">
             <div class="container p-0">
@@ -185,7 +151,6 @@ const goBack = () => {
               </button>
               <h2 class="fw-bold">您的貼文牆</h2>
             </div>
-            <!-- Filter and Search -->
             <div class="d-flex mb-4">
               <select
                 class="form-select w-auto me-2 border border-3 border-dark"
@@ -208,7 +173,6 @@ const goBack = () => {
               </div>
             </div>
 
-            <!-- Posts -->
             <div class="mb-3" v-for="post in getUserPost" :key="post._id">
               <PostCard
                 :post="post"
@@ -218,8 +182,6 @@ const goBack = () => {
             </div>
           </div>
         </main>
-
-        <!-- Sidebar -->
         <SidebarCard></SidebarCard>
       </div>
     </div>

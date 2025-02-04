@@ -10,11 +10,12 @@ const route = useRoute()
 //APIS
 import {
   postCommentData,
-  fetchMemberOnePost,
   followMember,
   unFollowMember,
-  fetchMemberPost,
   fetchMemberData,
+  fetchMemberPost,
+  fetchMemberOnePost,
+  deleteMemberPost,
 } from '@/apis'
 
 //Components
@@ -91,7 +92,7 @@ const getPost = async (timeSort = 'desc') => {
       }
     })
   } catch (error) {
-    showAlert(`${error}`, 'error')
+    showAlert(`${error.response.message}`, 'error')
   }
 }
 
@@ -128,6 +129,16 @@ const updatePostComments = async (postId) => {
   } catch (error) {
     console.log('更新留言區域失敗:', error)
     showAlert('留言更新失敗，請稍後再試', 'error', 1500)
+  }
+}
+
+//刪除貼文
+const deletePost = async (postId) => {
+  try {
+    await deleteMemberPost(postId, userStore.token)
+    getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
+  } catch (error) {
+    showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
 
@@ -210,7 +221,11 @@ onMounted(async () => {
           </div>
 
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
-            <PostCard :post="post" @submit-comment="submitComment"></PostCard>
+            <PostCard
+              :post="post"
+              @submit-comment="submitComment"
+              @delete-post="deletePost"
+            ></PostCard>
           </div>
         </main>
 

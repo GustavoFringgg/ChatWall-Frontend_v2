@@ -134,3 +134,10 @@ export const fetchMemberPost = async (timeSort = 'desc', keyword, userId, token)
   })
   return data
 }
+
+//刪除Member貼文
+export const deleteMemberPost = (postId, token) => {
+  return axios.delete(`${baseURL}/posts/${postId}/post`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
