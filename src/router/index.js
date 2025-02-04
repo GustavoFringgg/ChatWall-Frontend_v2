@@ -1,8 +1,7 @@
 import { createRouter } from 'vue-router'
 import HomeView from '../views/LoginView.vue'
 import { createWebHashHistory } from 'vue-router'
-import axios from 'axios'
-const baseURL = 'http://localhost:3000'
+import { validateToken } from '@/apis'
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
@@ -72,13 +71,10 @@ router.beforeEach(async (to, from, next) => {
   }
   if (token && to.meta.requiresAuth) {
     try {
-      // 可選擇請求後端檢查 Token 是否有效
-      await axios.get(`${baseURL}/auth/validate-token`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      await validateToken(token)
     } catch (error) {
       document.cookie = 'Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;' // 清除過期 Token
-      return next({ path: '/' }) // Token 過期，強制登出
+      return next({ path: '/' })
     }
   }
   console.log('beforeEach觸發')

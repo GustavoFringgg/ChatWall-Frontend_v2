@@ -1,33 +1,47 @@
 <script setup>
+//Vue-核心
+import { onMounted, ref } from 'vue'
+
+//Vue-Router
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+//Components
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
-import { useUserStore } from '@/stores/userStore.js'
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
-import { fetchUserLikeList, unlikePost, verifyToken } from '@/apis'
-import dayjs from 'dayjs'
-const { showAlert } = useAlert()
-const router = useRouter()
-
-const userStore = useUserStore()
+//Components-loading
 const isLoading = ref(true)
+
+//API
+import { fetchUserLikeList, unlikePost } from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+const { showAlert } = useAlert()
+import dayjs from 'dayjs'
+
+//Store
+import { useUserStore } from '@/stores/userStore.js'
+const userStore = useUserStore()
+
+//forfunction
 const userLikeListData = ref() //取得個人按讚列表
 
-//確認token是否過期
-const checkSignInStatus = async () => {
-  try {
-    await verifyToken(userStore.token)
-  } catch (error) {
-    showAlert(error.response?.data?.message || '登入驗證失敗', 'error', 2000)
-    router.push({ path: '/' })
-  }
+//back router
+const goBack = () => {
+  router.back()
 }
 
-const goBack = () => {
-  history.back()
-}
+//確認token是否過期
+// const checkSignInStatus = async () => {
+//   try {
+//     await verifyToken(userStore.token)
+//   } catch (error) {
+//     showAlert(error.response?.data?.message || '登入驗證失敗', 'error', 2000)
+//     router.push({ path: '/' })
+//   }
+// }
 
 const goToLikePage = (id) => {
   router.push(`/certainpost/${id}`)
@@ -36,8 +50,6 @@ const goToLikePage = (id) => {
 // 取得使用者按讚的文章列表
 const getUserLikeList = async (token) => {
   const data = await fetchUserLikeList(token)
-  console.log('likeList', data)
-
   userLikeListData.value = data.likeList.map((list) => ({
     ...list,
     formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
@@ -58,7 +70,6 @@ const handleUnlikePost = async (postId, token) => {
 onMounted(async () => {
   try {
     userStore.loadUserInfo()
-    await checkSignInStatus()
     await getUserLikeList(userStore.token)
   } finally {
     isLoading.value = false

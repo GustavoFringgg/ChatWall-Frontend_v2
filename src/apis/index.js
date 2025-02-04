@@ -7,7 +7,14 @@ export const getMessages = (query) => {
   return axios.get(`${baseURL}/api/messages`, { params: query })
 }
 
-//signCheck
+//後端的tokenCheck(不會過資料庫)
+export const validateToken = (token) => {
+  return axios.get(`${baseURL}/auth/validate-token`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+//首次登入的tokenCheck(會過資料庫)
 export const verifyToken = async (token) => {
   return await axios.get(`${baseURL}/users/checkout`, {
     headers: {
