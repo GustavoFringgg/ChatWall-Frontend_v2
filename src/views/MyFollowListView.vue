@@ -1,59 +1,59 @@
 <script setup>
-import SidebarCard from '@/components/SidebarCard.vue'
-import NavbarCard from '@/components/NavbarCard.vue'
-import LoadingOverlay from '@/components/LoadingOverlay.vue'
-import { useUserStore } from '@/stores/userStore.js'
+//Vue-核心
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
-import axios from 'axios'
-import dayjs from 'dayjs'
-const signInToken = ref('') //user token存取
-const { showAlert } = useAlert()
-const router = useRouter()
-const localurl = 'http://localhost:3000'
 
-const userStore = useUserStore()
+//Vue-Router
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+//Components
+import NavbarCard from '@/components/NavbarCard.vue'
+import SidebarCard from '@/components/SidebarCard.vue'
+import LoadingOverlay from '@/components/LoadingOverlay.vue'
+
+//Components-loading
 const isLoading = ref(true)
-const getUserFollowListData = ref() //取得個人追蹤列表
-const signCheck = async () => {
-  signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
-  if (!signInToken.value) {
-    showAlert('請登入', 'error')
-    router.push({ path: '/' })
-  }
-  try {
-    const res = await axios.get(`${localurl}/users/checkout`, {
-      headers: {
-        Authorization: `Bearer ${signInToken.value}`,
-      },
-    })
-  } catch (error) {
-    console.log(error)
-  }
+
+//API
+import { fetchFollowList, unFollowMember } from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+const { showAlert } = useAlert()
+import dayjs from 'dayjs'
+
+//Store
+import { useUserStore } from '@/stores/userStore.js'
+const userStore = useUserStore()
+
+//forfunction
+const getUserFollowListData = ref()
+
+//back router
+const goBack = () => {
+  router.back()
+}
+
+const goToUserPage = (id) => {
+  router.push(`/otherpost/${id}`)
 }
 
 const getUserFollowList = async () => {
-  const res = await axios.get(`${localurl}/users/getFollowingList`, {
-    headers: {
-      Authorization: `Bearer ${userStore.token}`,
-    },
-  })
-  getUserFollowListData.value = res.data.followingList.map((list) => ({
+  const data = await fetchFollowList(userStore.token)
+  getUserFollowListData.value = data.followingList.map((list) => ({
     ...list,
-    formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
+    formattedDate: dayjs(list.createAt).format('YYYY-MM-DD HH:mm'),
   }))
-  console.log('getUserFollowListData.value', getUserFollowListData.value)
+
+  console.log(' getUserFollowListData', getUserFollowListData.value)
 }
 
 const toggleUnfollow = async (userId) => {
   try {
-    const res = await axios.delete(`${localurl}/users/${userId}/unfollow`, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
-    getUserFollowListData.value = res.data.followingList
+    await unFollowMember(userId, userStore.token)
+    getUserFollowListData.value = getUserFollowListData.value.filter(
+      (list) => list.user._id !== userId,
+    )
     userStore.following.length -= 1
     showAlert(`已取消追蹤`, 'success', 2000)
   } catch (error) {
@@ -63,27 +63,14 @@ const toggleUnfollow = async (userId) => {
 }
 onMounted(async () => {
   try {
-    await signCheck()
     userStore.loadUserInfo()
-    if (signInToken.value) {
-      await getUserFollowList()
-    } else {
-      router.push({ path: '/' })
-    }
+    await getUserFollowList()
   } catch (error) {
     console.log(error)
   } finally {
     isLoading.value = false
   }
 })
-
-const goToUserPage = (id) => {
-  router.push(`/otherpost/${id}`)
-}
-
-const goBack = () => {
-  history.back()
-}
 </script>
 <template>
   <LoadingOverlay :is-loading="isLoading" />

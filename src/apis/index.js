@@ -15,8 +15,8 @@ export const validateToken = (token) => {
 }
 
 //首次登入的tokenCheck(會過資料庫)
-export const verifyToken = async (token) => {
-  return await axios.get(`${baseURL}/users/checkout`, {
+export const verifyToken = (token) => {
+  return axios.get(`${baseURL}/users/checkout`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -147,4 +147,14 @@ export const deleteMemberPost = (postId, token) => {
   return axios.delete(`${baseURL}/posts/${postId}/post`, {
     headers: { Authorization: `Bearer ${token}` },
   })
+}
+
+//MyFollowListView
+export const fetchFollowList = async (token) => {
+  const { data } = await axios.get(`${baseURL}/users/getFollowingList`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data
 }
