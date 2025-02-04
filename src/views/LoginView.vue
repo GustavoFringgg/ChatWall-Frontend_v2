@@ -1,13 +1,21 @@
 <script setup>
+//Vue 核心
 import { ref, watch } from 'vue'
+
+//Vue-Router
 import { RouterLink } from 'vue-router'
 import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert'
+const router = useRouter()
+
+//API
 import { signInUser } from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert'
 const { showAlert } = useAlert()
 
+//forfunction
 const isActiveForPassword = ref(false)
-const router = useRouter()
 const signInField = ref({
   email: '',
   password: '',
@@ -42,7 +50,6 @@ const signIn = async () => {
     <div class="container d-flex justify-content-center align-items-center vh-100">
       <div class="row shadow rounded p-md-4 w-75 h-75 login-box border border-3 border-dark">
         <div class="relative d-md-flex justify-content-center">
-          <!-- 登入表單 -->
           <div class="text-center absolute-cus">
             <h1 class="navbar-header">ChatWall</h1>
           </div>

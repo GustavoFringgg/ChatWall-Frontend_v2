@@ -22,10 +22,10 @@ import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
 //forfunction
 const postContent = ref('')
-
 const selectedImage = ref(null) // 儲存選擇的圖片檔案
 const fileInput = ref(null) // 引用隱藏的檔案輸入框
 const uploadedFileUrl = ref(null) // 從後端返回的圖片 URL
+
 // 觸發檔案選擇
 const triggerFileUpload = () => {
   fileInput.value.click() // 觸發檔案輸入框的點擊事件

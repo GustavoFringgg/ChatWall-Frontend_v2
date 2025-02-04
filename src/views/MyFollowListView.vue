@@ -44,8 +44,6 @@ const getUserFollowList = async () => {
     ...list,
     formattedDate: dayjs(list.createAt).format('YYYY-MM-DD HH:mm'),
   }))
-
-  console.log(' getUserFollowListData', getUserFollowListData.value)
 }
 
 const toggleUnfollow = async (userId) => {
@@ -61,6 +59,7 @@ const toggleUnfollow = async (userId) => {
     showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
+
 onMounted(async () => {
   try {
     userStore.loadUserInfo()

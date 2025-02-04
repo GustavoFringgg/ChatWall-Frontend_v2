@@ -65,7 +65,6 @@ const getOtherUserData = async () => {
 //取得貼文
 const getPost = async (timeSort = 'desc') => {
   const res = await fetchMemberPost(timeSort, searchPost.value, userId, userStore.token)
-  console.log('取得貼文', res)
   if (res.data.data.length === 0) {
     showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
     searchPost.value = ''
