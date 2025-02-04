@@ -74,9 +74,45 @@ export const updateUserPhoto = async (formData, token) => {
 
 //PostView
 export const postPostData = async (postData, token) => {
-  return await axios.post(`${baseURL}/posts/`, postData, {
+  return axios.post(`${baseURL}/posts/`, postData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  })
+}
+
+//OtherPostView
+export const postCommentData = (postId, commenData, token) => {
+  return axios.post(
+    `${baseURL}/posts/${postId}/comment`,
+    { comment: commenData },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+}
+
+export const fetchUserPost = (postId, token) => {
+  const { data } = axios.get(`${baseURL}/posts/${postId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data.message[0]
+}
+
+export const followUser = (userId, token) => {
+  return axios.post(
+    `${baseURL}/users/${userId}/follow`,
+    {},
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  )
+}
+
+export const unFollowUser = (userId, token) => {
+  return axios.delete(`${baseURL}/users/${userId}/unfollow`, {
+    headers: { Authorization: `Bearer ${token}` },
   })
 }

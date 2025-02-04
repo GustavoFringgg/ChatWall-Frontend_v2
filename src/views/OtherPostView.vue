@@ -10,6 +10,9 @@ const route = useRoute()
 //Axios
 import axios from 'axios'
 
+//APIS
+import { postCommentData, fetchUserPost, followUser, unFollowUser } from '@/apis'
+
 //Components
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
@@ -30,7 +33,6 @@ const userStore = useUserStore()
 
 //const
 const localurl = 'http://localhost:3000'
-const signInToken = ref('') //user token存取
 
 //forfunction
 const getUserData = ref('') //user 個人資料存取
@@ -49,7 +51,7 @@ const getOtherUserData = async () => {
   try {
     const res = await axios.get(`${localurl}/users/profile/${userId}`, {
       headers: {
-        Authorization: `Bearer ${signInToken.value}`,
+        Authorization: `Bearer ${userStore.token}`,
       },
     })
     getUserData.value = res.data
@@ -61,11 +63,13 @@ const getOtherUserData = async () => {
     console.log('error', error)
   }
 }
+
+//取得貼文
 const getPost = async (timeSort = 'desc') => {
   const res = await axios.get(`${localurl}/posts/${userId}/user`, {
     params: { timeSort, keyword: searchPost.value },
     headers: {
-      Authorization: `Bearer ${signInToken.value}`,
+      Authorization: `Bearer ${userStore.token}`,
     },
   })
   console.log('res.data', res.data)
@@ -104,65 +108,42 @@ const handleSortChange = (event) => {
   getPost(selectedSort)
 }
 
-const signCheck = async () => {
-  signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
-
-  if (!signInToken.value) {
-    showAlert(`請登入`, 'error')
-    router.push({ path: '/' })
-  }
-  try {
-    const res = await axios.get(`${localurl}/users/checkout`, {
-      headers: {
-        Authorization: `Bearer ${signInToken.value}`,
-      },
-    })
-  } catch (error) {
-    showAlert(`${error.response.data.message}`, 'error')
-    router.push({ path: '/' })
-  }
-}
-
 // 提交留言
-
 const submitComment = async (postId, commentText) => {
   if (!commentText || !commentText.trim()) {
-    alert('請輸入留言！')
-    return
+    return showAlert('請輸入留言~', 'error', 1500)
   }
   try {
-    const res = await axios.post(
-      `${localurl}/posts/${postId}/comment`,
-      { comment: commentText },
-      {
-        headers: {
-          Authorization: `Bearer ${signInToken.value}`,
-        },
-      },
-    )
-
-    // 將新留言加入到對應的貼文留言列表中
-    // const post = post.value.find((post) => post.id === postId)
-    // if (post) {
-    //   post.comments.push(res.data.comment)
-    // }
-
-    getPost()
+    await postCommentData(postId, commentText, userStore.token)
+    updatePostComments(postId)
   } catch (error) {
-    console.error(`留言失敗：`, error)
+    showAlert(`${error.response.data.message}`, 'error', 1500)
   }
 }
-//
+
+//更新留言列表
+const updatePostComments = async (postId) => {
+  try {
+    const data = await fetchUserPost(postId, userStore.token)
+    const updateComments = data.comments.map((comment) => ({
+      ...comment,
+      formattedCommentDate: formatTime(comment.createdAt),
+    }))
+    const postIndex = getUserPost.value.findIndex((post) => post._id === postId)
+    if (postIndex !== -1) {
+      getUserPost.value[postIndex].comments = updateComments
+    }
+  } catch (error) {
+    console.log('更新留言區域失敗:', error)
+    showAlert('留言更新失敗，請稍後再試', 'error', 1500)
+  }
+}
+
 onMounted(async () => {
   try {
-    await signCheck()
     userStore.loadUserInfo()
-    if (signInToken.value) {
-      await getPost()
-      await getOtherUserData()
-    } else {
-      router.push({ path: '/' })
-    }
+    await getPost()
+    await getOtherUserData()
   } finally {
     isLoading.value = false
   }
@@ -172,29 +153,15 @@ const toggleFollow = async () => {
   isFollowing.value = !isFollowing.value
   try {
     if (isFollowing.value) {
-      const res = await axios.post(
-        `${localurl}/users/${userId}/follow`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${userStore.token}`,
-          },
-        },
-      )
+      await followUser(userId, userStore.token)
       followersCount.value += 1
       userStore.following.length += 1
+      showAlert('已追蹤~~', 'success', 1500)
     } else {
-      const res = await axios.delete(
-        `${localurl}/users/${userId}/unfollow`,
-
-        {
-          headers: {
-            Authorization: `Bearer ${userStore.token}`,
-          },
-        },
-      )
+      await unFollowUser(userId, userStore.token)
       followersCount.value -= 1
       userStore.following.length -= 1
+      showAlert('已取消追蹤~~', 'success', 1500)
     }
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error', 2000)
@@ -207,18 +174,13 @@ const toggleFollow = async () => {
   <div v-if="!isLoading">
     <NavbarCard></NavbarCard>
     <div class="container">
-      <!-- Main Section -->
       <div class="row mt-4">
-        <!-- Main Content -->
-
         <main class="col-lg-9">
           <button class="btn btn-success rounded-3 mb-2" @click="goBack">
             <i class="bi bi-arrow-left"></i>
           </button>
 
           <div class="header-container mb-3 border border-3 border-dark rounded-3">
-            <!-- 左側 回退按鈕 -->
-            <!-- 中間 主要資訊 -->
             <div class="user-info">
               <img
                 :src="getUserData.data.photo"
@@ -231,14 +193,12 @@ const toggleFollow = async () => {
               <span v-else class="user-followers">{{ followersCount }} 人追隨</span>
             </div>
 
-            <!-- 右側 操作按鈕 -->
             <div v-if="getUserData.data._id !== userStore.userid">
               <button class="btn btn-warning rounded-pill" @click="toggleFollow">
                 {{ isFollowing ? '已追隨' : '追隨' }}
               </button>
             </div>
           </div>
-          <!-- Filter and Search -->
           <div class="d-flex mb-4">
             <select
               class="form-select w-auto me-2 border border-3 border-dark"
@@ -256,13 +216,11 @@ const toggleFollow = async () => {
             </div>
           </div>
 
-          <!-- Posts -->
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
             <PostCard :post="post" @submit-comment="submitComment"></PostCard>
           </div>
         </main>
 
-        <!-- Sidebar -->
         <SidebarCard></SidebarCard>
       </div>
     </div>

@@ -81,7 +81,7 @@ router.beforeEach(async (to, from, next) => {
       return next({ path: '/' }) // Token 過期，強制登出
     }
   }
-
+  console.log('beforeEach觸發')
   next()
 })
 export default router
