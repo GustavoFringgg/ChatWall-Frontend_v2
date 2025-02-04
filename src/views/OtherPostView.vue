@@ -7,11 +7,15 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 
-//Axios
-import axios from 'axios'
-
 //APIS
-import { postCommentData, fetchUserPost, followUser, unFollowUser } from '@/apis'
+import {
+  postCommentData,
+  fetchMemberOnePost,
+  followMember,
+  unFollowMember,
+  fetchMemberPost,
+  fetchMemberData,
+} from '@/apis'
 
 //Components
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
@@ -31,9 +35,6 @@ const { formatTime } = useformatTime()
 import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
 
-//const
-const localurl = 'http://localhost:3000'
-
 //forfunction
 const getUserData = ref('') //user 個人資料存取
 const getUserPost = ref([]) //取的使用者文章
@@ -49,11 +50,7 @@ const goBack = () => {
 
 const getOtherUserData = async () => {
   try {
-    const res = await axios.get(`${localurl}/users/profile/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
+    const res = await fetchMemberData(userId, userStore.token)
     getUserData.value = res.data
     followersCount.value = getUserData.value.data.followers.length
     isFollowing.value = getUserData.value.data?.followers.some(
@@ -66,14 +63,9 @@ const getOtherUserData = async () => {
 
 //取得貼文
 const getPost = async (timeSort = 'desc') => {
-  const res = await axios.get(`${localurl}/posts/${userId}/user`, {
-    params: { timeSort, keyword: searchPost.value },
-    headers: {
-      Authorization: `Bearer ${userStore.token}`,
-    },
-  })
-  console.log('res.data', res.data)
-  if (res.data.message.length === 0) {
+  const res = await fetchMemberPost(timeSort, searchPost.value, userId, userStore.token)
+  console.log('取得貼文', res)
+  if (res.data.data.length === 0) {
     showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
     searchPost.value = ''
     return
@@ -97,7 +89,7 @@ const getPost = async (timeSort = 'desc') => {
         ...post,
         formattedDate: formattedPostTime,
       }
-    }) // 格式化日期
+    })
   } catch (error) {
     showAlert(`${error}`, 'error')
   }
@@ -124,7 +116,7 @@ const submitComment = async (postId, commentText) => {
 //更新留言列表
 const updatePostComments = async (postId) => {
   try {
-    const data = await fetchUserPost(postId, userStore.token)
+    const data = await fetchMemberOnePost(postId, userStore.token)
     const updateComments = data.comments.map((comment) => ({
       ...comment,
       formattedCommentDate: formatTime(comment.createdAt),
@@ -139,6 +131,26 @@ const updatePostComments = async (postId) => {
   }
 }
 
+//追蹤他人
+const toggleFollow = async () => {
+  isFollowing.value = !isFollowing.value
+  try {
+    if (isFollowing.value) {
+      await followMember(userId, userStore.token)
+      followersCount.value += 1
+      userStore.following.length += 1
+      showAlert('已追蹤~~', 'success', 1500)
+    } else {
+      await unFollowMember(userId, userStore.token)
+      followersCount.value -= 1
+      userStore.following.length -= 1
+      showAlert('已取消追蹤~~', 'success', 1500)
+    }
+  } catch (error) {
+    showAlert(`${error.response.data.message}`, 'error', 2000)
+  }
+}
+
 onMounted(async () => {
   try {
     userStore.loadUserInfo()
@@ -148,25 +160,6 @@ onMounted(async () => {
     isLoading.value = false
   }
 })
-
-const toggleFollow = async () => {
-  isFollowing.value = !isFollowing.value
-  try {
-    if (isFollowing.value) {
-      await followUser(userId, userStore.token)
-      followersCount.value += 1
-      userStore.following.length += 1
-      showAlert('已追蹤~~', 'success', 1500)
-    } else {
-      await unFollowUser(userId, userStore.token)
-      followersCount.value -= 1
-      userStore.following.length -= 1
-      showAlert('已取消追蹤~~', 'success', 1500)
-    }
-  } catch (error) {
-    showAlert(`${error.response.data.message}`, 'error', 2000)
-  }
-}
 </script>
 
 <template>

@@ -26,8 +26,8 @@ export const fetchUserLikeList = async (token) => {
   return data
 }
 
-export const unlikePost = async (postId, token) => {
-  return await axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
+export const unlikePost = (postId, token) => {
+  return axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -47,15 +47,15 @@ export const signUpUser = async (signUpData) => {
 }
 
 //ProfileView
-export const updatePassword = async (passwordtData, token) => {
-  return await axios.patch(`${baseURL}/users/updatePassword`, passwordtData, {
+export const updatePassword = (passwordtData, token) => {
+  return axios.patch(`${baseURL}/users/updatePassword`, passwordtData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   })
 }
-export const updateUserData = async (userInfo, token) => {
-  return await axios.patch(`${baseURL}/users/profile/`, userInfo, {
+export const updateUserData = (userInfo, token) => {
+  return axios.patch(`${baseURL}/users/profile/`, userInfo, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -73,7 +73,7 @@ export const updateUserPhoto = async (formData, token) => {
 }
 
 //PostView
-export const postPostData = async (postData, token) => {
+export const postPostData = (postData, token) => {
   return axios.post(`${baseURL}/posts/`, postData, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -94,14 +94,14 @@ export const postCommentData = (postId, commenData, token) => {
   )
 }
 
-export const fetchUserPost = (postId, token) => {
-  const { data } = axios.get(`${baseURL}/posts/${postId}`, {
+export const fetchMemberOnePost = async (postId, token) => {
+  const { data } = await axios.get(`${baseURL}/posts/${postId}`, {
     headers: { Authorization: `Bearer ${token}` },
   })
   return data.message[0]
 }
 
-export const followUser = (userId, token) => {
+export const followMember = (userId, token) => {
   return axios.post(
     `${baseURL}/users/${userId}/follow`,
     {},
@@ -111,8 +111,26 @@ export const followUser = (userId, token) => {
   )
 }
 
-export const unFollowUser = (userId, token) => {
+//取消追蹤Member
+export const unFollowMember = (userId, token) => {
   return axios.delete(`${baseURL}/users/${userId}/unfollow`, {
     headers: { Authorization: `Bearer ${token}` },
   })
+}
+
+//取得Member資料
+export const fetchMemberData = async (userId, token) => {
+  const data = await axios.get(`${baseURL}/users/profile/${userId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
+}
+
+//取得Member所有貼文
+export const fetchMemberPost = async (timeSort = 'desc', keyword, userId, token) => {
+  const data = await axios.get(`${baseURL}/posts/${userId}/user`, {
+    params: { timeSort, keyword },
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
 }
