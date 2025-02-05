@@ -117,7 +117,7 @@ const submitComment = async (postId, commentText) => {
 const updatePostComments = async (postId) => {
   try {
     const data = await fetchMemberOnePost(postId, userStore.token)
-    const updateComments = data.comments.map((comment) => ({
+    const updateComments = data.message[0].comments.map((comment) => ({
       ...comment,
       formattedCommentDate: formatTime(comment.createdAt),
     }))

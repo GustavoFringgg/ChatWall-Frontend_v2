@@ -1,35 +1,43 @@
 <script setup>
-import axios from 'axios'
-import { useRoute } from 'vue-router'
-import { computed, nextTick, onMounted, ref } from 'vue'
+//Vue 核心
+import { onMounted, ref } from 'vue'
+
+//Vue-Router
 import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
+import { useRoute } from 'vue-router'
+const router = useRouter()
+const route = useRoute()
+
+//Components
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
-import { useUserStore } from '@/stores/userStore.js'
-import { useformatTime } from '@/Composables/useformatTime.js'
-const { formatTime } = useformatTime()
-const userStore = useUserStore()
-const { showAlert } = useAlert()
-const router = useRouter()
-const localurl = 'http://localhost:3000'
-const signInToken = ref('') //user token存取
-const getUserPost = ref([]) //取的使用者文章
+
+//Components-loading
 const isLoading = ref(true) //判斷是否在loding
-const route = useRoute()
+
+//API
+import { fetchMemberOnePost, postCommentData, deleteMemberPost } from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+import { useformatTime } from '@/Composables/useformatTime.js'
+const { showAlert } = useAlert()
+const { formatTime } = useformatTime()
+
+//Store
+import { useUserStore } from '@/stores/userStore.js'
+const userStore = useUserStore()
+
+//forfunction
+const getUserPost = ref([]) //取的使用者文章
 
 const getOnePost = async () => {
   const post_id = route.params.id
-  const res = await axios.get(`${localurl}/posts/${post_id}`, {
-    headers: {
-      Authorization: `Bearer ${signInToken.value}`,
-    },
-  })
-
+  const res = await fetchMemberOnePost(post_id, userStore.token)
   try {
-    getUserPost.value = res.data.message.map((post) => {
+    getUserPost.value = res.message.map((post) => {
       const formattedPostTime = formatTime(post.createdAt)
       post.comments = post.comments.map((comment) => {
         const formattedCommentTime = formatTime(comment.createdAt)
@@ -38,7 +46,6 @@ const getOnePost = async () => {
           formattedCommentDate: formattedCommentTime,
         }
       })
-
       return {
         ...post,
         formattedDate: formattedPostTime,
@@ -50,61 +57,40 @@ const getOnePost = async () => {
   }
 }
 
-const signCheck = async () => {
-  signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
-  if (!signInToken.value) {
-    showAlert(`請登入`, 'error')
-    router.push({ path: '/login' })
-  }
-  try {
-    const res = await axios.get(`${localurl}/users/checkout`, {
-      headers: {
-        Authorization: `Bearer ${signInToken.value}`,
-      },
-    })
-  } catch (error) {
-    showAlert(`${error.response.data.message}`, 'error')
-    router.push({ path: '/' })
-  }
-}
-
 // 提交留言
 const submitComment = async (postId, commentText) => {
   if (!commentText || !commentText.trim()) {
-    alert('請輸入留言！')
-    return
+    return showAlert('請輸入留言~', 'error', 1500)
   }
   try {
-    const res = await axios.post(
-      `${localurl}/posts/${postId}/comment`,
-      { comment: commentText },
-      {
-        headers: {
-          Authorization: `Bearer ${signInToken.value}`,
-        },
-      },
-    )
-
-    // 將新留言加入到對應的貼文留言列表中
-    // const postItem = post.find((post) => post.id === postId)
-    // if (postItem) {
-    //   postItem.comments.push(res.data.comment)
-    // }
-
-    getOnePost()
+    await postCommentData(postId, commentText, userStore.token)
+    updatePostComments(postId)
   } catch (error) {
     console.error(`留言失敗：`, error)
+  }
+}
+//更新留言列表
+const updatePostComments = async (postId) => {
+  try {
+    const data = await fetchMemberOnePost(postId, userStore.token)
+    const updateComments = data.message[0].comments.map((comment) => ({
+      ...comment,
+      formattedCommentDate: formatTime(comment.createdAt),
+    }))
+    const postIndex = getUserPost.value.findIndex((post) => post._id === postId)
+    if (postIndex !== -1) {
+      getUserPost.value[postIndex].comments = updateComments
+    }
+  } catch (error) {
+    console.log('更新留言區域失敗:', error)
+    showAlert('留言更新失敗，請稍後再試', 'error', 1500)
   }
 }
 
 //刪除貼文
 const deletePost = async (postId) => {
   try {
-    const res = await axios.delete(`${localurl}/posts/${postId}/post`, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
+    await deleteMemberPost(postId, userStore.token)
     setTimeout(() => {
       router.push({ path: '/mylikelist' })
     }, 1500)
@@ -112,17 +98,11 @@ const deletePost = async (postId) => {
     console.log(error)
   }
 }
-//
+
 onMounted(async () => {
   try {
-    await signCheck()
-    console.log('這是Index的onMounted')
     userStore.loadUserInfo()
-    if (signInToken.value) {
-      await getOnePost()
-    } else {
-      router.push({ path: '/' })
-    }
+    await getOnePost()
   } finally {
     isLoading.value = false
   }
@@ -132,20 +112,16 @@ onMounted(async () => {
 <template>
   <LoadingOverlay :is-loading="isLoading" />
   <div v-if="!isLoading">
-    <!-- Header -->
     <NavbarCard></NavbarCard>
 
     <div class="container">
-      <!-- Main Section -->
       <div class="row mt-4">
-        <!-- Main Content -->
         <main class="col-lg-9">
           <div class="row">
             <div class="col text-center">
               <h2 class="fw-bold">{{ getUserPost[0].user.name }}的文章</h2>
             </div>
           </div>
-          <!-- Posts -->
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
             <PostCard
               :post="post"
@@ -154,8 +130,6 @@ onMounted(async () => {
             ></PostCard>
           </div>
         </main>
-
-        <!-- Sidebar -->
         <SidebarCard></SidebarCard>
       </div>
     </div>

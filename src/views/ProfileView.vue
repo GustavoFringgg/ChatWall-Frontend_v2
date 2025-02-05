@@ -195,14 +195,14 @@ const uploadImage = async () => {
                             :src="uploadedFileUrl"
                             alt="頭像"
                             class="rounded-circle img-fluid-cos"
-                            style="width: 200px; height: 200px"
+                            style="width: 200px; height: 200px; object-fit: cover"
                           />
                           <img
                             v-else
                             :src="userStore.photo"
                             alt="頭像"
                             class="rounded-circle img-fluid-cos"
-                            style="width: 120px; height: 120px"
+                            style="width: 120px; height: 120px; object-fit: cover"
                           />
                         </div>
                         <div class="mt-4">

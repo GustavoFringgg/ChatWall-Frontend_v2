@@ -105,7 +105,7 @@ export const fetchMemberOnePost = async (postId, token) => {
   const { data } = await axios.get(`${baseURL}/posts/${postId}`, {
     headers: { Authorization: `Bearer ${token}` },
   })
-  return data.message[0]
+  return data
 }
 
 export const followMember = (userId, token) => {
@@ -155,6 +155,15 @@ export const fetchFollowList = async (token) => {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  })
+  return data
+}
+
+//index.vue
+export const fetchAllPost = async (timeSort = 'desc', keyword, token) => {
+  const data = await axios.get(`${baseURL}/posts/`, {
+    params: { timeSort, keyword },
+    headers: { Authorization: `Bearer ${token}` },
   })
   return data
 }

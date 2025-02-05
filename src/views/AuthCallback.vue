@@ -1,8 +1,3 @@
-<template>
-  <LoadingOverlay :is-loading="isLoading" />
-  <div v-if="!isLoading"></div>
-</template>
-
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -19,3 +14,8 @@ onMounted(async () => {
   }
 })
 </script>
+
+<template>
+  <LoadingOverlay :is-loading="isLoading" />
+  <div v-if="!isLoading"></div>
+</template>

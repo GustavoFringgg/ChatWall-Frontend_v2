@@ -12,7 +12,6 @@ const userStore = useUserStore()
         >
         <div class="d-flex flex-column align-items-start">
           <div class="d-flex align-items-center mb-3">
-            <!-- test start-->
             <div
               data-bs-toggle="offcanvas"
               data-bs-target="#offcanvasRight"
@@ -22,7 +21,7 @@ const userStore = useUserStore()
                 :src="userStore.photo"
                 alt="Avatar"
                 class="rounded-circle me-2"
-                style="width: 50px; height: 50px"
+                style="width: 50px; height: 50px; object-fit: cover"
               />
               <span>{{ userStore.username }}</span>
             </div>
@@ -49,7 +48,7 @@ const userStore = useUserStore()
                   :src="userStore.photo"
                   alt="userphoto"
                   class="rounded-circle mt-2 mb-3"
-                  style="width: 200px; height: 200px"
+                  style="width: 200px; height: 200px; object-fit: cover"
                 />
 
                 <div style="width: 200px" class="mx-auto text-start">

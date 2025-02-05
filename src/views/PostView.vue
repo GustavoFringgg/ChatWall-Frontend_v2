@@ -1,6 +1,6 @@
 <script setup>
 //Vue-核心
-import { nextTick, ref } from 'vue'
+import { nextTick, onMounted, ref } from 'vue'
 
 //Vue-Router
 import { useRouter } from 'vue-router'
@@ -71,6 +71,10 @@ const submitPost = async () => {
     }, 1500)
   })
 }
+
+onMounted(() => {
+  userStore.loadUserInfo()
+})
 </script>
 
 <template>

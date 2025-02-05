@@ -40,7 +40,7 @@ onMounted(() => {
         photo: message.user.photo,
       },
       content: message.content,
-      formattedDate: new Date().toLocaleString(), // 假設格式化處理
+      formattedDate: new Date().toLocaleString(),
     })
   })
   getMessage()
@@ -58,7 +58,6 @@ watch(messages, () => {
   const isScrolledToBottom =
     messageArea.value.scrollTop + messageArea.value.offsetHeight >=
     messageArea.value.scrollHeight - 5
-  console.log('isScrolledToBottom', isScrolledToBottom)
 
   if (isScrolledToBottom) {
     nextTick(() => {
@@ -109,10 +108,7 @@ const sendMessage = (user, content) => {
 </script>
 
 <template>
-  <!-- 聊天室按鈕 -->
   <button class="btn btn-primary chat-toggle" @click="toggleChat">聊天室</button>
-
-  <!-- 聊天室面板 -->
   <div
     v-show="isChatOpen"
     class="chat-room border border-dark rounded shadow position-fixed end-0 me-2 bg-white"

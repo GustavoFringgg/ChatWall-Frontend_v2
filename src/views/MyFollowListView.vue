@@ -111,7 +111,7 @@ onMounted(async () => {
                         :src="list.user.photo"
                         alt="用戶頭像"
                         class="rounded-circle border"
-                        style="width: 50px; height: 50px"
+                        style="width: 50px; height: 50px; object-fit: cover"
                       />
                       <div class="ms-3">
                         <p class="mb-1 fw-bold">{{ list.user.name }}</p>

@@ -79,7 +79,7 @@ const toggleLike = async () => {
 
 //
 const goToUserPage = (id) => {
-  router.push(`/otherpost/${id}`) // 跳轉到 URL，並附上 ID
+  router.push(`/otherpost/${id}`)
 }
 </script>
 
@@ -91,7 +91,7 @@ const goToUserPage = (id) => {
           :src="post.user.photo"
           alt="Avatar"
           class="rounded-circle me-2"
-          style="width: 50px; height: 50px"
+          style="width: 50px; height: 50px; object-fit: cover"
         />
         <div>
           <h6
@@ -166,7 +166,7 @@ const goToUserPage = (id) => {
               <img
                 :src="comment.user.photo"
                 alt="userphoto"
-                style="width: 35px; height: 35px"
+                style="width: 35px; height: 35px; object-fit: cover"
                 class="rounded-circle me-2"
               />
             </div>

@@ -1,32 +1,49 @@
 <script setup>
-import axios from 'axios'
+//Vue
 import { computed, nextTick, onMounted, ref } from 'vue'
+
+//Vue-Router
 import { useRouter } from 'vue-router'
-import { useAlert } from '@/Composables/useAlert.js'
-// import dayjs from 'dayjs'
+const router = useRouter()
+
+//Components
 import ChatRoom from '@/components/ChatRoom.vue'
 import PostCard from '@/components/PostCard.vue'
 import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
-import { useUserStore } from '@/stores/userStore.js'
-import { useformatTime } from '@/Composables/useformatTime.js'
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
-const { formatTime } = useformatTime()
-const userStore = useUserStore()
+
+//Components-loading
+const isLoading = ref(true) //判斷是否在loding
+
+//API
+import {
+  fetchMemberOnePost,
+  fetchAllPost,
+  verifyToken,
+  deleteMemberPost,
+  postCommentData,
+} from '@/apis'
+
+//Composables
+import { useAlert } from '@/Composables/useAlert.js'
+import { useformatTime } from '@/Composables/useformatTime.js'
 const { showAlert } = useAlert()
-const router = useRouter()
-const localurl = 'http://localhost:3000'
+const { formatTime } = useformatTime()
+
+//Store
+import { useUserStore } from '@/stores/userStore.js'
+const userStore = useUserStore()
+
+//forfunction
 const signInToken = ref('') //user token存取
 const getUserData = ref('') //user 個人資料存取
 const searchPost = ref('') //收尋文章關鍵字存取
 const getUserPost = ref([]) //取的使用者文章
-const isLoading = ref(true) //判斷是否在loding
 
 const getPost = async (timeSort = 'desc') => {
-  console.log('timeSort', timeSort)
-  const res = await axios.get(`${localurl}/posts/`, {
-    params: { timeSort, keyword: searchPost.value },
-  })
+  const res = await fetchAllPost(timeSort, searchPost.value, userStore.token)
+
   if (res.data.data.length === 0) {
     showAlert(`沒有找到關於${searchPost.value}的貼文`, 'warning', 1500)
     searchPost.value = ''
@@ -42,14 +59,11 @@ const getPost = async (timeSort = 'desc') => {
       const formattedPostTime = formatTime(post.createdAt)
       post.comments = post.comments.map((comment) => {
         const formattedCommentTime = formatTime(comment.createdAt)
-
-        // 新增格式化comments時間
         return {
           ...comment,
           formattedCommentDate: formattedCommentTime,
         }
       })
-      // 格式化 posts 的時間
       return {
         ...post,
         formattedDate: formattedPostTime,
@@ -68,7 +82,6 @@ const handleSortChange = (event) => {
 
 const signCheck = async () => {
   signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
-
   if (!signInToken.value) {
     showAlert(`請登入`, 'error', 1500)
     setTimeout(() => {
@@ -76,73 +89,59 @@ const signCheck = async () => {
     }, 1500)
   }
   try {
-    const res = await axios.get(`${localurl}/users/checkout`, {
-      headers: {
-        Authorization: `Bearer ${signInToken.value}`,
-      },
-    })
+    const res = await verifyToken(signInToken.value)
     getUserData.value = res.data
     getUserData.value.user.formatTime = formatTime(res.data.user.createdAt)
     userStore.setUserInfo(getUserData.value.user, signInToken.value)
   } catch (error) {
     showAlert(`${error.response.data.message}`, 'error')
     router.push({ path: '/' })
-    // setTimeout(() => {
-    //   nextTick(() => {
-    //     location.reload() // 強制刷新頁面，保證渲染完成後再重新加載
-    //   })
-    // }, 500)
   }
 }
 
 //刪除貼文
 const deletePost = async (postId) => {
   try {
-    const res = await axios.delete(`${localurl}/posts/${postId}/post`, {
-      headers: {
-        Authorization: `Bearer ${userStore.token}`,
-      },
-    })
-    getPost()
+    await deleteMemberPost(postId, userStore.token)
+    getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
   } catch (error) {
-    console.log(error)
+    showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
 
 // 提交留言
 const submitComment = async (postId, commentText) => {
   if (!commentText || !commentText.trim()) {
-    alert('請輸入留言！')
-    return
+    return showAlert('請輸入留言~', 'error', 1500)
   }
   try {
-    const res = await axios.post(
-      `${localurl}/posts/${postId}/comment`,
-      { comment: commentText },
-      {
-        headers: {
-          Authorization: `Bearer ${signInToken.value}`,
-        },
-      },
-    )
-
-    // 將新留言加入到對應的貼文留言列表中
-    // const postItem = post.find((post) => post.id === postId)
-    // if (postItem) {
-    //   postItem.comments.push(res.data.comment)
-    // }
-
-    getPost()
+    await postCommentData(postId, commentText, userStore.token)
+    updatePostComments(postId)
   } catch (error) {
     console.error(`留言失敗：`, error)
   }
 }
-//
+
+const updatePostComments = async (postId) => {
+  try {
+    const data = await fetchMemberOnePost(postId, userStore.token)
+    const updateComments = data.message[0].comments.map((comment) => ({
+      ...comment,
+      formattedCommentDate: formatTime(comment.createdAt),
+    }))
+    const postIndex = getUserPost.value.findIndex((post) => post._id === postId)
+    if (postIndex !== -1) {
+      getUserPost.value[postIndex].comments = updateComments
+    }
+  } catch (error) {
+    console.log('更新留言區域失敗:', error)
+    showAlert('留言更新失敗，請稍後再試', 'error', 1500)
+  }
+}
 onMounted(async () => {
   try {
     await signCheck()
     userStore.loadUserInfo()
-    console.log('userStore', userStore)
     if (signInToken.value) {
       await getPost()
     } else {
@@ -157,9 +156,7 @@ onMounted(async () => {
 <template>
   <LoadingOverlay :is-loading="isLoading" />
   <div v-if="!isLoading">
-    <!-- Header -->
     <NavbarCard></NavbarCard>
-
     <div class="container">
       <!-- Main Section -->
       <div class="row mt-4">
@@ -182,8 +179,6 @@ onMounted(async () => {
               </button>
             </div>
           </div>
-
-          <!-- Posts -->
           <div class="mb-3" v-for="post in getUserPost" :key="post._id">
             <PostCard
               :post="post"
@@ -192,8 +187,6 @@ onMounted(async () => {
             ></PostCard>
           </div>
         </main>
-
-        <!-- Sidebar -->
         <SidebarCard></SidebarCard>
       </div>
     </div>

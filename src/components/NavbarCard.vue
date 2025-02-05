@@ -7,13 +7,12 @@ import { ref, onMounted, onUnmounted } from 'vue'
 const router = useRouter()
 const userStore = useUserStore()
 const { showAlert } = useAlert()
-userStore.loadUserInfo()
+// userStore.loadUserInfo()
 
 const signOut = async () => {
   showAlert('登出成功，導回登入頁', 'success', 1500)
   setTimeout(() => {
     document.cookie = 'Token=; expires=Thu, 01 Jan 1970 00:00:00 UTC;'
-    console.log('After deletion:', document.cookie) // 確認刪除狀態
     userStore.clearUserInfo()
     router.push({ path: '/' })
   }, 1500)
@@ -57,7 +56,7 @@ onUnmounted(() => {
                 :src="userStore.photo"
                 alt="User Avatar"
                 class="rounded-circle me-2"
-                style="width: 45px; height: 45px"
+                style="width: 45px; height: 45px; object-fit: cover"
               />
               <span class="fs-6">{{ userStore.username }}</span>
             </button>

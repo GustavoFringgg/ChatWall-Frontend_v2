@@ -1,3 +1,15 @@
+<script setup>
+import { defineProps } from 'vue'
+
+// 接收父元件傳遞的屬性
+defineProps({
+  isLoading: {
+    type: Boolean,
+    required: true,
+  },
+})
+</script>
+
 <template>
   <div v-if="isLoading" class="loading-overlay">
     <div class="d-flex align-items-center">
@@ -12,18 +24,6 @@
   </div>
 </template>
 
-<script setup>
-import { defineProps } from 'vue'
-
-// 接收父元件傳遞的屬性
-defineProps({
-  isLoading: {
-    type: Boolean,
-    required: true,
-  },
-})
-</script>
-
 <style>
 .loading-overlay {
   position: fixed;
@@ -31,7 +31,7 @@ defineProps({
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(135, 206, 235, 0); /* 半透明 */
+  background: rgba(135, 206, 235, 0);
   display: flex;
   justify-content: center;
   align-items: center;
