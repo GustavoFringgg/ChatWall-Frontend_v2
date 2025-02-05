@@ -3,7 +3,6 @@ import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 const userStore = useUserStore()
 import { useAlert } from './useAlert'
-
 const { showAlert } = useAlert()
 
 export function useToggleFollow() {

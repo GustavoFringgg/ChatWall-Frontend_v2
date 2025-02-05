@@ -11,7 +11,7 @@ import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 
 //API
-import { updatePassword, updateUserData, updateUserPhoto } from '@/apis'
+import { updatePassword, updateUserData, uploadPhoto } from '@/apis'
 
 //Composables
 import { useAlert } from '@/Composables/useAlert'
@@ -117,7 +117,7 @@ const uploadImage = async () => {
   formData.append('file', selectedImage.value) // 添加檔案
   formData.append('type', 'user')
   try {
-    const data = await updateUserPhoto(formData, userStore.token)
+    const data = await uploadPhoto(formData, userStore.token)
     uploadedFileUrl.value = data.fileUrl // 獲取圖片 URL
     showAlert('圖片上傳成功', 'success')
     userData.value.photo = uploadedFileUrl.value //增加回後端的物件photo

@@ -1,12 +1,14 @@
-import { useUserStore } from '@/stores/userStore'
 import axios from 'axios'
 const baseURL = 'http://localhost:3000'
 // const baseURL = 'https://chatwall-backend.onrender.com'
+
+//     --socket.io--     //
+//取得聊天室聊天訊息
 export const getMessages = (query) => {
-  console.log('query', query)
   return axios.get(`${baseURL}/api/messages`, { params: query })
 }
 
+//     --auth--     //
 //後端的tokenCheck(不會過資料庫)
 export const validateToken = (token) => {
   return axios.get(`${baseURL}/auth/validate-token`, {
@@ -14,7 +16,20 @@ export const validateToken = (token) => {
   })
 }
 
-//首次登入的tokenCheck(會過資料庫)
+//登入
+export const signInUser = async (signInData) => {
+  const { data } = await axios.post(`${baseURL}/auth/sign_in`, signInData)
+  return data
+}
+
+//註冊
+export const signUpUser = async (signUpData) => {
+  const { data } = await axios.post(`${baseURL}/auth/sign_Up`, signUpData)
+  return data
+}
+
+//     --user--     //
+//首次登入的tokenCheck(會過資料庫取得使用者資料)
 export const verifyToken = (token) => {
   return axios.get(`${baseURL}/users/checkout`, {
     headers: {
@@ -23,7 +38,7 @@ export const verifyToken = (token) => {
   })
 }
 
-//MyLikeListView
+//取得使用者按讚清單
 export const fetchUserLikeList = async (token) => {
   const { data } = await axios.get(`${baseURL}/users/getLikeList`, {
     headers: {
@@ -33,19 +48,7 @@ export const fetchUserLikeList = async (token) => {
   return data
 }
 
-//LoginView
-export const signInUser = async (signInData) => {
-  const { data } = await axios.post(`${baseURL}/auth/sign_in`, signInData)
-  return data
-}
-
-//RegisterView
-export const signUpUser = async (signUpData) => {
-  const { data } = await axios.post(`${baseURL}/auth/sign_Up`, signUpData)
-  return data
-}
-
-//ProfileView
+//更新密碼
 export const updatePassword = (passwordtData, token) => {
   return axios.patch(`${baseURL}/users/updatePassword`, passwordtData, {
     headers: {
@@ -53,6 +56,8 @@ export const updatePassword = (passwordtData, token) => {
     },
   })
 }
+
+//更新個人訊息
 export const updateUserData = (userInfo, token) => {
   return axios.patch(`${baseURL}/users/profile/`, userInfo, {
     headers: {
@@ -61,45 +66,7 @@ export const updateUserData = (userInfo, token) => {
   })
 }
 
-export const updateUserPhoto = async (formData, token) => {
-  const { data } = await axios.post(`${baseURL}/upload/file`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  return data
-}
-
-//PostView
-export const postPostData = (postData, token) => {
-  return axios.post(`${baseURL}/posts/`, postData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-}
-
-//OtherPostView
-export const postCommentData = (postId, commenData, token) => {
-  return axios.post(
-    `${baseURL}/posts/${postId}/comment`,
-    { comment: commenData },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
-  )
-}
-
-export const fetchMemberOnePost = async (postId, token) => {
-  const { data } = await axios.get(`${baseURL}/posts/${postId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  return data
-}
-
+//追蹤Member
 export const followMember = (userId, token) => {
   return axios.post(
     `${baseURL}/users/${userId}/follow`,
@@ -125,6 +92,59 @@ export const fetchMemberData = async (userId, token) => {
   return data
 }
 
+//取得使用者追蹤清單
+export const fetchFollowList = async (token) => {
+  const { data } = await axios.get(`${baseURL}/users/getFollowingList`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data
+}
+
+//     --upload--     //
+//上傳使用者照片
+export const uploadPhoto = async (formData, token) => {
+  const { data } = await axios.post(`${baseURL}/upload/file`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+  return data
+}
+
+//     --posts--     //
+//貼文
+export const postPostData = (postData, token) => {
+  return axios.post(`${baseURL}/posts/`, postData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+
+//留言
+export const postCommentData = (postId, commenData, token) => {
+  return axios.post(
+    `${baseURL}/posts/${postId}/comment`,
+    { comment: commenData },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+}
+
+//取得Member單一貼文
+export const fetchMemberOnePost = async (postId, token) => {
+  const { data } = await axios.get(`${baseURL}/posts/${postId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
+}
+
 //取得Member所有貼文
 export const fetchMemberPost = async (timeSort = 'desc', keyword, userId, token) => {
   const data = await axios.get(`${baseURL}/posts/${userId}/user`, {
@@ -141,17 +161,7 @@ export const deleteMemberPost = (postId, token) => {
   })
 }
 
-//MyFollowListView
-export const fetchFollowList = async (token) => {
-  const { data } = await axios.get(`${baseURL}/users/getFollowingList`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  return data
-}
-
-//index.vue
+//取得所有貼文
 export const fetchAllPost = async (timeSort = 'desc', keyword, token) => {
   const data = await axios.get(`${baseURL}/posts/`, {
     params: { timeSort, keyword },
@@ -160,7 +170,7 @@ export const fetchAllPost = async (timeSort = 'desc', keyword, token) => {
   return data
 }
 
-//PostCard
+//按Member貼文讚
 export const likeMemberPost = (postId, token) => {
   return axios.post(
     `${baseURL}/posts/${postId}/likes`,
@@ -173,6 +183,7 @@ export const likeMemberPost = (postId, token) => {
   )
 }
 
+//取消Member貼文讚
 export const unLikeMemberPost = (postId, token) => {
   return axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
     headers: {

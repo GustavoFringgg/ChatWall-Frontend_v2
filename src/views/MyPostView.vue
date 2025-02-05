@@ -31,7 +31,6 @@ const userStore = useUserStore()
 
 //forfunction
 const searchPost = ref('') //收尋文章關鍵字存取
-// const getUserPost = ref([]) //取的使用者文章
 
 //back router
 const goBack = () => {
@@ -109,16 +108,6 @@ const updatePostComments = async (postId) => {
     showAlert('留言更新失敗，請稍後再試', 'error', 1500)
   }
 }
-
-// //刪除貼文
-// const deletePost = async (postId) => {
-//   try {
-//     await deleteMemberPost(postId, userStore.token)
-//     getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
-//   } catch (error) {
-//     showAlert(`${error.response.data.message}`, 'error', 2000)
-//   }
-// }
 
 onMounted(async () => {
   try {

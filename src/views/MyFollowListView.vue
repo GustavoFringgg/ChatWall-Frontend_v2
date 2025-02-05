@@ -15,7 +15,7 @@ import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const isLoading = ref(true)
 
 //API
-import { fetchFollowList, unFollowMember } from '@/apis'
+import { unFollowMember } from '@/apis'
 
 //Composables
 import { useGetUserList } from '@/Composables/useGetUserLikeOrFollowList'
@@ -23,14 +23,10 @@ const { getUserFollowList, getUserFollowListData } = useGetUserList()
 
 import { useAlert } from '@/Composables/useAlert.js'
 const { showAlert } = useAlert()
-import dayjs from 'dayjs'
 
 //Store
 import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
-
-//forfunction
-// const getUserFollowListData = ref()
 
 //back router
 const goBack = () => {
@@ -40,14 +36,6 @@ const goBack = () => {
 const goToUserPage = (id) => {
   router.push(`/otherpost/${id}`)
 }
-
-// const getUserFollowList = async () => {
-//   const data = await fetchFollowList(userStore.token)
-//   getUserFollowListData.value = data.followingList.map((list) => ({
-//     ...list,
-//     formattedDate: dayjs(list.createAt).format('YYYY-MM-DD HH:mm'),
-//   }))
-// }
 
 const toggleUnfollow = async (userId) => {
   try {

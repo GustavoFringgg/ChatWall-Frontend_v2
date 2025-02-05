@@ -8,15 +8,7 @@ const router = useRouter()
 const route = useRoute()
 
 //APIS
-import {
-  postCommentData,
-  followMember,
-  unFollowMember,
-  fetchMemberData,
-  fetchMemberPost,
-  fetchMemberOnePost,
-  deleteMemberPost,
-} from '@/apis'
+import { postCommentData, fetchMemberData, fetchMemberPost, fetchMemberOnePost } from '@/apis'
 
 //Components
 import LoadingOverlay from '@/components/LoadingOverlay.vue'
@@ -42,10 +34,7 @@ const userStore = useUserStore()
 
 //forfunction
 const getUserData = ref('') //user 個人資料存取
-// const getUserPost = ref([]) //取的使用者文章
 const searchPost = ref('') //收尋文章關鍵字存取
-// const isFollowing = ref(false) //判斷有無追蹤
-// const followersCount = ref(0)
 const userId = route.params.id // 從路由中獲取 ID
 
 //back router
@@ -134,36 +123,6 @@ const updatePostComments = async (postId) => {
     showAlert('留言更新失敗，請稍後再試', 'error', 1500)
   }
 }
-
-//刪除貼文
-// const deletePost = async (postId) => {
-//   try {
-//     await deleteMemberPost(postId, userStore.token)
-//     getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
-//   } catch (error) {
-//     showAlert(`${error.response.data.message}`, 'error', 2000)
-//   }
-// }
-
-//追蹤他人
-// const toggleFollow = async () => {
-//   isFollowing.value = !isFollowing.value
-//   try {
-//     if (isFollowing.value) {
-//       await followMember(userId, userStore.token)
-//       followersCount.value += 1
-//       userStore.following.length += 1
-//       showAlert('已追蹤~~', 'success', 1500)
-//     } else {
-//       await unFollowMember(userId, userStore.token)
-//       followersCount.value -= 1
-//       userStore.following.length -= 1
-//       showAlert('已取消追蹤~~', 'success', 1500)
-//     }
-//   } catch (error) {
-//     showAlert(`${error.response.data.message}`, 'error', 2000)
-//   }
-// }
 
 onMounted(async () => {
   try {

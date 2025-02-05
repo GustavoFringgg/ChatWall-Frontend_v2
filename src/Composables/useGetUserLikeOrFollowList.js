@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import dayjs from 'dayjs'
 
 export function useGetUserList() {
-  const userLikeListData = ref([]) //取得個人按讚列表
+  const userLikeListData = ref([])
   const getUserFollowListData = ref([])
 
   const getUserLikeList = async (token) => {

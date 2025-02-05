@@ -15,49 +15,26 @@ import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const isLoading = ref(true)
 
 //API
-import { fetchUserLikeList, unLikeMemberPost } from '@/apis'
+import { unLikeMemberPost } from '@/apis'
 
 //Composables
 import { useAlert } from '@/Composables/useAlert.js'
 import { useGetUserList } from '@/Composables/useGetUserLikeOrFollowList'
 const { showAlert } = useAlert()
 const { getUserLikeList, userLikeListData } = useGetUserList()
-import dayjs from 'dayjs'
 
 //Store
 import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
-
-//forfunction
-// const userLikeListData = ref() //取得個人按讚列表
 
 //back router
 const goBack = () => {
   router.back()
 }
 
-//確認token是否過期
-// const checkSignInStatus = async () => {
-//   try {
-//     await verifyToken(userStore.token)
-//   } catch (error) {
-//     showAlert(error.response?.data?.message || '登入驗證失敗', 'error', 2000)
-//     router.push({ path: '/' })
-//   }
-// }
-
 const goToLikePage = (id) => {
   router.push(`/certainpost/${id}`)
 }
-
-// 取得使用者按讚的文章列表
-// const getUserLikeList = async (token) => {
-//   const data = await fetchUserLikeList(token)
-//   userLikeListData.value = data.likeList.map((list) => ({
-//     ...list,
-//     formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
-//   }))
-// }
 
 // 取消使用者按讚的文章
 const handleUnlikePost = async (postId, token) => {

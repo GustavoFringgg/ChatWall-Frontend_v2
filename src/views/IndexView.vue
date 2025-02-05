@@ -1,10 +1,6 @@
 <script setup>
 //Vue
-import { computed, nextTick, onMounted, ref } from 'vue'
-
-//Vue-Router
-import { useRouter } from 'vue-router'
-const router = useRouter()
+import { onMounted, ref } from 'vue'
 
 //Components
 import ChatRoom from '@/components/ChatRoom.vue'
@@ -17,13 +13,7 @@ import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const isLoading = ref(true) //判斷是否在loding
 
 //API
-import {
-  fetchMemberOnePost,
-  fetchAllPost,
-  verifyToken,
-  deleteMemberPost,
-  postCommentData,
-} from '@/apis'
+import { fetchMemberOnePost, fetchAllPost, postCommentData } from '@/apis'
 
 //Store
 import { useUserStore } from '@/stores/userStore.js'
@@ -40,10 +30,7 @@ const { showAlert } = useAlert()
 const { formatTime } = useformatTime()
 
 //forfunction
-const signInToken = ref('') //user token存取
-const getUserData = ref('') //user 個人資料存取
 const searchPost = ref('') //收尋文章關鍵字存取
-// const getUserPost = ref([]) //取的使用者文章
 
 const getPost = async (timeSort = 'desc') => {
   const res = await fetchAllPost(timeSort, searchPost.value, userStore.token)
@@ -83,35 +70,6 @@ const handleSortChange = (event) => {
   const selectedSort = event.target.value // 獲取選中的排序條件
   getPost(selectedSort) // 呼叫 API，傳入對應的排序條件
 }
-
-// const signCheck = async () => {
-//   signInToken.value = document.cookie.replace(/(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/, '$1')
-//   if (!signInToken.value) {
-//     showAlert(`請登入`, 'error', 1500)
-//     setTimeout(() => {
-//       router.push({ path: '/' })
-//     }, 1500)
-//   }
-//   try {
-//     const res = await verifyToken(signInToken.value)
-//     getUserData.value = res.data
-//     getUserData.value.user.formatTime = formatTime(res.data.user.createdAt)
-//     userStore.setUserInfo(getUserData.value.user, signInToken.value)
-//   } catch (error) {
-//     showAlert(`${error.response.data.message}`, 'error')
-//     router.push({ path: '/' })
-//   }
-// }
-
-//刪除貼文
-// const deletePost = async (postId) => {
-//   try {
-//     await deleteMemberPost(postId, userStore.token)
-//     getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
-//   } catch (error) {
-//     showAlert(`${error.response.data.message}`, 'error', 2000)
-//   }
-// }
 
 // 提交留言
 const submitComment = async (postId, commentText) => {

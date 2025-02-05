@@ -11,7 +11,7 @@ import SidebarCard from '@/components/SidebarCard.vue'
 import NavbarCard from '@/components/NavbarCard.vue'
 
 //API
-import { postPostData, updateUserPhoto } from '@/apis'
+import { postPostData, uploadPhoto } from '@/apis'
 
 //Composables
 import { useAlert } from '@/Composables/useAlert.js'
@@ -44,7 +44,7 @@ const uploadImage = async () => {
   formData.append('file', selectedImage.value) // 添加檔案
   formData.append('type', 'post') // 指定上傳類型
   try {
-    const data = await updateUserPhoto(formData, userStore.token)
+    const data = await uploadPhoto(formData, userStore.token)
     uploadedFileUrl.value = data.fileUrl // 獲取圖片 URL
     showAlert('圖片上傳成功', 'success')
   } catch (error) {
