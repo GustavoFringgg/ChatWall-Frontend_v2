@@ -1,0 +1,1 @@
+import{r as s,N as o,h as a}from"./index-EPcCLbKF.js";import{u as n}from"./NavbarCard-DXiBNRcN.js";const u=n(),{showAlert:l}=a();function f(){const e=s([]);return{deletePost:async r=>{try{await o(r,u.token),e.value=e.value.filter(t=>t._id!==r)}catch(t){l(`${t.response.data.message}`,"error",2e3)}},getUserPost:e}}export{f as u};
