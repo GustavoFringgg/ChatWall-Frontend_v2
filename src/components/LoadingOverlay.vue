@@ -1,6 +1,4 @@
 <script setup>
-import { defineProps } from 'vue'
-
 // 接收父元件傳遞的屬性
 defineProps({
   isLoading: {

@@ -87,7 +87,7 @@ const signIn = async () => {
               <input class="btn btn-success w-75 mb-3" type="button" @click="signIn" value="登入" />
               <a
                 class="btn btn-primary google-login-btn w-75 mt-2 mb-3"
-                href="https://chatwall-backend.onrender.com/users/google"
+                href="http://localhost:3000/users/google"
               >
                 <img
                   src="https://developers.google.com/identity/images/g-logo.png"

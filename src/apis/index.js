@@ -1,7 +1,7 @@
 import { useUserStore } from '@/stores/userStore'
 import axios from 'axios'
-// const baseURL = 'http://localhost:3000'
-const baseURL = 'https://chatwall-backend.onrender.com'
+const baseURL = 'http://localhost:3000'
+// const baseURL = 'https://chatwall-backend.onrender.com'
 export const getMessages = (query) => {
   console.log('query', query)
   return axios.get(`${baseURL}/api/messages`, { params: query })

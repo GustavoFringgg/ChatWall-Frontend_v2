@@ -30,7 +30,8 @@ const scrollToBottom = () => {
 }
 
 onMounted(() => {
-  const URL = 'https://chatwall-backend.onrender.com'
+  // const URL = 'https://chatwall-backend.onrender.com'
+  const URL = 'http://localhost:3000'
   userStore.loadUserInfo()
   socket = io(URL, { transports: ['websocket'] })
   socket.on('chatMessage', (message) => {

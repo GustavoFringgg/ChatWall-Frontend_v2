@@ -29,8 +29,10 @@ const isLoading = ref(true) //判斷是否在loding
 //Composables
 import { useAlert } from '@/Composables/useAlert.js'
 import { useformatTime } from '@/Composables/useformatTime.js'
+import { useDeletePost } from '@/Composables/useDeletePost'
 const { showAlert } = useAlert()
 const { formatTime } = useformatTime()
+const { deletePost, getUserPost } = useDeletePost()
 
 //Store
 import { useUserStore } from '@/stores/userStore.js'
@@ -38,7 +40,7 @@ const userStore = useUserStore()
 
 //forfunction
 const getUserData = ref('') //user 個人資料存取
-const getUserPost = ref([]) //取的使用者文章
+// const getUserPost = ref([]) //取的使用者文章
 const searchPost = ref('') //收尋文章關鍵字存取
 const isFollowing = ref(false) //判斷有無追蹤
 const followersCount = ref(0)
@@ -132,14 +134,14 @@ const updatePostComments = async (postId) => {
 }
 
 //刪除貼文
-const deletePost = async (postId) => {
-  try {
-    await deleteMemberPost(postId, userStore.token)
-    getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
-  } catch (error) {
-    showAlert(`${error.response.data.message}`, 'error', 2000)
-  }
-}
+// const deletePost = async (postId) => {
+//   try {
+//     await deleteMemberPost(postId, userStore.token)
+//     getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
+//   } catch (error) {
+//     showAlert(`${error.response.data.message}`, 'error', 2000)
+//   }
+// }
 
 //追蹤他人
 const toggleFollow = async () => {
