@@ -1,20 +1,19 @@
 <script setup>
 import Swal from 'sweetalert2'
-import axios from 'axios'
-import { defineProps, ref, defineEmits, computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore.js'
 import { useAlert } from '@/Composables/useAlert.js'
+import { unLikeMemberPost, likeMemberPost } from '@/apis'
 const { showDeleteAlert } = useAlert()
 const router = useRouter()
 const userStore = useUserStore()
-const localurl = 'http://localhost:3000'
+
 // defineProps(['post'])
 const props = defineProps({
-  post: Object, // 接收父層傳遞的 post 資料
+  post: Object,
 })
 
-//只有自己的post才能刪除
 const isOwner = computed(() => props.post.user._id === userStore.userid)
 
 //post內容過長縮減
@@ -26,7 +25,7 @@ const toggleExpand = () => {
 }
 
 const emit = defineEmits(['submit-comment', 'delete-post']) // 定義事件
-const newComment = ref('') // 子元件內部儲存新留言
+const newComment = ref('')
 // 點擊按鈕觸發事件，將 post ID 和留言內容發送給父層
 const handleSubmit = (postId) => {
   emit('submit-comment', postId, newComment.value)
@@ -52,23 +51,11 @@ const likeCount = ref(props.post.likes.length)
 const toggleLike = async () => {
   try {
     if (isLiked.value) {
-      const res = await axios.delete(`${localurl}/posts/${props.post._id}/unlikes`, {
-        headers: {
-          Authorization: `Bearer ${userStore.token}`,
-        },
-      })
+      await unLikeMemberPost(props.post._id, userStore.token)
       likeCount.value -= 1
       isLiked.value = false
     } else {
-      await axios.post(
-        `${localurl}/posts/${props.post._id}/likes`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${userStore.token}`,
-          },
-        },
-      )
+      await likeMemberPost(props.post._id, userStore.token)
       likeCount.value += 1
       isLiked.value = true
     }
@@ -77,7 +64,6 @@ const toggleLike = async () => {
   }
 }
 
-//
 const goToUserPage = (id) => {
   router.push(`/otherpost/${id}`)
 }

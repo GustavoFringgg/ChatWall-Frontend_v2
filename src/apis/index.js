@@ -1,7 +1,7 @@
 import { useUserStore } from '@/stores/userStore'
 import axios from 'axios'
-const baseURL = 'http://localhost:3000'
-
+// const baseURL = 'http://localhost:3000'
+const baseURL = 'https://chatwall-backend.onrender.com'
 export const getMessages = (query) => {
   console.log('query', query)
   return axios.get(`${baseURL}/api/messages`, { params: query })
@@ -166,4 +166,25 @@ export const fetchAllPost = async (timeSort = 'desc', keyword, token) => {
     headers: { Authorization: `Bearer ${token}` },
   })
   return data
+}
+
+//PostCard
+export const likeMemberPost = (postId, token) => {
+  return axios.post(
+    `${baseURL}/posts/${postId}/likes`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  )
+}
+
+export const unLikeMemberPost = (postId, token) => {
+  return axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
 }
