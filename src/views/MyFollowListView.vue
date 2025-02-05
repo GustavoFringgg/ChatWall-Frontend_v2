@@ -18,6 +18,9 @@ const isLoading = ref(true)
 import { fetchFollowList, unFollowMember } from '@/apis'
 
 //Composables
+import { useGetUserList } from '@/Composables/useGetUserLikeOrFollowList'
+const { getUserFollowList, getUserFollowListData } = useGetUserList()
+
 import { useAlert } from '@/Composables/useAlert.js'
 const { showAlert } = useAlert()
 import dayjs from 'dayjs'
@@ -27,7 +30,7 @@ import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
 
 //forfunction
-const getUserFollowListData = ref()
+// const getUserFollowListData = ref()
 
 //back router
 const goBack = () => {
@@ -38,13 +41,13 @@ const goToUserPage = (id) => {
   router.push(`/otherpost/${id}`)
 }
 
-const getUserFollowList = async () => {
-  const data = await fetchFollowList(userStore.token)
-  getUserFollowListData.value = data.followingList.map((list) => ({
-    ...list,
-    formattedDate: dayjs(list.createAt).format('YYYY-MM-DD HH:mm'),
-  }))
-}
+// const getUserFollowList = async () => {
+//   const data = await fetchFollowList(userStore.token)
+//   getUserFollowListData.value = data.followingList.map((list) => ({
+//     ...list,
+//     formattedDate: dayjs(list.createAt).format('YYYY-MM-DD HH:mm'),
+//   }))
+// }
 
 const toggleUnfollow = async (userId) => {
   try {
@@ -52,18 +55,18 @@ const toggleUnfollow = async (userId) => {
     getUserFollowListData.value = getUserFollowListData.value.filter(
       (list) => list.user._id !== userId,
     )
-    userStore.following.length -= 1
-    showAlert(`已取消追蹤`, 'success', 2000)
+    userStore.following = userStore.following.filter((following) => following._id !== userId)
+
+    showAlert('已取消追蹤', 'success', 2000)
   } catch (error) {
-    console.log('error', error)
-    showAlert(`${error.response.data.message}`, 'error', 2000)
+    console.log('錯誤:', error)
   }
 }
 
 onMounted(async () => {
   try {
     userStore.loadUserInfo()
-    await getUserFollowList()
+    await getUserFollowList(userStore.token)
   } catch (error) {
     console.log(error)
   } finally {
@@ -139,7 +142,6 @@ onMounted(async () => {
           </div>
         </main>
 
-        <!-- Sidebar -->
         <SidebarCard></SidebarCard>
       </div>
     </div>
@@ -147,11 +149,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* .follow-list-body {
-  max-height: 100px;
-  overflow-y: auto;
-} */
-
 /*倒退按鈕*/
 .back-button button {
   background-color: transparent;

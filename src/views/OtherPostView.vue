@@ -30,6 +30,8 @@ const isLoading = ref(true) //判斷是否在loding
 import { useAlert } from '@/Composables/useAlert.js'
 import { useformatTime } from '@/Composables/useformatTime.js'
 import { useDeletePost } from '@/Composables/useDeletePost'
+import { useToggleFollow } from '@/Composables/useToggleFollow'
+const { toggleFollow, isFollowing, followersCount } = useToggleFollow()
 const { showAlert } = useAlert()
 const { formatTime } = useformatTime()
 const { deletePost, getUserPost } = useDeletePost()
@@ -42,8 +44,8 @@ const userStore = useUserStore()
 const getUserData = ref('') //user 個人資料存取
 // const getUserPost = ref([]) //取的使用者文章
 const searchPost = ref('') //收尋文章關鍵字存取
-const isFollowing = ref(false) //判斷有無追蹤
-const followersCount = ref(0)
+// const isFollowing = ref(false) //判斷有無追蹤
+// const followersCount = ref(0)
 const userId = route.params.id // 從路由中獲取 ID
 
 //back router
@@ -144,24 +146,24 @@ const updatePostComments = async (postId) => {
 // }
 
 //追蹤他人
-const toggleFollow = async () => {
-  isFollowing.value = !isFollowing.value
-  try {
-    if (isFollowing.value) {
-      await followMember(userId, userStore.token)
-      followersCount.value += 1
-      userStore.following.length += 1
-      showAlert('已追蹤~~', 'success', 1500)
-    } else {
-      await unFollowMember(userId, userStore.token)
-      followersCount.value -= 1
-      userStore.following.length -= 1
-      showAlert('已取消追蹤~~', 'success', 1500)
-    }
-  } catch (error) {
-    showAlert(`${error.response.data.message}`, 'error', 2000)
-  }
-}
+// const toggleFollow = async () => {
+//   isFollowing.value = !isFollowing.value
+//   try {
+//     if (isFollowing.value) {
+//       await followMember(userId, userStore.token)
+//       followersCount.value += 1
+//       userStore.following.length += 1
+//       showAlert('已追蹤~~', 'success', 1500)
+//     } else {
+//       await unFollowMember(userId, userStore.token)
+//       followersCount.value -= 1
+//       userStore.following.length -= 1
+//       showAlert('已取消追蹤~~', 'success', 1500)
+//     }
+//   } catch (error) {
+//     showAlert(`${error.response.data.message}`, 'error', 2000)
+//   }
+// }
 
 onMounted(async () => {
   try {
@@ -199,7 +201,7 @@ onMounted(async () => {
             </div>
 
             <div v-if="getUserData.data._id !== userStore.userid">
-              <button class="btn btn-warning rounded-pill" @click="toggleFollow">
+              <button class="btn btn-warning rounded-pill" @click="toggleFollow(userId)">
                 {{ isFollowing ? '已追隨' : '追隨' }}
               </button>
             </div>

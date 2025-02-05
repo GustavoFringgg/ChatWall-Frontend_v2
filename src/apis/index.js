@@ -33,14 +33,6 @@ export const fetchUserLikeList = async (token) => {
   return data
 }
 
-export const unlikePost = (postId, token) => {
-  return axios.delete(`${baseURL}/posts/${postId}/unlikes`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-}
-
 //LoginView
 export const signInUser = async (signInData) => {
   const { data } = await axios.post(`${baseURL}/auth/sign_in`, signInData)

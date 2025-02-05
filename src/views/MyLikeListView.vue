@@ -15,11 +15,13 @@ import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const isLoading = ref(true)
 
 //API
-import { fetchUserLikeList, unlikePost } from '@/apis'
+import { fetchUserLikeList, unLikeMemberPost } from '@/apis'
 
 //Composables
 import { useAlert } from '@/Composables/useAlert.js'
+import { useGetUserList } from '@/Composables/useGetUserLikeOrFollowList'
 const { showAlert } = useAlert()
+const { getUserLikeList, userLikeListData } = useGetUserList()
 import dayjs from 'dayjs'
 
 //Store
@@ -27,7 +29,7 @@ import { useUserStore } from '@/stores/userStore.js'
 const userStore = useUserStore()
 
 //forfunction
-const userLikeListData = ref() //取得個人按讚列表
+// const userLikeListData = ref() //取得個人按讚列表
 
 //back router
 const goBack = () => {
@@ -49,18 +51,18 @@ const goToLikePage = (id) => {
 }
 
 // 取得使用者按讚的文章列表
-const getUserLikeList = async (token) => {
-  const data = await fetchUserLikeList(token)
-  userLikeListData.value = data.likeList.map((list) => ({
-    ...list,
-    formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
-  }))
-}
+// const getUserLikeList = async (token) => {
+//   const data = await fetchUserLikeList(token)
+//   userLikeListData.value = data.likeList.map((list) => ({
+//     ...list,
+//     formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
+//   }))
+// }
 
 // 取消使用者按讚的文章
 const handleUnlikePost = async (postId, token) => {
   try {
-    await unlikePost(postId, token)
+    await unLikeMemberPost(postId, token)
     userLikeListData.value = userLikeListData.value.filter((post) => post._id !== postId)
     showAlert(`已取消讚`, 'success', 1500)
   } catch (error) {
@@ -72,6 +74,8 @@ onMounted(async () => {
   try {
     userStore.loadUserInfo()
     await getUserLikeList(userStore.token)
+  } catch (error) {
+    console.log(error)
   } finally {
     isLoading.value = false
   }
