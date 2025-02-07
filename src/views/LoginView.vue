@@ -21,6 +21,14 @@ const signInField = ref({
   password: '',
 })
 
+let baseURL = ref()
+if (import.meta.env.MODE === 'production') {
+  baseURL.value = 'https://chatwall-backend.onrender.com/users/google'
+} else {
+  baseURL.value = 'http://localhost:3000/users/google'
+}
+
+console.log('2')
 watch(isActiveForPassword, () => {
   const inputPassword = document.getElementById('password')
   if (isActiveForPassword.value) {
@@ -85,10 +93,7 @@ const signIn = async () => {
           <div>
             <div class="text-center mt-1 mb-3">
               <input class="btn btn-success w-75 mb-3" type="button" @click="signIn" value="登入" />
-              <a
-                class="btn btn-primary google-login-btn w-75 mt-2 mb-3"
-                href="http://localhost:3000/users/google"
-              >
+              <a class="btn btn-primary google-login-btn w-75 mt-2 mb-3" :href="baseURL">
                 <img
                   src="https://developers.google.com/identity/images/g-logo.png"
                   alt="Google Icon"

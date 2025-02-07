@@ -1,13 +1,11 @@
 import axios from 'axios'
 let baseURL
-
 if (import.meta.env.MODE === 'production') {
   baseURL = 'https://chatwall-backend.onrender.com'
 } else {
   baseURL = 'http://localhost:3000'
 }
 
-console.log('我的baseurl', baseURL)
 //     --socket.io--     //
 //取得聊天室聊天訊息
 export const getMessages = (query) => {
