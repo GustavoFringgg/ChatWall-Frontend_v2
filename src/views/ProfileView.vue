@@ -1,6 +1,6 @@
 <script setup>
 //Vue-核心
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, onMounted } from 'vue'
 
 //Vue-Router
 import { useRouter } from 'vue-router'
@@ -126,6 +126,10 @@ const uploadImage = async () => {
     showAlert(`${error.response.data.message}`, 'error', 2000)
   }
 }
+
+onMounted(() => {
+  userStore.loadUserInfo()
+})
 </script>
 <template>
   <div>
@@ -187,81 +191,79 @@ const uploadImage = async () => {
                     role="tabpanel"
                     aria-labelledby="nickname-tab"
                   >
-                    <form>
-                      <div class="text-center mb-4">
-                        <div class="img-container" style="height: 140px">
-                          <img
-                            v-if="uploadedFileUrl"
-                            :src="uploadedFileUrl"
-                            alt="頭像"
-                            class="rounded-circle img-fluid-cos"
-                            style="width: 200px; height: 200px; object-fit: cover"
-                          />
-                          <img
-                            v-else
-                            :src="userStore.photo"
-                            alt="頭像"
-                            class="rounded-circle img-fluid-cos"
-                            style="width: 120px; height: 120px; object-fit: cover"
-                          />
-                        </div>
-                        <div class="mt-4">
-                          <button class="btn btn-primary" @click="triggerFileUpload">
-                            上傳大頭照
-                          </button>
-                          <input
-                            ref="fileInput"
-                            type="file"
-                            class="d-none"
-                            @change="handleImageUpload"
-                          />
-                        </div>
-                      </div>
-                      <div class="mb-3">
-                        <label for="nickname" class="form-label">暱稱</label>
-                        <input
-                          type="text"
-                          class="form-control"
-                          id="nickname"
-                          placeholder="輸入暱稱"
-                          v-model="userData.name"
+                    <div class="text-center mb-4">
+                      <div class="img-container" style="height: 140px">
+                        <img
+                          v-if="uploadedFileUrl"
+                          :src="uploadedFileUrl"
+                          alt="頭像"
+                          class="rounded-circle img-fluid-cos"
+                          style="width: 200px; height: 200px; object-fit: cover"
+                        />
+                        <img
+                          v-else
+                          :src="userStore.photo"
+                          alt="頭像"
+                          class="rounded-circle img-fluid-cos"
+                          style="width: 120px; height: 120px; object-fit: cover"
                         />
                       </div>
-                      <div class="mb-3">
-                        <label class="form-label">性別</label><br />
-                        <div class="form-check form-check-inline">
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            name="gender"
-                            id="genderMale"
-                            value="male"
-                            v-model="userData.sex"
-                          />
-
-                          <label class="form-check-label" for="genderMale">男</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                          <input
-                            class="form-check-input"
-                            type="radio"
-                            name="gender"
-                            id="genderFemale"
-                            value="female"
-                            v-model="userData.sex"
-                          />
-                          <label class="form-check-label" for="genderFemale">女</label>
-                        </div>
+                      <div class="mt-4">
+                        <button type="button" class="btn btn-primary" @click="triggerFileUpload">
+                          上傳大頭照
+                        </button>
+                        <input
+                          ref="fileInput"
+                          type="file"
+                          class="d-none"
+                          @change="handleImageUpload"
+                        />
                       </div>
-                      <button
-                        :disabled="!userData.name.trim()"
-                        type="button"
-                        class="btn btn-secondary w-100"
-                        @click="updateUserInfo"
-                      >
-                        送出資訊
-                      </button>
-                    </form>
+                    </div>
+                    <div class="mb-3">
+                      <label for="nickname" class="form-label">暱稱</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="nickname"
+                        placeholder="輸入暱稱"
+                        v-model="userData.name"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label">性別</label><br />
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="gender"
+                          id="genderMale"
+                          value="male"
+                          v-model="userData.sex"
+                        />
+
+                        <label class="form-check-label" for="genderMale">男</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="gender"
+                          id="genderFemale"
+                          value="female"
+                          v-model="userData.sex"
+                        />
+                        <label class="form-check-label" for="genderFemale">女</label>
+                      </div>
+                    </div>
+                    <button
+                      :disabled="!userData.name.trim()"
+                      type="button"
+                      class="btn btn-secondary w-100"
+                      @click="updateUserInfo"
+                    >
+                      送出資訊
+                    </button>
                   </div>
 
                   <!-- 重設密碼內容 -->

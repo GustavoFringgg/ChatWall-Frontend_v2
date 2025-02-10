@@ -28,7 +28,6 @@ if (import.meta.env.MODE === 'production') {
   baseURL.value = 'http://localhost:3000/users/google'
 }
 
-console.log('2')
 watch(isActiveForPassword, () => {
   const inputPassword = document.getElementById('password')
   if (isActiveForPassword.value) {

@@ -103,7 +103,9 @@ onMounted(() => {
             <div class="mb-3">
               <div>
                 <!-- 上傳檔案按鈕 -->
-                <button class="btn btn-primary" @click="triggerFileUpload">上傳圖片</button>
+                <button type="button" class="btn btn-primary" @click="triggerFileUpload">
+                  上傳圖片
+                </button>
                 <!-- 隱藏檔案選擇框 -->
                 <input ref="fileInput" type="file" class="d-none" @change="handleImageUpload" />
               </div>

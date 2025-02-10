@@ -36,8 +36,6 @@ onMounted(() => {
   } else {
     baseURL = 'http://localhost:3000'
   }
-  console.log('baseURL', baseURL)
-
   userStore.loadUserInfo()
   socket = io(baseURL, { transports: ['websocket'] })
   socket.on('chatMessage', (message) => {
@@ -50,12 +48,11 @@ onMounted(() => {
       formattedDate: new Date().toLocaleString(),
     })
   })
-  getMessage()
+  getMessage(userStore.token)
 })
 
 onUnmounted(() => {
   socket?.disconnect()
-  console.log('取消連接')
 })
 
 watch(messages, () => {
@@ -72,9 +69,9 @@ watch(messages, () => {
     })
   }
 })
-async function getMessage(query) {
+async function getMessage(token) {
   try {
-    const { data } = await getMessages(query)
+    const { data } = await getMessages(token)
     messages.value = data.data.map((message) => {
       const formattedMessageTime = formatTime(message.createdAt)
       return {

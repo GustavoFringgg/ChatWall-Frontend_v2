@@ -8,15 +8,26 @@ if (import.meta.env.MODE === 'production') {
 
 //     --socket.io--     //
 //取得聊天室聊天訊息
-export const getMessages = (query) => {
-  return axios.get(`${baseURL}/api/messages`, { params: query })
+export const getMessages = (token) => {
+  return axios.get(`${baseURL}/api/messages`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
 }
 
 //     --auth--     //
 //後端的tokenCheck(不會過資料庫)
 export const validateToken = (token) => {
-  return axios.get(`${baseURL}/auth/validate-token`, {
+  return axios.get(`${baseURL}/auth/checkout-token`, {
     headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+//首次登入的tokenCheck(會過資料庫取得使用者資料)
+export const verifyToken = (token) => {
+  return axios.get(`${baseURL}/auth/checkout-userinfo`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   })
 }
 
@@ -33,15 +44,6 @@ export const signUpUser = async (signUpData) => {
 }
 
 //     --user--     //
-//首次登入的tokenCheck(會過資料庫取得使用者資料)
-export const verifyToken = (token) => {
-  return axios.get(`${baseURL}/users/checkout`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-}
-
 //取得使用者按讚清單
 export const fetchUserLikeList = async (token) => {
   const { data } = await axios.get(`${baseURL}/users/getLikeList`, {
