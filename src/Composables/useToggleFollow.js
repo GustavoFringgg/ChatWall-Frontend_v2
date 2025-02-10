@@ -1,11 +1,11 @@
 import { unFollowMember, followMember } from '@/apis'
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/userStore'
-const userStore = useUserStore()
 import { useAlert } from './useAlert'
-const { showAlert } = useAlert()
 
 export function useToggleFollow() {
+  const { showAlert } = useAlert()
+  const userStore = useUserStore()
   const isFollowing = ref(false)
   const followersCount = ref(0)
 

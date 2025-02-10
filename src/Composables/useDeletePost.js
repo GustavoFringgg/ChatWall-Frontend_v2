@@ -3,10 +3,9 @@ import { deleteMemberPost } from '@/apis'
 import { useUserStore } from '@/stores/userStore'
 import { useAlert } from './useAlert'
 
-const userStore = useUserStore()
-const { showAlert } = useAlert()
-
 export function useDeletePost() {
+  const userStore = useUserStore()
+  const { showAlert } = useAlert()
   const getUserPost = ref([])
   const deletePost = async (postId) => {
     try {

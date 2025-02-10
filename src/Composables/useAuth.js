@@ -6,12 +6,11 @@ import { useUserStore } from '@/stores/userStore'
 import { useformatTime } from './useformatTime'
 import { useAlert } from './useAlert'
 
-const router = useRouter()
-const userStore = useUserStore()
-const { formatTime } = useformatTime()
-const { showAlert } = useAlert()
-
 export function useAuth() {
+  const router = useRouter()
+  const userStore = useUserStore()
+  const { formatTime } = useformatTime()
+  const { showAlert } = useAlert()
   const signInToken = ref('')
   const getUserData = ref(null)
 
@@ -22,8 +21,8 @@ export function useAuth() {
     )
     console.log(' signInToken.value', signInToken.value)
     if (!signInToken.value) {
+      router.push({ path: '/' })
       showAlert(`請登入`, 'error', 1500)
-      setTimeout(() => router.push({ path: '/' }), 1500)
       return
     }
     try {
