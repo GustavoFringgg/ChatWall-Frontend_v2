@@ -1,22 +1,26 @@
-# ChatWall 雀窩- Backend API<br>
+# ChatWall 雀窩- Frontend<br>
 
 
 ### 專案描述
 ChatWall是一個社交媒體平台，提供用戶一般註冊/一般登入/google第三方登入，發佈動態、圖片、留言評論、貼文點讚、追蹤用戶以及線上聊天即時等功能
 
 ---
+
+本頁為前端repository，提供測試帳號供用戶使用<br>
+
+|暱稱 | E-mail                | Password   |
+|----|-----------------------|------------|
+| 我是測試員 | 123456789a@gmail.com   | 123456789a |
+
+前往[ChatWall!](<https://chat-wall-frontend-v2.vercel.app/#/>) ⬅⬅⬅⬅⬅
+
+--- 
 ChatWall為前後端分離開發<br>
 - 前端<br>
 基於Vue3、Vite的架構開發，UI framework使用Bootstrap，使用MVVM設計模式，導入第三方google登入註冊，實現socket-io即時聊天功能，並部屬至Vercel
 - 後端<br>
 基於Node.js的Express架構開發，使用MVC設計模式，在Restful規範下實現CRUD，ODM使用mongoose操控MongoDB Atlas，儲存用戶上傳圖檔至Firebase Storage，並擁有全域錯誤管理handleErrorAsync，最後使用Docker打包部屬至Render<br>
-
-[後端repository](<https://github.com/GustavoFringgg/ChatWall-Frontend_v2>) ⬅
-
-
-
-
-本頁為前端repository，提供測試帳號供用戶使用<br>
+- [後端repository](<https://github.com/GustavoFringgg/ChatWall-Frontend_v2>) ⬅
 
 
 ---
@@ -62,6 +66,12 @@ npm run start:dev
 //正式環境模式
 npm run start:production
 ```
+---
+# Screenshots
+<img src="https://firebasestorage.googleapis.com/v0/b/theodore-s-blog.appspot.com/o/%E5%80%8B%E4%BA%BA%E8%B3%87%E6%96%99%E5%A4%BE%2Fgithub%20readme%2FchatWall%2F0618.jpg?alt=media&token=483269aa-004e-4cea-9638-12c27ca2143d" width="500" style="display: inline-block;"/>
+<img src="https://firebasestorage.googleapis.com/v0/b/theodore-s-blog.appspot.com/o/%E5%80%8B%E4%BA%BA%E8%B3%87%E6%96%99%E5%A4%BE%2Fgithub%20readme%2FchatWall%2F0618.jpg?alt=media&token=483269aa-004e-4cea-9638-12c27ca2143d" width="500" style="display: inline-block;"/>
+
+
 ---
 
 # Technologies & Libraries
