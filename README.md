@@ -65,7 +65,7 @@ ChatWall為前後端分離開發<br>
 
 ---
 
-## Installation
+# Installation
 
 #### 1. Clone the repository && Move to the ChatWall-Backend directory
 ```
