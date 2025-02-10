@@ -17,10 +17,11 @@ ChatWall是一個社交媒體平台，提供用戶一般註冊/一般登入/goog
 --- 
 ChatWall為前後端分離開發<br>
 - 前端<br>
-基於Vue3、Vite的架構開發，UI framework使用Bootstrap，使用MVVM設計模式，導入第三方google登入註冊，實現socket-io即時聊天功能，並部屬至Vercel
+基於Vue3、Vite的架構開發，UI framework使用Bootstrap，符合RWD，並使用MVVM設計模式，使用Pinia管理用戶狀態，導入第三方google登入註冊，實現socket-io即時聊天功能，並部屬至Vercel<br><br>
 - 後端<br>
 基於Node.js的Express架構開發，使用MVC設計模式，在Restful規範下實現CRUD，ODM使用mongoose操控MongoDB Atlas，儲存用戶上傳圖檔至Firebase Storage，並擁有全域錯誤管理handleErrorAsync，最後使用Docker打包部屬至Render<br>
-- [後端repository](<https://github.com/GustavoFringgg/ChatWall-Frontend_v2>) ⬅
+[後端repository](<https://github.com/GustavoFringgg/ChatWall-Frontend_v2>) ⬅<br>
+
 
 
 ---
@@ -34,7 +35,7 @@ ChatWall為前後端分離開發<br>
 - ✅ 修改用戶暱稱大頭貼密碼功能
 - ✅ 發佈貼文
 - ✅ 留言功能
-- ✅ 貼文篩選(最新貼文/最舊貼文/熱門貼文/搜索貼文)
+- ✅ 貼文篩選(最新貼文/最舊貼文/熱門貼文/關鍵字搜尋貼文)
 - ✅ 刪除貼文
 - ✅ 點讚功能
 - ✅ 追蹤用戶
@@ -60,7 +61,6 @@ ChatWall為前後端分離開發<br>
   <img src="https://firebasestorage.googleapis.com/v0/b/theodore-s-blog.appspot.com/o/%E5%80%8B%E4%BA%BA%E8%B3%87%E6%96%99%E5%A4%BE%2Fgithub%20readme%2FchatWall%2F0640.jpg?alt=media&token=ab6bb41c-d3e6-4cd6-b915-0ae5529713d5" width="500" height="250">
   <img src="https://firebasestorage.googleapis.com/v0/b/theodore-s-blog.appspot.com/o/%E5%80%8B%E4%BA%BA%E8%B3%87%E6%96%99%E5%A4%BE%2Fgithub%20readme%2FchatWall%2F0649-a.jpg?alt=media&token=3667b814-1340-4f5a-9986-d2ee5fba14cd" width="500" height="250">
     <img src="https://firebasestorage.googleapis.com/v0/b/theodore-s-blog.appspot.com/o/%E5%80%8B%E4%BA%BA%E8%B3%87%E6%96%99%E5%A4%BE%2Fgithub%20readme%2FchatWall%2F0649b.jpg?alt=media&token=3f07b8ed-2949-4a9e-926e-105db0799d45" width="500" height="250">
-
 </div>
 
 ---
@@ -69,8 +69,8 @@ ChatWall為前後端分離開發<br>
 
 #### 1. Clone the repository && Move to the ChatWall-Backend directory
 ```
-git clone https://github.com/GustavoFringgg/ChatWall-Backend.git
-cd ChatWall-Backend
+git clone https://github.com/GustavoFringgg/ChatWall-Frontend_v2.git
+cd ChatWall-Frontend_v2
 ```
 #### 2. Install the dependencies
 ```
@@ -80,50 +80,27 @@ npm install
 ```
 //開發者模式
 npm run start:dev
-
-//正式環境模式
-npm run start:production
 ```
 ---
 
 # Technologies & Libraries
-### Backend:
-- Node.js v20.11.1
+### Core Framework & Plugins :
+- vue@3.5.13
+- vue-router@4.5.0
+- pinia@2.3.0
 
-### Backend Framework:
-- express@4.16.4
-- express-rate-limit@7.4.0
+### Build & Development Tools 
+- vite@5.4.14
+- gh-pages@6.2.0
 
-### Database:
-- firebase-admin@12.1.1
-- mongoose@8.9.4
+### UI & Styling 
+- bootstrap@5.3.3
+- sass@1.82.0
+- sweetalert2@11.14.5
 
-### Connection:
-- axios@1.7.2
-
-### Authentication:
-- jsonwebtoken@9.0.2
-- validator@13.12.0
-
-### Encryption:
-- bcryptjs@2.4.3
-- uuid@10.0.0
-
-### Image Handling:
-- image-size@1.1.1
-- multer@1.4.5-lts.1
-
-### Documentation:
-- dotenv@16.4.5
-- swagger-autogen@2.23.7
-- swagger-ui-express@5.0.1
-
-### Logging:
-- morgan@1.9.1
-
-### Passport Login:
-- passport-google-oauth20@2.0.0
-- passport@0.7.0
+### Utilities 
+- axios@1.7.9
+- dayjs@1.11.13
 
 ### Real-time Connection:
 - socket.io@4.8.1
