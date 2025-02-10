@@ -39,7 +39,7 @@ export const signInUser = async (signInData) => {
 
 //註冊
 export const signUpUser = async (signUpData) => {
-  const { data } = await axios.post(`${baseURL}/auth/sign_Up`, signUpData)
+  const { data } = await axios.post(`${baseURL}/auth/sign_up`, signUpData)
   return data
 }
 
