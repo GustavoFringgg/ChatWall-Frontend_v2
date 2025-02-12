@@ -18,7 +18,7 @@ import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const isLoading = ref(true) //判斷是否在loding
 
 //API
-import { fetchMemberOnePost, postCommentData, deleteMemberPost } from '@/apis'
+import { updateMemberPost, fetchMemberOnePost, postCommentData, deleteMemberPost } from '@/apis'
 
 //Composables
 import { useAlert } from '@/Composables/useAlert.js'
@@ -99,6 +99,18 @@ const deletePost = async (postId) => {
   }
 }
 
+//更新留言
+const updatePost = async (postId, newContent) => {
+  try {
+    const post = getUserPost.value.find((p) => p._id === postId)
+    if (post) post.content = newContent
+    showAlert('貼文修改成功', 'success', 2000)
+    await updateMemberPost(postId, newContent, userStore.token)
+  } catch (error) {
+    console.log('更新失敗', error)
+  }
+}
+
 onMounted(async () => {
   try {
     userStore.loadUserInfo()
@@ -127,6 +139,7 @@ onMounted(async () => {
               :post="post"
               @submit-comment="submitComment"
               @delete-post="deletePost"
+              @update-post="updatePost"
             ></PostCard>
           </div>
         </main>

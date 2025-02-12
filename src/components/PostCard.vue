@@ -14,7 +14,26 @@ const props = defineProps({
   post: Object,
 })
 
+//確認貼文是否屬於自己
 const isOwner = computed(() => props.post.user._id === userStore.userid)
+
+//確認是否開始編輯
+const isEditing = ref(false)
+
+//開始編輯後的內容
+const editedContent = ref('')
+
+//開始編輯
+const startEditing = () => {
+  isEditing.value = true
+  editedContent.value = props.post.content
+}
+
+// 取消編輯
+const cancelEditing = () => {
+  isEditing.value = false
+  editedContent.value = props.post.content
+}
 
 //post內容過長縮減
 const maxLength = 100
@@ -24,12 +43,18 @@ const toggleExpand = () => {
   isExpanded.value = !isExpanded.value
 }
 
-const emit = defineEmits(['submit-comment', 'delete-post']) // 定義事件
+const emit = defineEmits(['submit-comment', 'delete-post', 'update-post']) // 定義事件
 const newComment = ref('')
-// 點擊按鈕觸發事件，將 post ID 和留言內容發送給父層
+
 const handleSubmit = (postId) => {
   emit('submit-comment', postId, newComment.value)
-  newComment.value = '' // 清空留言框
+  newComment.value = ''
+}
+
+//確認編輯
+const handleUpdatePost = () => {
+  emit('update-post', props.post._id, editedContent.value)
+  isEditing.value = false
 }
 
 const handleDeletePost = (postId) => {
@@ -90,24 +115,53 @@ const goToUserPage = (id) => {
           <small class="text-muted"> {{ post.formattedDate }}</small>
         </div>
       </div>
-      <p v-if="post.content.length < maxLength" style="white-space: pre-wrap">{{ post.content }}</p>
-      <p v-else style="white-space: pre-wrap">{{ isExpanded ? post.content : expandContent }}</p>
-      <button
-        type="button"
-        class="btn btn-outline-primary btn-sm rounded-pill"
-        v-if="post.content.length > maxLength"
-        @click="toggleExpand"
-      >
-        {{ isExpanded ? '收起來' : '閱讀更多' }}
-      </button>
-      <button
-        v-if="isOwner"
-        @click="handleDeletePost(post.id)"
-        class="btn btn-outline-secondary btn-sm position-absolute"
-        style="top: 10px; right: 10px"
-      >
-        <i class="bi bi-x-lg"></i>
-      </button>
+      <div v-if="isEditing">
+        <textarea
+          v-model="editedContent"
+          class="form-control"
+          rows="8"
+          style="resize: none"
+        ></textarea>
+        <div class="mt-2">
+          <button class="btn btn-success btn-sm me-2" @click="handleUpdatePost">確認修改</button>
+          <button class="btn btn-secondary btn-sm" @click="cancelEditing">取消</button>
+        </div>
+      </div>
+      <div v-else>
+        <p v-if="post.content.length < maxLength" style="white-space: pre-wrap">
+          {{ post.content }}
+        </p>
+        <p v-else style="white-space: pre-wrap">{{ isExpanded ? post.content : expandContent }}</p>
+        <button
+          type="button"
+          class="btn btn-outline-primary btn-sm rounded-pill"
+          v-if="post.content.length > maxLength"
+          @click="toggleExpand"
+        >
+          {{ isExpanded ? '收起來' : '閱讀更多' }}
+        </button>
+      </div>
+      <div v-if="isOwner" class="dropdown position-absolute" style="top: 10px; right: 10px">
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          id="dropdownMenuButton2"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <i class="bi bi-three-dots-vertical"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+          <li>
+            <button type="button" class="dropdown-item" @click="startEditing()">編輯貼文</button>
+          </li>
+          <li>
+            <button type="button" class="dropdown-item" @click="handleDeletePost(post.id)">
+              刪除貼文
+            </button>
+          </li>
+        </ul>
+      </div>
       <div v-if="post.image" class="mb-3 img-container border border-3 border-dark text-center">
         <img :src="post.image" alt="Image Preview" class="img-fluid-cos rounded" />
       </div>

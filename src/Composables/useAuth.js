@@ -19,7 +19,6 @@ export function useAuth() {
       /(?:(?:^|.*;\s*)Token\s*\=\s*([^;]*).*$)|^.*$/,
       '$1',
     )
-    console.log(' signInToken.value', signInToken.value)
     if (!signInToken.value) {
       router.push({ path: '/' })
       showAlert(`請登入`, 'error', 1500)

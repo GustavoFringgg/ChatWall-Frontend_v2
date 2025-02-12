@@ -11,7 +11,7 @@ defineProps({
 <template>
   <div v-if="isLoading" class="loading-overlay">
     <div class="d-flex align-items-center">
-      <strong class="text-success fw-bolder loading-text">Loading<!-- LOADING DOTS... --> </strong>
+      <strong class="text-success fw-bolder loading-text">Loading</strong>
       <div
         style="width: 5rem; height: 5rem"
         class="spinner-border text-success ms-3"

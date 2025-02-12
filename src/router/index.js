@@ -77,7 +77,6 @@ router.beforeEach(async (to, from, next) => {
       return next({ path: '/' })
     }
   }
-  console.log('beforeEach觸發')
   next()
 })
 export default router

@@ -13,7 +13,7 @@ import LoadingOverlay from '@/components/LoadingOverlay.vue'
 const isLoading = ref(true) //判斷是否在loding
 
 //API
-import { fetchMemberOnePost, fetchAllPost, postCommentData } from '@/apis'
+import { fetchMemberOnePost, fetchAllPost, postCommentData, updateMemberPost } from '@/apis'
 
 //Store
 import { useUserStore } from '@/stores/userStore.js'
@@ -84,13 +84,28 @@ const submitComment = async (postId, commentText) => {
   }
 }
 
+//更新留言
+const updatePost = async (postId, newContent) => {
+  try {
+    const post = getUserPost.value.find((p) => p._id === postId)
+    if (post) post.content = newContent
+    showAlert('貼文修改成功', 'success', 2000)
+    await updateMemberPost(postId, newContent, userStore.token)
+  } catch (error) {
+    console.log('更新失敗', error)
+  }
+}
+
 const updatePostComments = async (postId) => {
   try {
+    //取得最新的post貼文
     const data = await fetchMemberOnePost(postId, userStore.token)
+    //將貼文的新留言時間格時化
     const updateComments = data.message[0].comments.map((comment) => ({
       ...comment,
       formattedCommentDate: formatTime(comment.createdAt),
     }))
+    //本地找到此貼文，並更新新留言
     const postIndex = getUserPost.value.findIndex((post) => post._id === postId)
     if (postIndex !== -1) {
       getUserPost.value[postIndex].comments = updateComments
@@ -142,6 +157,7 @@ onMounted(async () => {
               :post="post"
               @submit-comment="submitComment"
               @delete-post="deletePost"
+              @update-post="updatePost"
             ></PostCard>
           </div>
         </main>

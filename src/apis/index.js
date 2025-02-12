@@ -197,3 +197,15 @@ export const unLikeMemberPost = (postId, token) => {
     },
   })
 }
+
+export const updateMemberPost = (postId, newContent, token) => {
+  const contenInfo = {
+    newContent,
+  }
+  console.log('NewContent', newContent)
+  return axios.patch(`${baseURL}/posts/${postId}`, contenInfo, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
