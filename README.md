@@ -19,7 +19,7 @@ ChatWall是一個社交媒體平台，提供用戶一般註冊/一般登入/goog
 - 前端<br>
 基於Vue3 Composition API、Vite的框架開發，UI framework使用Bootstrap，支援 RWD，適應不同裝置與螢幕尺寸，並使用MVVM設計模式，使用Pinia管理用戶狀態，使用sweetAlert2通知提醒，導入第三方google登入註冊，實現Socket.io即時聊天功能，並部屬至Vercel<br><br>
 - 後端<br>
-基於Node.js的Express框架開發，使用MVC設計模式開發API，使用Postman做API測試，在Restful規範下實現CRUD，ODM使用**mongoose**操控資料庫**MongoDB Atlas**，提供用戶上傳圖檔至Firebase Storage，並擁有全域錯誤管理handleErrorAsync，使用Swagger生成API文件，最後使用Docker打包部屬至Render<br>
+基於Node.js的Express框架開發，使用MVC設計模式開發API，使用Postman做API測試，使用JWT Token驗證與前端交互，在Restful規範下實現CRUD，ODM使用mongoose操控資料庫MongoDB Atlas，提供用戶上傳圖檔至Firebase Storage，並擁有全域錯誤管理handleErrorAsync，使用Swagger生成API文件，最後使用Docker打包部屬至Render<br>
 [後端repository](<https://github.com/GustavoFringgg/ChatWall-Backend>) ⬅<br>
 
 
