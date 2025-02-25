@@ -43,7 +43,7 @@ const handleUnlikePost = async (postId, token) => {
     userLikeListData.value = userLikeListData.value.filter((post) => post._id !== postId)
     showAlert(`已取消讚`, 'success', 1500)
   } catch (error) {
-    showAlert(`${error.response.data.message}`, 'error', 2000)
+    showAlert('此貼文可能被刪除囉，請重新整理', 'error', 2000)
   }
 }
 

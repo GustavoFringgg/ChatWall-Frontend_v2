@@ -4,6 +4,8 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore.js'
 import { useAlert } from '@/Composables/useAlert.js'
+const { showAlert } = useAlert()
+
 import { unLikeMemberPost, likeMemberPost } from '@/apis'
 const { showDeleteAlert } = useAlert()
 const router = useRouter()
@@ -85,7 +87,7 @@ const toggleLike = async () => {
       isLiked.value = true
     }
   } catch (error) {
-    console.log('操作錯誤', error)
+    showAlert('此貼文可能被刪除囉，請重新整理', 'error', 2000)
   }
 }
 

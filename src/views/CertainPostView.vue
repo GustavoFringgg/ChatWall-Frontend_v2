@@ -35,8 +35,8 @@ const getUserPost = ref([]) //取的使用者文章
 
 const getOnePost = async () => {
   const post_id = route.params.id
-  const res = await fetchMemberOnePost(post_id, userStore.token)
   try {
+    const res = await fetchMemberOnePost(post_id, userStore.token)
     getUserPost.value = res.message.map((post) => {
       const formattedPostTime = formatTime(post.createdAt)
       post.comments = post.comments.map((comment) => {
@@ -52,8 +52,8 @@ const getOnePost = async () => {
       }
     }) // 格式化日期
   } catch (error) {
-    console.error(error)
-    showAlert(`${error}`, 'error')
+    showAlert('此貼文可能被刪除囉，將重新導回按讚名單', 'error', 2000)
+    router.push('/mylikelist')
   }
 }
 
@@ -66,7 +66,7 @@ const submitComment = async (postId, commentText) => {
     await postCommentData(postId, commentText, userStore.token)
     updatePostComments(postId)
   } catch (error) {
-    console.error(`留言失敗：`, error)
+    showAlert('此貼文可能被刪除囉，請重新整理', 'error', 2000)
   }
 }
 //更新留言列表

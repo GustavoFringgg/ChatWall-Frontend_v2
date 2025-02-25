@@ -80,7 +80,7 @@ const submitComment = async (postId, commentText) => {
     await postCommentData(postId, commentText, userStore.token)
     updatePostComments(postId)
   } catch (error) {
-    console.error(`留言失敗：`, error)
+    showAlert('此貼文可能被刪除囉，請重新整理', 'error', 2000)
   }
 }
 
