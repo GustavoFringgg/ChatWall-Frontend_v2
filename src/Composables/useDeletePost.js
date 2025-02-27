@@ -12,7 +12,7 @@ export function useDeletePost() {
       await deleteMemberPost(postId, userStore.token)
       getUserPost.value = getUserPost.value.filter((post) => post._id !== postId)
     } catch (error) {
-      showAlert(`${error.response.data.message}`, 'error', 2000)
+      showAlert('此貼文可能被刪除囉，請重新整理', 'error', 2000)
     }
   }
 

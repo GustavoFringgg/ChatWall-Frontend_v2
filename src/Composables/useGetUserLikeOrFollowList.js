@@ -8,7 +8,7 @@ export function useGetUserList() {
 
   const getUserLikeList = async (token) => {
     const data = await fetchUserLikeList(token)
-    userLikeListData.value = data.likeList.map((list) => ({
+    userLikeListData.value = data.data.map((list) => ({
       ...list,
       formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
     }))
@@ -16,7 +16,7 @@ export function useGetUserList() {
 
   const getUserFollowList = async (token) => {
     const data = await fetchFollowList(token)
-    getUserFollowListData.value = data.followingList.map((list) => ({
+    getUserFollowListData.value = data.data.map((list) => ({
       ...list,
       formattedDate: dayjs(list.createdAt).format('YYYY-MM-DD HH:mm'),
     }))
