@@ -198,11 +198,11 @@ export const unLikeMemberPost = (postId, token) => {
   })
 }
 
+//更新貼文
 export const updateMemberPost = (postId, newContent, token) => {
   const contenInfo = {
     newContent,
   }
-  console.log('NewContent', newContent)
   return axios.patch(`${baseURL}/posts/${postId}`, contenInfo, {
     headers: {
       Authorization: `Bearer ${token}`,

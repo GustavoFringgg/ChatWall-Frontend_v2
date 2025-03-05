@@ -37,7 +37,7 @@ const getOnePost = async () => {
   const post_id = route.params.id
   try {
     const res = await fetchMemberOnePost(post_id, userStore.token)
-    getUserPost.value = res.message.map((post) => {
+    getUserPost.value = res.data.map((post) => {
       const formattedPostTime = formatTime(post.createdAt)
       post.comments = post.comments.map((comment) => {
         const formattedCommentTime = formatTime(comment.createdAt)
@@ -73,7 +73,7 @@ const submitComment = async (postId, commentText) => {
 const updatePostComments = async (postId) => {
   try {
     const data = await fetchMemberOnePost(postId, userStore.token)
-    const updateComments = data.message[0].comments.map((comment) => ({
+    const updateComments = data.data[0].comments.map((comment) => ({
       ...comment,
       formattedCommentDate: formatTime(comment.createdAt),
     }))

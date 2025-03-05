@@ -92,7 +92,7 @@ const updatePost = async (postId, newContent) => {
     showAlert('貼文修改成功', 'success', 2000)
     await updateMemberPost(postId, newContent, userStore.token)
   } catch (error) {
-    console.log('更新失敗', error)
+    showAlert('此貼文可能被刪除囉，請重新整理', 'error', 2000)
   }
 }
 
