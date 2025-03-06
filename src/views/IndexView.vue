@@ -101,7 +101,7 @@ const updatePostComments = async (postId) => {
     //取得最新的post貼文
     const data = await fetchMemberOnePost(postId, userStore.token)
     //將貼文的新留言時間格時化
-    const updateComments = data.message[0].comments.map((comment) => ({
+    const updateComments = data.data[0].comments.map((comment) => ({
       ...comment,
       formattedCommentDate: formatTime(comment.createdAt),
     }))
